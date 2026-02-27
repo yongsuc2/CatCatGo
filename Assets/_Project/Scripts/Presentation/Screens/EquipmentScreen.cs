@@ -307,7 +307,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (isTop)
             {
-                var charText = UIManager.CreateText(cellGo.transform, "\ud83d\udc31", 28f, ColorPalette.Text, "CharIcon");
+                var charText = UIManager.CreateText(cellGo.transform, "CAT", 28f, ColorPalette.Text, "CharIcon");
                 charText.alignment = TextAlignmentOptions.Center;
             }
         }

@@ -220,14 +220,31 @@ namespace CatCatGo.Presentation.Core
             if (_skillIconByKey.TryGetValue(skillId, out var sprite))
                 return sprite;
 
-            var loaded = Resources.Load<Sprite>($"Icons/skill/icon_skill_{skillId}");
+            string path = $"Icons/skill/icon_skill_{skillId}";
+
+            var loaded = Resources.Load<Sprite>(path);
             if (loaded != null)
             {
                 _skillIconByKey[skillId] = loaded;
                 return loaded;
             }
 
-            return null;
+            var tex = Resources.Load<Texture2D>(path);
+            if (tex != null)
+            {
+                var created = Sprite.Create(
+                    tex,
+                    new Rect(0, 0, tex.width, tex.height),
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+                created.name = skillId;
+                _skillIconByKey[skillId] = created;
+                return created;
+            }
+
+            var placeholder = PlaceholderGenerator.CreateRect(48, 48, ColorPalette.ButtonPrimary, "SK");
+            _skillIconByKey[skillId] = placeholder;
+            return placeholder;
         }
 
         public Sprite GetUISprite(string spriteName)

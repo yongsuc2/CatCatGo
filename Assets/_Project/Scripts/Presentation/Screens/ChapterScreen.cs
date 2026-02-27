@@ -193,8 +193,8 @@ namespace CatCatGo.Presentation.Screens
             _skillCountText.text = $"\uc2a4\ud0ac {chapter.SessionSkills.Count}";
 
             var threshold = EncounterDataTable.CounterThreshold;
-            _jungbakText.text = $"\u26a1 \uc911\ubc15 {chapter.JungbakCount}/{threshold.Jungbak}";
-            _daebakText.text = $"\u2605 \ub300\ubc15 {chapter.DaebakCount}/{threshold.Daebak}";
+            _jungbakText.text = $"\uc911\ubc15 {chapter.JungbakCount}/{threshold.Jungbak}";
+            _daebakText.text = $"\ub300\ubc15 {chapter.DaebakCount}/{threshold.Daebak}";
         }
 
         private void UpdateStatsBar()
@@ -245,32 +245,9 @@ namespace CatCatGo.Presentation.Screens
                 if (rt == null) rt = iconGo.AddComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(28f, 28f);
 
-                var skillSprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
-                if (skillSprite != null)
-                {
-                    var img = iconGo.AddComponent<Image>();
-                    img.sprite = skillSprite;
-                    img.preserveAspect = true;
-                }
-                else
-                {
-                    var bg = iconGo.AddComponent<Image>();
-                    bg.color = ColorPalette.CardLight;
-                    var textGo = new GameObject("Icon");
-                    textGo.transform.SetParent(iconGo.transform, false);
-                    var textRt = textGo.GetComponent<RectTransform>();
-
-                    if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
-                    textRt.anchorMin = Vector2.zero;
-                    textRt.anchorMax = Vector2.one;
-                    textRt.offsetMin = Vector2.zero;
-                    textRt.offsetMax = Vector2.zero;
-                    var tmp = textGo.AddComponent<TextMeshProUGUI>();
-                    tmp.text = skill.Icon;
-                    tmp.fontSize = 22f;
-                    tmp.alignment = TextAlignmentOptions.Center;
-                    tmp.raycastTarget = false;
-                }
+                var img = iconGo.AddComponent<Image>();
+                img.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
+                img.preserveAspect = true;
             }
         }
 
@@ -774,19 +751,15 @@ namespace CatCatGo.Presentation.Screens
                 nameRowLayout.childForceExpandHeight = true;
                 nameRowLayout.childAlignment = TextAnchor.MiddleLeft;
 
-                var eliteSkillSprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
-                if (eliteSkillSprite != null)
-                {
-                    var iconImgGo = new GameObject("SkillIcon");
-                    iconImgGo.transform.SetParent(nameRowGo.transform, false);
-                    var iconImgLe = iconImgGo.AddComponent<LayoutElement>();
-                    iconImgLe.preferredWidth = 24f;
-                    iconImgLe.preferredHeight = 24f;
-                    var iconImg = iconImgGo.AddComponent<Image>();
-                    iconImg.sprite = eliteSkillSprite;
-                    iconImg.preserveAspect = true;
-                    iconImg.raycastTarget = false;
-                }
+                var iconImgGo = new GameObject("SkillIcon");
+                iconImgGo.transform.SetParent(nameRowGo.transform, false);
+                var iconImgLe = iconImgGo.AddComponent<LayoutElement>();
+                iconImgLe.preferredWidth = 24f;
+                iconImgLe.preferredHeight = 24f;
+                var iconImg = iconImgGo.AddComponent<Image>();
+                iconImg.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
+                iconImg.preserveAspect = true;
+                iconImg.raycastTarget = false;
 
                 var nameGo = new GameObject("Name");
                 nameGo.transform.SetParent(nameRowGo.transform, false);
@@ -794,7 +767,7 @@ namespace CatCatGo.Presentation.Screens
                 var nameLe = nameGo.AddComponent<LayoutElement>();
                 nameLe.flexibleWidth = 1f;
                 var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-                nameTmp.text = eliteSkillSprite != null ? skill.Name : $"{skill.Icon} {skill.Name}";
+                nameTmp.text = skill.Name;
                 nameTmp.fontSize = 22f;
                 nameTmp.color = ColorPalette.Text;
                 nameTmp.fontStyle = FontStyles.Bold;
@@ -915,7 +888,7 @@ namespace CatCatGo.Presentation.Screens
             var titleLe = titleGo.AddComponent<LayoutElement>();
             titleLe.preferredHeight = 36f;
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
-            titleTmp.text = "\u2699\ufe0f \ubaa8\ud5d8 \uc124\uc815";
+            titleTmp.text = "\ubaa8\ud5d8 \uc124\uc815";
             titleTmp.fontSize = 28f;
             titleTmp.color = ColorPalette.Text;
             titleTmp.alignment = TextAlignmentOptions.Center;
@@ -1014,26 +987,22 @@ namespace CatCatGo.Presentation.Screens
                     nameRowHlg.childForceExpandHeight = true;
                     nameRowHlg.childAlignment = TextAnchor.MiddleLeft;
 
-                    var settingsSkillSprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
-                    if (settingsSkillSprite != null)
-                    {
-                        var sIconGo = new GameObject("SkillIcon");
-                        sIconGo.transform.SetParent(nameRowGo.transform, false);
-                        var sIconLe = sIconGo.AddComponent<LayoutElement>();
-                        sIconLe.preferredWidth = 22f;
-                        sIconLe.preferredHeight = 22f;
-                        var sIconImg = sIconGo.AddComponent<Image>();
-                        sIconImg.sprite = settingsSkillSprite;
-                        sIconImg.preserveAspect = true;
-                        sIconImg.raycastTarget = false;
-                    }
+                    var sIconGo = new GameObject("SkillIcon");
+                    sIconGo.transform.SetParent(nameRowGo.transform, false);
+                    var sIconLe = sIconGo.AddComponent<LayoutElement>();
+                    sIconLe.preferredWidth = 22f;
+                    sIconLe.preferredHeight = 22f;
+                    var sIconImg = sIconGo.AddComponent<Image>();
+                    sIconImg.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
+                    sIconImg.preserveAspect = true;
+                    sIconImg.raycastTarget = false;
 
                     var nameGo = new GameObject("Name");
                     nameGo.transform.SetParent(nameRowGo.transform, false);
                     var nameLe = nameGo.AddComponent<LayoutElement>();
                     nameLe.flexibleWidth = 1f;
                     var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-                    nameTmp.text = settingsSkillSprite != null ? skill.Name : $"{skill.Icon} {skill.Name}";
+                    nameTmp.text = skill.Name;
                     nameTmp.fontSize = 22f;
                     nameTmp.color = ColorPalette.Text;
                     nameTmp.alignment = TextAlignmentOptions.Left;
@@ -1485,7 +1454,7 @@ namespace CatCatGo.Presentation.Screens
             if (settingsBtnTextRt == null) settingsBtnTextRt = settingsBtnTextGo.AddComponent<RectTransform>();
             UIManager.StretchFull(settingsBtnTextRt);
             var settingsBtnTmp = settingsBtnTextGo.AddComponent<TextMeshProUGUI>();
-            settingsBtnTmp.text = "\u2699";
+            settingsBtnTmp.text = "\uc124\uc815";
             settingsBtnTmp.fontSize = 22f;
             settingsBtnTmp.color = Color.white;
             settingsBtnTmp.alignment = TextAlignmentOptions.Center;
