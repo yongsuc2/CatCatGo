@@ -1307,7 +1307,7 @@ namespace CatCatGo.Presentation.Screens
             titleRow.transform.SetParent(go.transform, false);
             titleRow.AddComponent<RectTransform>();
             var titleRowLe = titleRow.AddComponent<LayoutElement>();
-            titleRowLe.preferredHeight = 20f;
+            titleRowLe.preferredHeight = 40f;
             var titleRowLayout = titleRow.AddComponent<HorizontalLayoutGroup>();
             titleRowLayout.childForceExpandWidth = false;
             titleRowLayout.childForceExpandHeight = false;
@@ -1318,9 +1318,9 @@ namespace CatCatGo.Presentation.Screens
             chTitleGo.AddComponent<RectTransform>();
             var chTitleLe = chTitleGo.AddComponent<LayoutElement>();
             chTitleLe.flexibleWidth = 1f;
-            chTitleLe.preferredHeight = 20f;
+            chTitleLe.preferredHeight = 40f;
             _chapterTitle = chTitleGo.AddComponent<TextMeshProUGUI>();
-            _chapterTitle.fontSize = 22f;
+            _chapterTitle.fontSize = 33f;
             _chapterTitle.color = ColorPalette.Text;
             _chapterTitle.fontStyle = FontStyles.Bold;
             _chapterTitle.alignment = TextAlignmentOptions.MidlineLeft;
@@ -1330,10 +1330,10 @@ namespace CatCatGo.Presentation.Screens
             dayTextGo.transform.SetParent(titleRow.transform, false);
             dayTextGo.AddComponent<RectTransform>();
             var dayTextLe = dayTextGo.AddComponent<LayoutElement>();
-            dayTextLe.preferredWidth = 100f;
-            dayTextLe.preferredHeight = 20f;
+            dayTextLe.preferredWidth = 160f;
+            dayTextLe.preferredHeight = 40f;
             _dayProgress = dayTextGo.AddComponent<TextMeshProUGUI>();
-            _dayProgress.fontSize = 22f;
+            _dayProgress.fontSize = 33f;
             _dayProgress.color = ColorPalette.TextDim;
             _dayProgress.alignment = TextAlignmentOptions.MidlineRight;
             _dayProgress.raycastTarget = false;
@@ -1344,7 +1344,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (progressRt == null) progressRt = progressGo.AddComponent<RectTransform>();
             var progressLe = progressGo.AddComponent<LayoutElement>();
-            progressLe.preferredHeight = 6f;
+            progressLe.preferredHeight = 12f;
 
             var pBg = new GameObject("Bg");
             pBg.transform.SetParent(progressGo.transform, false);
@@ -1389,7 +1389,7 @@ namespace CatCatGo.Presentation.Screens
             goldRow.transform.SetParent(go.transform, false);
             goldRow.AddComponent<RectTransform>();
             var goldRowLe = goldRow.AddComponent<LayoutElement>();
-            goldRowLe.preferredHeight = 16f;
+            goldRowLe.preferredHeight = 32f;
             var goldRowLayout = goldRow.AddComponent<HorizontalLayoutGroup>();
             goldRowLayout.childForceExpandWidth = false;
             goldRowLayout.childForceExpandHeight = false;
@@ -1400,10 +1400,10 @@ namespace CatCatGo.Presentation.Screens
             goldLabelGo.AddComponent<RectTransform>();
             var goldLabelLe = goldLabelGo.AddComponent<LayoutElement>();
             goldLabelLe.flexibleWidth = 1f;
-            goldLabelLe.preferredHeight = 28f;
+            goldLabelLe.preferredHeight = 40f;
             var goldLabelTmp = goldLabelGo.AddComponent<TextMeshProUGUI>();
             goldLabelTmp.text = "\ud68d\ub4dd \uace8\ub4dc";
-            goldLabelTmp.fontSize = 22f;
+            goldLabelTmp.fontSize = 33f;
             goldLabelTmp.color = ColorPalette.TextDim;
             goldLabelTmp.alignment = TextAlignmentOptions.MidlineLeft;
             goldLabelTmp.raycastTarget = false;
@@ -1412,10 +1412,10 @@ namespace CatCatGo.Presentation.Screens
             goldValGo.transform.SetParent(goldRow.transform, false);
             goldValGo.AddComponent<RectTransform>();
             var goldValLe = goldValGo.AddComponent<LayoutElement>();
-            goldValLe.preferredWidth = 80f;
-            goldValLe.preferredHeight = 28f;
+            goldValLe.preferredWidth = 120f;
+            goldValLe.preferredHeight = 40f;
             _sessionGoldText = goldValGo.AddComponent<TextMeshProUGUI>();
-            _sessionGoldText.fontSize = 22f;
+            _sessionGoldText.fontSize = 33f;
             _sessionGoldText.color = ColorPalette.Gold;
             _sessionGoldText.alignment = TextAlignmentOptions.MidlineRight;
             _sessionGoldText.raycastTarget = false;
@@ -1424,9 +1424,9 @@ namespace CatCatGo.Presentation.Screens
             skillRow.transform.SetParent(go.transform, false);
             skillRow.AddComponent<RectTransform>();
             var skillRowLe = skillRow.AddComponent<LayoutElement>();
-            skillRowLe.preferredHeight = 28f;
+            skillRowLe.preferredHeight = 40f;
             _skillCountText = skillRow.AddComponent<TextMeshProUGUI>();
-            _skillCountText.fontSize = 22f;
+            _skillCountText.fontSize = 33f;
             _skillCountText.color = ColorPalette.TextDim;
             _skillCountText.alignment = TextAlignmentOptions.MidlineLeft;
             _skillCountText.raycastTarget = false;
@@ -1435,7 +1435,7 @@ namespace CatCatGo.Presentation.Screens
             counterRow.transform.SetParent(go.transform, false);
             counterRow.AddComponent<RectTransform>();
             var counterRowLe = counterRow.AddComponent<LayoutElement>();
-            counterRowLe.preferredHeight = 28f;
+            counterRowLe.preferredHeight = 40f;
             var counterRowLayout = counterRow.AddComponent<HorizontalLayoutGroup>();
             counterRowLayout.spacing = 12f;
             counterRowLayout.childForceExpandWidth = true;
@@ -1445,7 +1445,7 @@ namespace CatCatGo.Presentation.Screens
             jungbakGo.transform.SetParent(counterRow.transform, false);
             jungbakGo.AddComponent<RectTransform>();
             _jungbakText = jungbakGo.AddComponent<TextMeshProUGUI>();
-            _jungbakText.fontSize = 22f;
+            _jungbakText.fontSize = 33f;
             _jungbakText.color = ColorPalette.Gold;
             _jungbakText.alignment = TextAlignmentOptions.MidlineLeft;
             _jungbakText.raycastTarget = false;
@@ -1454,7 +1454,7 @@ namespace CatCatGo.Presentation.Screens
             daebakGo.transform.SetParent(counterRow.transform, false);
             daebakGo.AddComponent<RectTransform>();
             _daebakText = daebakGo.AddComponent<TextMeshProUGUI>();
-            _daebakText.fontSize = 22f;
+            _daebakText.fontSize = 33f;
             _daebakText.color = ColorPalette.Gold;
             _daebakText.alignment = TextAlignmentOptions.MidlineLeft;
             _daebakText.raycastTarget = false;
@@ -1463,8 +1463,8 @@ namespace CatCatGo.Presentation.Screens
             settingsBtnGo.transform.SetParent(titleRow.transform, false);
             settingsBtnGo.AddComponent<RectTransform>();
             var settingsBtnLe = settingsBtnGo.AddComponent<LayoutElement>();
-            settingsBtnLe.preferredWidth = 36f;
-            settingsBtnLe.preferredHeight = 60f;
+            settingsBtnLe.preferredWidth = 72f;
+            settingsBtnLe.preferredHeight = 40f;
             var settingsBtnBg = settingsBtnGo.AddComponent<Image>();
             settingsBtnBg.color = ColorPalette.ButtonSecondary;
             var settingsBtn = settingsBtnGo.AddComponent<Button>();
@@ -1479,7 +1479,7 @@ namespace CatCatGo.Presentation.Screens
             UIManager.StretchFull(settingsBtnTextRt);
             var settingsBtnTmp = settingsBtnTextGo.AddComponent<TextMeshProUGUI>();
             settingsBtnTmp.text = "\uc124\uc815";
-            settingsBtnTmp.fontSize = 22f;
+            settingsBtnTmp.fontSize = 28f;
             settingsBtnTmp.color = Color.white;
             settingsBtnTmp.alignment = TextAlignmentOptions.Center;
             settingsBtnTmp.raycastTarget = false;
@@ -1592,9 +1592,9 @@ namespace CatCatGo.Presentation.Screens
             dayLabelGo.transform.SetParent(go.transform, false);
             dayLabelGo.AddComponent<RectTransform>();
             var dayLabelLe = dayLabelGo.AddComponent<LayoutElement>();
-            dayLabelLe.preferredHeight = 28f;
+            dayLabelLe.preferredHeight = 40f;
             _dayLabel = dayLabelGo.AddComponent<TextMeshProUGUI>();
-            _dayLabel.fontSize = 22f;
+            _dayLabel.fontSize = 33f;
             _dayLabel.color = ColorPalette.TextDim;
             _dayLabel.alignment = TextAlignmentOptions.Center;
             _dayLabel.raycastTarget = false;
