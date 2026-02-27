@@ -72,7 +72,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);
-            var scrollRt = scrollGo.AddComponent<RectTransform>();
+            var scrollRt = (scrollGo.GetComponent<RectTransform>() ?? scrollGo.AddComponent<RectTransform>());
             UIManager.StretchFull(scrollRt);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             scrollRect.horizontal = false;
@@ -81,13 +81,13 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            var contentRt = contentGo.AddComponent<RectTransform>();
+            var contentRt = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1);
@@ -222,7 +222,7 @@ namespace CatCatGo.Presentation.Screens
 
             var initialGo = new GameObject("Initial");
             initialGo.transform.SetParent(iconBgGo.transform, false);
-            var initialRt = initialGo.AddComponent<RectTransform>();
+            var initialRt = (initialGo.GetComponent<RectTransform>() ?? initialGo.AddComponent<RectTransform>());
             UIManager.StretchFull(initialRt);
             _showcaseInitial = initialGo.AddComponent<TextMeshProUGUI>();
             _showcaseInitial.fontSize = 48;
@@ -363,7 +363,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var gridGo = new GameObject("PetGrid");
             gridGo.transform.SetParent(parent, false);
-            _gridContent = gridGo.AddComponent<RectTransform>();
+            _gridContent = (gridGo.GetComponent<RectTransform>() ?? gridGo.AddComponent<RectTransform>());
             var gridLe = gridGo.AddComponent<LayoutElement>();
             gridLe.preferredHeight = 300;
 
@@ -583,7 +583,7 @@ namespace CatCatGo.Presentation.Screens
 
                 var borderGo = new GameObject("Border");
                 borderGo.transform.SetParent(cellGo.transform, false);
-                var borderRt = borderGo.AddComponent<RectTransform>();
+                var borderRt = (borderGo.GetComponent<RectTransform>() ?? borderGo.AddComponent<RectTransform>());
                 UIManager.StretchFull(borderRt);
                 var borderImg = borderGo.AddComponent<Image>();
                 borderImg.color = Color.clear;
@@ -594,7 +594,7 @@ namespace CatCatGo.Presentation.Screens
 
                 var textGo = new GameObject("Initial");
                 textGo.transform.SetParent(cellGo.transform, false);
-                var textRt = textGo.AddComponent<RectTransform>();
+                var textRt = (textGo.GetComponent<RectTransform>() ?? textGo.AddComponent<RectTransform>());
                 UIManager.StretchFull(textRt);
                 var initialText = textGo.AddComponent<TextMeshProUGUI>();
                 initialText.text = string.IsNullOrEmpty(pet.Name) ? "?" : pet.Name.Substring(0, 1);

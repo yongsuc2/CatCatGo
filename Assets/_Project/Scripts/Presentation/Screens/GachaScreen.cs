@@ -147,13 +147,13 @@ namespace CatCatGo.Presentation.Screens
 
             var resultGo = new GameObject("ResultPanel");
             resultGo.transform.SetParent(transform, false);
-            _resultPanel = resultGo.AddComponent<RectTransform>();
+            _resultPanel = (resultGo.GetComponent<RectTransform>() ?? resultGo.AddComponent<RectTransform>());
             var resultPanelLe = resultGo.AddComponent<LayoutElement>();
             resultPanelLe.flexibleHeight = 1;
 
             var resultScrollGo = new GameObject("ResultScroll");
             resultScrollGo.transform.SetParent(resultGo.transform, false);
-            var resultScrollRt = resultScrollGo.AddComponent<RectTransform>();
+            var resultScrollRt = (resultScrollGo.GetComponent<RectTransform>() ?? resultScrollGo.AddComponent<RectTransform>());
             UIManager.StretchFull(resultScrollRt);
             var resultScrollRect = resultScrollGo.AddComponent<ScrollRect>();
             resultScrollRect.horizontal = false;
@@ -161,13 +161,13 @@ namespace CatCatGo.Presentation.Screens
 
             var resultViewport = new GameObject("Viewport");
             resultViewport.transform.SetParent(resultScrollGo.transform, false);
-            var resultViewportRt = resultViewport.AddComponent<RectTransform>();
+            var resultViewportRt = (resultViewport.GetComponent<RectTransform>() ?? resultViewport.AddComponent<RectTransform>());
             UIManager.StretchFull(resultViewportRt);
             resultViewport.AddComponent<RectMask2D>();
 
             var resultContentGo = new GameObject("Content");
             resultContentGo.transform.SetParent(resultViewport.transform, false);
-            _resultContent = resultContentGo.AddComponent<RectTransform>();
+            _resultContent = (resultContentGo.GetComponent<RectTransform>() ?? resultContentGo.AddComponent<RectTransform>());
             _resultContent.anchorMin = new Vector2(0, 1);
             _resultContent.anchorMax = new Vector2(1, 1);
             _resultContent.pivot = new Vector2(0.5f, 1);

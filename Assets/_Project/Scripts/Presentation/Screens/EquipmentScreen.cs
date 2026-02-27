@@ -146,13 +146,13 @@ namespace CatCatGo.Presentation.Screens
         {
             var panelGo = new GameObject("EquipmentTab");
             panelGo.transform.SetParent(transform, false);
-            _equipmentTabPanel = panelGo.AddComponent<RectTransform>();
+            _equipmentTabPanel = (panelGo.GetComponent<RectTransform>() ?? panelGo.AddComponent<RectTransform>());
             var panelLe = panelGo.AddComponent<LayoutElement>();
             panelLe.flexibleHeight = 1;
 
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(panelGo.transform, false);
-            var scrollRt = scrollGo.AddComponent<RectTransform>();
+            var scrollRt = (scrollGo.GetComponent<RectTransform>() ?? scrollGo.AddComponent<RectTransform>());
             UIManager.StretchFull(scrollRt);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             scrollRect.horizontal = false;
@@ -161,13 +161,13 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            var contentRt = contentGo.AddComponent<RectTransform>();
+            var contentRt = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1);
@@ -311,7 +311,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var detailGo = new GameObject("DetailPanel");
             detailGo.transform.SetParent(parent, false);
-            _detailPanel = detailGo.AddComponent<RectTransform>();
+            _detailPanel = (detailGo.GetComponent<RectTransform>() ?? detailGo.AddComponent<RectTransform>());
             var detailLe = detailGo.AddComponent<LayoutElement>();
             detailLe.preferredHeight = 160;
             detailGo.AddComponent<Image>().color = ColorPalette.CardLight;
@@ -495,7 +495,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var invGo = new GameObject("InventoryGrid");
             invGo.transform.SetParent(parent, false);
-            _inventoryGrid = invGo.AddComponent<RectTransform>();
+            _inventoryGrid = (invGo.GetComponent<RectTransform>() ?? invGo.AddComponent<RectTransform>());
             var invLe = invGo.AddComponent<LayoutElement>();
             invLe.preferredHeight = 400;
 
@@ -513,13 +513,13 @@ namespace CatCatGo.Presentation.Screens
         {
             var panelGo = new GameObject("ForgeTab");
             panelGo.transform.SetParent(transform, false);
-            _forgeTabPanel = panelGo.AddComponent<RectTransform>();
+            _forgeTabPanel = (panelGo.GetComponent<RectTransform>() ?? panelGo.AddComponent<RectTransform>());
             var panelLe = panelGo.AddComponent<LayoutElement>();
             panelLe.flexibleHeight = 1;
 
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(panelGo.transform, false);
-            var scrollRt = scrollGo.AddComponent<RectTransform>();
+            var scrollRt = (scrollGo.GetComponent<RectTransform>() ?? scrollGo.AddComponent<RectTransform>());
             UIManager.StretchFull(scrollRt);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             scrollRect.horizontal = false;
@@ -528,13 +528,13 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            _forgeGridContent = contentGo.AddComponent<RectTransform>();
+            _forgeGridContent = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
             _forgeGridContent.anchorMin = new Vector2(0, 1);
             _forgeGridContent.anchorMax = new Vector2(1, 1);
             _forgeGridContent.pivot = new Vector2(0.5f, 1);
@@ -586,7 +586,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var previewGo = new GameObject("MergePreview");
             previewGo.transform.SetParent(parent, false);
-            _mergePreviewArea = previewGo.AddComponent<RectTransform>();
+            _mergePreviewArea = (previewGo.GetComponent<RectTransform>() ?? previewGo.AddComponent<RectTransform>());
             var previewLe = previewGo.AddComponent<LayoutElement>();
             previewLe.preferredHeight = 80;
             previewGo.AddComponent<Image>().color = ColorPalette.Card;

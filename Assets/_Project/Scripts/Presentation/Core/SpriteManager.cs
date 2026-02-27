@@ -18,6 +18,7 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<StatusEffectType, StatusEffectSpriteEntry> _statusEffectLookup;
         private Dictionary<string, Sprite> _iconLookup;
         private Dictionary<string, Sprite> _equipIconByKey;
+        private Dictionary<string, Sprite> _skillIconByKey;
 
         private void Awake()
         {
@@ -62,7 +63,18 @@ namespace CatCatGo.Presentation.Core
                     _equipIconByKey[key] = sprite;
             }
 
-            Debug.Log($"[SpriteManager] Icons loaded: {_iconLookup.Count} (sprites: {iconSprites.Length}), equip: {_equipIconByKey.Count}");
+            _skillIconByKey = new Dictionary<string, Sprite>();
+            var skillSprites = Resources.LoadAll<Sprite>("Icons/skill");
+            foreach (var sprite in skillSprites)
+            {
+                string name = StripSpriteModeSuffix(sprite.name);
+                if (!name.StartsWith("icon_skill_")) continue;
+                string key = name.Substring(11);
+                if (!_skillIconByKey.ContainsKey(key))
+                    _skillIconByKey[key] = sprite;
+            }
+
+            Debug.Log($"[SpriteManager] Icons loaded: {_iconLookup.Count} (sprites: {iconSprites.Length}), equip: {_equipIconByKey.Count}, skill: {_skillIconByKey.Count}");
 
             if (iconSprites.Length == 0)
             {
@@ -199,6 +211,13 @@ namespace CatCatGo.Presentation.Core
             if (lastUnderscore > 0 && int.TryParse(name.Substring(lastUnderscore + 1), out _))
                 return name.Substring(0, lastUnderscore);
             return name;
+        }
+
+        public Sprite GetSkillIcon(string skillId)
+        {
+            if (_skillIconByKey != null && _skillIconByKey.TryGetValue(skillId, out var sprite))
+                return sprite;
+            return null;
         }
 
         public Sprite GetUISprite(string spriteName)

@@ -76,7 +76,7 @@ namespace CatCatGo.Presentation.Components
         private RectTransform GetOrAddRectTransform(GameObject go)
         {
             var rt = go.GetComponent<RectTransform>();
-            if (rt == null) rt = go.AddComponent<RectTransform>();
+            if (rt == null) rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
             return rt;
         }
 

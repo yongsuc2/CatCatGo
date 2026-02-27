@@ -216,14 +216,14 @@ namespace CatCatGo.Presentation.Battle
         {
             _rectTransform = gameObject.GetComponent<RectTransform>();
             if (_rectTransform == null)
-                _rectTransform = gameObject.AddComponent<RectTransform>();
+                _rectTransform = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
 
             float charSize = isBoss ? 100f : 72f;
             _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
 
             var spriteGo = new GameObject("Sprite");
             spriteGo.transform.SetParent(transform, false);
-            var spriteRt = spriteGo.AddComponent<RectTransform>();
+            var spriteRt = (spriteGo.GetComponent<RectTransform>() ?? spriteGo.AddComponent<RectTransform>());
             spriteRt.anchoredPosition = new Vector2(0f, 20f);
             spriteRt.sizeDelta = new Vector2(charSize, charSize);
             _spriteImage = spriteGo.AddComponent<Image>();
@@ -232,7 +232,7 @@ namespace CatCatGo.Presentation.Battle
 
             var nameGo = new GameObject("Name");
             nameGo.transform.SetParent(transform, false);
-            var nameRt = nameGo.AddComponent<RectTransform>();
+            var nameRt = (nameGo.GetComponent<RectTransform>() ?? nameGo.AddComponent<RectTransform>());
             nameRt.anchoredPosition = new Vector2(0f, -charSize / 2f + 10f);
             nameRt.sizeDelta = new Vector2(140f, 28f);
             _nameLabel = nameGo.AddComponent<TextMeshProUGUI>();
@@ -250,7 +250,7 @@ namespace CatCatGo.Presentation.Battle
 
             var hpTextGo = new GameObject("HpText");
             hpTextGo.transform.SetParent(_hpBar.transform, false);
-            var hpTextRt = hpTextGo.AddComponent<RectTransform>();
+            var hpTextRt = (hpTextGo.GetComponent<RectTransform>() ?? hpTextGo.AddComponent<RectTransform>());
             hpTextRt.anchorMin = Vector2.zero;
             hpTextRt.anchorMax = Vector2.one;
             hpTextRt.offsetMin = Vector2.zero;
@@ -272,7 +272,7 @@ namespace CatCatGo.Presentation.Battle
 
             var statusGo = new GameObject("StatusContainer");
             statusGo.transform.SetParent(transform, false);
-            _statusContainer = statusGo.AddComponent<RectTransform>();
+            _statusContainer = (statusGo.GetComponent<RectTransform>() ?? statusGo.AddComponent<RectTransform>());
             _statusContainer.anchoredPosition = new Vector2(0f, barY - 20f);
             _statusContainer.sizeDelta = new Vector2(100f, 20f);
             var layout = statusGo.AddComponent<HorizontalLayoutGroup>();
@@ -286,13 +286,13 @@ namespace CatCatGo.Presentation.Battle
         {
             var barGo = new GameObject(name);
             barGo.transform.SetParent(transform, false);
-            var barRt = barGo.AddComponent<RectTransform>();
+            var barRt = (barGo.GetComponent<RectTransform>() ?? barGo.AddComponent<RectTransform>());
             barRt.anchoredPosition = new Vector2(0f, yOffset);
             barRt.sizeDelta = size;
 
             var bgGo = new GameObject("Background");
             bgGo.transform.SetParent(barGo.transform, false);
-            var bgRt = bgGo.AddComponent<RectTransform>();
+            var bgRt = (bgGo.GetComponent<RectTransform>() ?? bgGo.AddComponent<RectTransform>());
             bgRt.anchorMin = Vector2.zero;
             bgRt.anchorMax = Vector2.one;
             bgRt.offsetMin = Vector2.zero;
@@ -302,7 +302,7 @@ namespace CatCatGo.Presentation.Battle
 
             var fillAreaGo = new GameObject("FillArea");
             fillAreaGo.transform.SetParent(barGo.transform, false);
-            var fillAreaRt = fillAreaGo.AddComponent<RectTransform>();
+            var fillAreaRt = (fillAreaGo.GetComponent<RectTransform>() ?? fillAreaGo.AddComponent<RectTransform>());
             fillAreaRt.anchorMin = Vector2.zero;
             fillAreaRt.anchorMax = Vector2.one;
             fillAreaRt.offsetMin = Vector2.zero;
@@ -310,7 +310,7 @@ namespace CatCatGo.Presentation.Battle
 
             var fillGo = new GameObject("Fill");
             fillGo.transform.SetParent(fillAreaGo.transform, false);
-            var fillRt = fillGo.AddComponent<RectTransform>();
+            var fillRt = (fillGo.GetComponent<RectTransform>() ?? fillGo.AddComponent<RectTransform>());
             fillRt.anchorMin = Vector2.zero;
             fillRt.anchorMax = Vector2.one;
             fillRt.offsetMin = Vector2.zero;
@@ -334,7 +334,7 @@ namespace CatCatGo.Presentation.Battle
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = go.AddComponent<RectTransform>();
+            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = new Vector2(0.5f, 1f);
             rt.offsetMin = Vector2.zero;

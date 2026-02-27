@@ -36,7 +36,7 @@ namespace CatCatGo.Presentation.Screens
         {
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);
-            var scrollRt = scrollGo.AddComponent<RectTransform>();
+            var scrollRt = (scrollGo.GetComponent<RectTransform>() ?? scrollGo.AddComponent<RectTransform>());
             UIManager.StretchFull(scrollRt);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             scrollRect.horizontal = false;
@@ -45,13 +45,13 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            var contentRt = contentGo.AddComponent<RectTransform>();
+            var contentRt = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1);
@@ -83,7 +83,7 @@ namespace CatCatGo.Presentation.Screens
 
             var gridContainerGo = new GameObject("GridContainer");
             gridContainerGo.transform.SetParent(contentGo.transform, false);
-            _calendarGrid = gridContainerGo.AddComponent<RectTransform>();
+            _calendarGrid = (gridContainerGo.GetComponent<RectTransform>() ?? gridContainerGo.AddComponent<RectTransform>());
             var gridContainerLe = gridContainerGo.AddComponent<LayoutElement>();
             gridContainerLe.preferredHeight = 300;
 

@@ -57,7 +57,7 @@ namespace CatCatGo.Presentation.Battle
 
             var rootGo = new GameObject("BattleView");
             rootGo.transform.SetParent(parent, false);
-            _root = rootGo.AddComponent<RectTransform>();
+            _root = (rootGo.GetComponent<RectTransform>() ?? rootGo.AddComponent<RectTransform>());
             _root.anchorMin = Vector2.zero;
             _root.anchorMax = Vector2.one;
             _root.offsetMin = Vector2.zero;
@@ -65,7 +65,7 @@ namespace CatCatGo.Presentation.Battle
 
             var turnGo = new GameObject("TurnCounter");
             turnGo.transform.SetParent(_root, false);
-            var turnRt = turnGo.AddComponent<RectTransform>();
+            var turnRt = (turnGo.GetComponent<RectTransform>() ?? turnGo.AddComponent<RectTransform>());
             turnRt.anchorMin = new Vector2(0.5f, 1f);
             turnRt.anchorMax = new Vector2(0.5f, 1f);
             turnRt.pivot = new Vector2(0.5f, 1f);
@@ -79,7 +79,7 @@ namespace CatCatGo.Presentation.Battle
 
             var labelGo = new GameObject("BattleLabel");
             labelGo.transform.SetParent(_root, false);
-            var labelRt = labelGo.AddComponent<RectTransform>();
+            var labelRt = (labelGo.GetComponent<RectTransform>() ?? labelGo.AddComponent<RectTransform>());
             labelRt.anchorMin = new Vector2(0.5f, 1f);
             labelRt.anchorMax = new Vector2(0.5f, 1f);
             labelRt.pivot = new Vector2(0.5f, 1f);
@@ -94,7 +94,7 @@ namespace CatCatGo.Presentation.Battle
 
             var fieldGo = new GameObject("BattleField");
             fieldGo.transform.SetParent(_root, false);
-            _battleField = fieldGo.AddComponent<RectTransform>();
+            _battleField = (fieldGo.GetComponent<RectTransform>() ?? fieldGo.AddComponent<RectTransform>());
             _battleField.anchorMin = new Vector2(0f, 0.1f);
             _battleField.anchorMax = new Vector2(1f, 0.85f);
             _battleField.offsetMin = Vector2.zero;
@@ -105,7 +105,7 @@ namespace CatCatGo.Presentation.Battle
 
             var vsGo = new GameObject("VsText");
             vsGo.transform.SetParent(_battleField, false);
-            var vsRt = vsGo.AddComponent<RectTransform>();
+            var vsRt = (vsGo.GetComponent<RectTransform>() ?? vsGo.AddComponent<RectTransform>());
             vsRt.anchorMin = new Vector2(0.5f, 0.5f);
             vsRt.anchorMax = new Vector2(0.5f, 0.5f);
             vsRt.anchoredPosition = Vector2.zero;
@@ -126,7 +126,7 @@ namespace CatCatGo.Presentation.Battle
 
             var popupLayerGo = new GameObject("PopupLayer");
             popupLayerGo.transform.SetParent(_root, false);
-            _popupLayer = popupLayerGo.AddComponent<RectTransform>();
+            _popupLayer = (popupLayerGo.GetComponent<RectTransform>() ?? popupLayerGo.AddComponent<RectTransform>());
             _popupLayer.anchorMin = Vector2.zero;
             _popupLayer.anchorMax = Vector2.one;
             _popupLayer.offsetMin = Vector2.zero;
@@ -143,7 +143,7 @@ namespace CatCatGo.Presentation.Battle
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            go.AddComponent<RectTransform>();
+            (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
             var view = go.AddComponent<CharacterView>();
             go.SetActive(false);
             return view;

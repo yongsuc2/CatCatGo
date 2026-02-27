@@ -19,7 +19,7 @@ namespace CatCatGo.Presentation.Components
         {
             _root = gameObject.GetComponent<RectTransform>();
             if (_root == null)
-                _root = gameObject.AddComponent<RectTransform>();
+                _root = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
             _root.sizeDelta = new Vector2(0f, 36f);
 
             var bgImage = gameObject.AddComponent<Image>();
@@ -33,7 +33,7 @@ namespace CatCatGo.Presentation.Components
 
             var topRow = new GameObject("TopRow");
             topRow.transform.SetParent(transform, false);
-            var topRt = topRow.AddComponent<RectTransform>();
+            var topRt = (topRow.GetComponent<RectTransform>() ?? topRow.AddComponent<RectTransform>());
             topRt.sizeDelta = new Vector2(0f, 14f);
             var topLayout = topRow.AddComponent<HorizontalLayoutGroup>();
             topLayout.spacing = 8f;
@@ -43,7 +43,7 @@ namespace CatCatGo.Presentation.Components
 
             var hpBarGo = new GameObject("HpBar");
             hpBarGo.transform.SetParent(topRow.transform, false);
-            var hpBarRt = hpBarGo.AddComponent<RectTransform>();
+            var hpBarRt = (hpBarGo.GetComponent<RectTransform>() ?? hpBarGo.AddComponent<RectTransform>());
             hpBarRt.sizeDelta = new Vector2(0f, 12f);
             var hpBarFlex = hpBarGo.AddComponent<LayoutElement>();
             hpBarFlex.flexibleWidth = 1f;
@@ -51,7 +51,7 @@ namespace CatCatGo.Presentation.Components
 
             var hpBg = new GameObject("HpBg");
             hpBg.transform.SetParent(hpBarGo.transform, false);
-            var hpBgRt = hpBg.AddComponent<RectTransform>();
+            var hpBgRt = (hpBg.GetComponent<RectTransform>() ?? hpBg.AddComponent<RectTransform>());
             hpBgRt.anchorMin = Vector2.zero;
             hpBgRt.anchorMax = Vector2.one;
             hpBgRt.offsetMin = Vector2.zero;
@@ -61,7 +61,7 @@ namespace CatCatGo.Presentation.Components
 
             var hpFillArea = new GameObject("FillArea");
             hpFillArea.transform.SetParent(hpBarGo.transform, false);
-            var hpFillAreaRt = hpFillArea.AddComponent<RectTransform>();
+            var hpFillAreaRt = (hpFillArea.GetComponent<RectTransform>() ?? hpFillArea.AddComponent<RectTransform>());
             hpFillAreaRt.anchorMin = Vector2.zero;
             hpFillAreaRt.anchorMax = Vector2.one;
             hpFillAreaRt.offsetMin = Vector2.zero;
@@ -69,7 +69,7 @@ namespace CatCatGo.Presentation.Components
 
             var hpFillGo = new GameObject("Fill");
             hpFillGo.transform.SetParent(hpFillArea.transform, false);
-            var hpFillRt = hpFillGo.AddComponent<RectTransform>();
+            var hpFillRt = (hpFillGo.GetComponent<RectTransform>() ?? hpFillGo.AddComponent<RectTransform>());
             hpFillRt.anchorMin = Vector2.zero;
             hpFillRt.anchorMax = Vector2.one;
             hpFillRt.offsetMin = Vector2.zero;
@@ -85,7 +85,7 @@ namespace CatCatGo.Presentation.Components
 
             var hpTextGo = new GameObject("HpText");
             hpTextGo.transform.SetParent(hpBarGo.transform, false);
-            var hpTextRt = hpTextGo.AddComponent<RectTransform>();
+            var hpTextRt = (hpTextGo.GetComponent<RectTransform>() ?? hpTextGo.AddComponent<RectTransform>());
             hpTextRt.anchorMin = Vector2.zero;
             hpTextRt.anchorMax = Vector2.one;
             hpTextRt.offsetMin = Vector2.zero;
@@ -99,7 +99,7 @@ namespace CatCatGo.Presentation.Components
 
             var statsRow = new GameObject("StatsRow");
             statsRow.transform.SetParent(transform, false);
-            var statsRt = statsRow.AddComponent<RectTransform>();
+            var statsRt = (statsRow.GetComponent<RectTransform>() ?? statsRow.AddComponent<RectTransform>());
             statsRt.sizeDelta = new Vector2(0f, 28f);
             var statsLayout = statsRow.AddComponent<HorizontalLayoutGroup>();
             statsLayout.spacing = 12f;
@@ -115,7 +115,7 @@ namespace CatCatGo.Presentation.Components
         {
             var go = new GameObject(prefix);
             go.transform.SetParent(parent, false);
-            go.AddComponent<RectTransform>();
+            (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 28f;
             var tmp = go.AddComponent<TextMeshProUGUI>();
