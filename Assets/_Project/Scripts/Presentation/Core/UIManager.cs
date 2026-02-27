@@ -178,7 +178,9 @@ namespace CatCatGo.Presentation.Core
         {
             var screenGo = new GameObject(name);
             screenGo.transform.SetParent(_screenContainer, false);
-            var rt = (screenGo.GetComponent<RectTransform>() ?? screenGo.AddComponent<RectTransform>());
+            var rt = screenGo.GetComponent<RectTransform>();
+
+            if (rt == null) rt = screenGo.AddComponent<RectTransform>();
             StretchFull(rt);
             var screen = screenGo.AddComponent<T>();
             screenGo.SetActive(false);
@@ -223,7 +225,9 @@ namespace CatCatGo.Presentation.Core
             _popupLayer.gameObject.SetActive(true);
             var popupGo = new GameObject(typeof(T).Name);
             popupGo.transform.SetParent(_popupContainer, false);
-            var rt = (popupGo.GetComponent<RectTransform>() ?? popupGo.AddComponent<RectTransform>());
+            var rt = popupGo.GetComponent<RectTransform>();
+
+            if (rt == null) rt = popupGo.AddComponent<RectTransform>();
             StretchFull(rt);
 
             _activePopup = popupGo.AddComponent<T>();
@@ -262,7 +266,9 @@ namespace CatCatGo.Presentation.Core
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            var rt = go.GetComponent<RectTransform>();
+
+            if (rt == null) rt = go.AddComponent<RectTransform>();
             return rt;
         }
 
@@ -278,7 +284,9 @@ namespace CatCatGo.Presentation.Core
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            var rt = go.GetComponent<RectTransform>();
+
+            if (rt == null) rt = go.AddComponent<RectTransform>();
             StretchFull(rt);
             var image = go.AddComponent<Image>();
             image.color = color;
@@ -289,7 +297,9 @@ namespace CatCatGo.Presentation.Core
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            var rt = go.GetComponent<RectTransform>();
+
+            if (rt == null) rt = go.AddComponent<RectTransform>();
             StretchFull(rt);
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
@@ -304,7 +314,9 @@ namespace CatCatGo.Presentation.Core
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            var rt = go.GetComponent<RectTransform>();
+
+            if (rt == null) rt = go.AddComponent<RectTransform>();
             StretchFull(rt);
 
             var image = go.AddComponent<Image>();
@@ -317,7 +329,9 @@ namespace CatCatGo.Presentation.Core
 
             var textGo = new GameObject("Label");
             textGo.transform.SetParent(go.transform, false);
-            var textRt = (textGo.GetComponent<RectTransform>() ?? textGo.AddComponent<RectTransform>());
+            var textRt = textGo.GetComponent<RectTransform>();
+
+            if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
             StretchFull(textRt);
             var tmp = textGo.AddComponent<TextMeshProUGUI>();
             tmp.text = label;
@@ -333,7 +347,9 @@ namespace CatCatGo.Presentation.Core
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            var rt = go.GetComponent<RectTransform>();
+
+            if (rt == null) rt = go.AddComponent<RectTransform>();
             rt.sizeDelta = new Vector2(300, 20);
 
             var bgGo = new GameObject("Background");
@@ -345,7 +361,9 @@ namespace CatCatGo.Presentation.Core
 
             var fillAreaGo = new GameObject("FillArea");
             fillAreaGo.transform.SetParent(go.transform, false);
-            var fillAreaRt = (fillAreaGo.GetComponent<RectTransform>() ?? fillAreaGo.AddComponent<RectTransform>());
+            var fillAreaRt = fillAreaGo.GetComponent<RectTransform>();
+
+            if (fillAreaRt == null) fillAreaRt = fillAreaGo.AddComponent<RectTransform>();
             fillAreaRt.anchorMin = new Vector2(0, 0.25f);
             fillAreaRt.anchorMax = new Vector2(1, 0.75f);
             fillAreaRt.offsetMin = new Vector2(5, 0);

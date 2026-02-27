@@ -25,7 +25,9 @@ namespace CatCatGo.Presentation.Components
 
             _root = gameObject.GetComponent<RectTransform>();
             if (_root == null)
-                _root = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
+                _root = gameObject.GetComponent<RectTransform>();
+
+                if (_root == null) _root = gameObject.AddComponent<RectTransform>();
 
             var bg = gameObject.AddComponent<Image>();
             bg.color = ColorPalette.Card;
@@ -77,7 +79,9 @@ namespace CatCatGo.Presentation.Components
 
             var containerGo = new GameObject("Bars");
             containerGo.transform.SetParent(transform, false);
-            _barsContainer = (containerGo.GetComponent<RectTransform>() ?? containerGo.AddComponent<RectTransform>());
+            _barsContainer = containerGo.GetComponent<RectTransform>();
+
+            if (_barsContainer == null) _barsContainer = containerGo.AddComponent<RectTransform>();
             var containerLayout = containerGo.AddComponent<VerticalLayoutGroup>();
             containerLayout.spacing = 3f;
             containerLayout.childForceExpandWidth = true;
@@ -119,7 +123,9 @@ namespace CatCatGo.Presentation.Components
         private GameObject CreateBarEntry(string label, int value, int maxValue, float sharePct)
         {
             var rowGo = new GameObject($"Bar_{label}");
-            var rowRt = (rowGo.GetComponent<RectTransform>() ?? rowGo.AddComponent<RectTransform>());
+            var rowRt = rowGo.GetComponent<RectTransform>();
+
+            if (rowRt == null) rowRt = rowGo.AddComponent<RectTransform>();
             var rowLe = rowGo.AddComponent<LayoutElement>();
             rowLe.preferredHeight = 32f;
 
@@ -155,7 +161,9 @@ namespace CatCatGo.Presentation.Components
 
             var barBg = new GameObject("BarBg");
             barBg.transform.SetParent(barWrapper.transform, false);
-            var barBgRt = (barBg.GetComponent<RectTransform>() ?? barBg.AddComponent<RectTransform>());
+            var barBgRt = barBg.GetComponent<RectTransform>();
+
+            if (barBgRt == null) barBgRt = barBg.AddComponent<RectTransform>();
             barBgRt.anchorMin = Vector2.zero;
             barBgRt.anchorMax = Vector2.one;
             barBgRt.offsetMin = Vector2.zero;
@@ -167,7 +175,9 @@ namespace CatCatGo.Presentation.Components
 
             var barFill = new GameObject("BarFill");
             barFill.transform.SetParent(barWrapper.transform, false);
-            var barFillRt = (barFill.GetComponent<RectTransform>() ?? barFill.AddComponent<RectTransform>());
+            var barFillRt = barFill.GetComponent<RectTransform>();
+
+            if (barFillRt == null) barFillRt = barFill.AddComponent<RectTransform>();
             barFillRt.anchorMin = Vector2.zero;
             barFillRt.anchorMax = new Vector2(ratio, 1f);
             barFillRt.offsetMin = Vector2.zero;

@@ -90,7 +90,9 @@ namespace CatCatGo.Presentation.Components
         {
             var rowGo = new GameObject(name);
             rowGo.transform.SetParent(transform, false);
-            var rowRt = (rowGo.GetComponent<RectTransform>() ?? rowGo.AddComponent<RectTransform>());
+            var rowRt = rowGo.GetComponent<RectTransform>();
+
+            if (rowRt == null) rowRt = rowGo.AddComponent<RectTransform>();
 
             var layout = rowGo.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 2;

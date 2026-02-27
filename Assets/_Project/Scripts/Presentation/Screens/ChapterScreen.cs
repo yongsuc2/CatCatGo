@@ -240,7 +240,9 @@ namespace CatCatGo.Presentation.Screens
             {
                 var iconGo = new GameObject($"Skill_{skill.Id}");
                 iconGo.transform.SetParent(_sessionSkillsContainer, false);
-                var rt = (iconGo.GetComponent<RectTransform>() ?? iconGo.AddComponent<RectTransform>());
+                var rt = iconGo.GetComponent<RectTransform>();
+
+                if (rt == null) rt = iconGo.AddComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(28f, 28f);
 
                 var skillSprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
@@ -256,7 +258,9 @@ namespace CatCatGo.Presentation.Screens
                     bg.color = ColorPalette.CardLight;
                     var textGo = new GameObject("Icon");
                     textGo.transform.SetParent(iconGo.transform, false);
-                    var textRt = (textGo.GetComponent<RectTransform>() ?? textGo.AddComponent<RectTransform>());
+                    var textRt = textGo.GetComponent<RectTransform>();
+
+                    if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
                     textRt.anchorMin = Vector2.zero;
                     textRt.anchorMax = Vector2.one;
                     textRt.offsetMin = Vector2.zero;
@@ -394,7 +398,9 @@ namespace CatCatGo.Presentation.Screens
 
                 var optGo = new GameObject($"Option_{i}");
                 optGo.transform.SetParent(_optionsContainer, false);
-                var optRt = (optGo.GetComponent<RectTransform>() ?? optGo.AddComponent<RectTransform>());
+                var optRt = optGo.GetComponent<RectTransform>();
+
+                if (optRt == null) optRt = optGo.AddComponent<RectTransform>();
                 optRt.sizeDelta = new Vector2(0f, 60f);
                 var optLe = optGo.AddComponent<LayoutElement>();
                 optLe.flexibleWidth = 1f;
@@ -740,7 +746,9 @@ namespace CatCatGo.Presentation.Screens
 
                 var cardGo = new GameObject($"SkillCard_{i}");
                 cardGo.transform.SetParent(_eliteOptionsContainer, false);
-                var cardRt = (cardGo.GetComponent<RectTransform>() ?? cardGo.AddComponent<RectTransform>());
+                var cardRt = cardGo.GetComponent<RectTransform>();
+
+                if (cardRt == null) cardRt = cardGo.AddComponent<RectTransform>();
                 cardRt.sizeDelta = new Vector2(0f, 80f);
                 var cardLe = cardGo.AddComponent<LayoutElement>();
                 cardLe.flexibleWidth = 1f;
@@ -877,7 +885,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var overlayGo = new GameObject("SettingsOverlay");
             overlayGo.transform.SetParent(transform, false);
-            _settingsOverlay = (overlayGo.GetComponent<RectTransform>() ?? overlayGo.AddComponent<RectTransform>());
+            _settingsOverlay = overlayGo.GetComponent<RectTransform>();
+
+            if (_settingsOverlay == null) _settingsOverlay = overlayGo.AddComponent<RectTransform>();
             UIManager.StretchFull(_settingsOverlay);
 
             var overlayBg = overlayGo.AddComponent<Image>();
@@ -885,7 +895,9 @@ namespace CatCatGo.Presentation.Screens
 
             var innerGo = new GameObject("Inner");
             innerGo.transform.SetParent(overlayGo.transform, false);
-            var innerRt = (innerGo.GetComponent<RectTransform>() ?? innerGo.AddComponent<RectTransform>());
+            var innerRt = innerGo.GetComponent<RectTransform>();
+
+            if (innerRt == null) innerRt = innerGo.AddComponent<RectTransform>();
             innerRt.anchorMin = new Vector2(0.05f, 0.1f);
             innerRt.anchorMax = new Vector2(0.95f, 0.9f);
             innerRt.offsetMin = Vector2.zero;
@@ -920,13 +932,17 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
+            var viewportRt = viewportGo.GetComponent<RectTransform>();
+
+            if (viewportRt == null) viewportRt = viewportGo.AddComponent<RectTransform>();
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var skillListGo = new GameObject("SkillList");
             skillListGo.transform.SetParent(viewportGo.transform, false);
-            _settingsSkillList = (skillListGo.GetComponent<RectTransform>() ?? skillListGo.AddComponent<RectTransform>());
+            _settingsSkillList = skillListGo.GetComponent<RectTransform>();
+
+            if (_settingsSkillList == null) _settingsSkillList = skillListGo.AddComponent<RectTransform>();
             _settingsSkillList.anchorMin = new Vector2(0, 1);
             _settingsSkillList.anchorMax = new Vector2(1, 1);
             _settingsSkillList.pivot = new Vector2(0.5f, 1);
@@ -1112,11 +1128,15 @@ namespace CatCatGo.Presentation.Screens
         {
             _rootPanel = gameObject.GetComponent<RectTransform>();
             if (_rootPanel == null)
-                _rootPanel = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
+                _rootPanel = gameObject.GetComponent<RectTransform>();
+
+                if (_rootPanel == null) _rootPanel = gameObject.AddComponent<RectTransform>();
 
             var scrollGo = new GameObject("Scroll");
             scrollGo.transform.SetParent(transform, false);
-            var scrollRt = (scrollGo.GetComponent<RectTransform>() ?? scrollGo.AddComponent<RectTransform>());
+            var scrollRt = scrollGo.GetComponent<RectTransform>();
+
+            if (scrollRt == null) scrollRt = scrollGo.AddComponent<RectTransform>();
             scrollRt.anchorMin = Vector2.zero;
             scrollRt.anchorMax = Vector2.one;
             scrollRt.offsetMin = Vector2.zero;
@@ -1129,7 +1149,9 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
+            var viewportRt = viewportGo.GetComponent<RectTransform>();
+
+            if (viewportRt == null) viewportRt = viewportGo.AddComponent<RectTransform>();
             viewportRt.anchorMin = Vector2.zero;
             viewportRt.anchorMax = Vector2.one;
             viewportRt.offsetMin = Vector2.zero;
@@ -1138,7 +1160,9 @@ namespace CatCatGo.Presentation.Screens
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            var contentRt = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
+            var contentRt = contentGo.GetComponent<RectTransform>();
+
+            if (contentRt == null) contentRt = contentGo.AddComponent<RectTransform>();
             contentRt.anchorMin = new Vector2(0f, 1f);
             contentRt.anchorMax = new Vector2(1f, 1f);
             contentRt.pivot = new Vector2(0.5f, 1f);
@@ -1172,7 +1196,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("IdlePanel");
             go.transform.SetParent(parent, false);
-            _idlePanel = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _idlePanel = go.GetComponent<RectTransform>();
+
+            if (_idlePanel == null) _idlePanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 120f;
 
@@ -1221,7 +1247,9 @@ namespace CatCatGo.Presentation.Screens
 
             var btnText = new GameObject("Text");
             btnText.transform.SetParent(btnGo.transform, false);
-            var btnTextRt = (btnText.GetComponent<RectTransform>() ?? btnText.AddComponent<RectTransform>());
+            var btnTextRt = btnText.GetComponent<RectTransform>();
+
+            if (btnTextRt == null) btnTextRt = btnText.AddComponent<RectTransform>();
             btnTextRt.anchorMin = Vector2.zero;
             btnTextRt.anchorMax = Vector2.one;
             btnTextRt.offsetMin = Vector2.zero;
@@ -1248,7 +1276,9 @@ namespace CatCatGo.Presentation.Screens
 
             var treasureTextGo = new GameObject("Text");
             treasureTextGo.transform.SetParent(treasureGo.transform, false);
-            var treasureTextRt = (treasureTextGo.GetComponent<RectTransform>() ?? treasureTextGo.AddComponent<RectTransform>());
+            var treasureTextRt = treasureTextGo.GetComponent<RectTransform>();
+
+            if (treasureTextRt == null) treasureTextRt = treasureTextGo.AddComponent<RectTransform>();
             treasureTextRt.anchorMin = Vector2.zero;
             treasureTextRt.anchorMax = Vector2.one;
             treasureTextRt.offsetMin = Vector2.zero;
@@ -1265,7 +1295,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("ChapterHeader");
             go.transform.SetParent(parent, false);
-            _chapterHeader = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _chapterHeader = go.GetComponent<RectTransform>();
+
+            if (_chapterHeader == null) _chapterHeader = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 80f;
 
@@ -1315,13 +1347,17 @@ namespace CatCatGo.Presentation.Screens
 
             var progressGo = new GameObject("ProgressBar");
             progressGo.transform.SetParent(go.transform, false);
-            var progressRt = (progressGo.GetComponent<RectTransform>() ?? progressGo.AddComponent<RectTransform>());
+            var progressRt = progressGo.GetComponent<RectTransform>();
+
+            if (progressRt == null) progressRt = progressGo.AddComponent<RectTransform>();
             var progressLe = progressGo.AddComponent<LayoutElement>();
             progressLe.preferredHeight = 6f;
 
             var pBg = new GameObject("Bg");
             pBg.transform.SetParent(progressGo.transform, false);
-            var pBgRt = (pBg.GetComponent<RectTransform>() ?? pBg.AddComponent<RectTransform>());
+            var pBgRt = pBg.GetComponent<RectTransform>();
+
+            if (pBgRt == null) pBgRt = pBg.AddComponent<RectTransform>();
             pBgRt.anchorMin = Vector2.zero;
             pBgRt.anchorMax = Vector2.one;
             pBgRt.offsetMin = Vector2.zero;
@@ -1331,7 +1367,9 @@ namespace CatCatGo.Presentation.Screens
 
             var pFillArea = new GameObject("FillArea");
             pFillArea.transform.SetParent(progressGo.transform, false);
-            var pFillAreaRt = (pFillArea.GetComponent<RectTransform>() ?? pFillArea.AddComponent<RectTransform>());
+            var pFillAreaRt = pFillArea.GetComponent<RectTransform>();
+
+            if (pFillAreaRt == null) pFillAreaRt = pFillArea.AddComponent<RectTransform>();
             pFillAreaRt.anchorMin = Vector2.zero;
             pFillAreaRt.anchorMax = Vector2.one;
             pFillAreaRt.offsetMin = Vector2.zero;
@@ -1339,7 +1377,9 @@ namespace CatCatGo.Presentation.Screens
 
             var pFill = new GameObject("Fill");
             pFill.transform.SetParent(pFillArea.transform, false);
-            var pFillRt = (pFill.GetComponent<RectTransform>() ?? pFill.AddComponent<RectTransform>());
+            var pFillRt = pFill.GetComponent<RectTransform>();
+
+            if (pFillRt == null) pFillRt = pFill.AddComponent<RectTransform>();
             pFillRt.anchorMin = Vector2.zero;
             pFillRt.anchorMax = Vector2.one;
             pFillRt.offsetMin = Vector2.zero;
@@ -1440,7 +1480,9 @@ namespace CatCatGo.Presentation.Screens
 
             var settingsBtnTextGo = new GameObject("Text");
             settingsBtnTextGo.transform.SetParent(settingsBtnGo.transform, false);
-            var settingsBtnTextRt = (settingsBtnTextGo.GetComponent<RectTransform>() ?? settingsBtnTextGo.AddComponent<RectTransform>());
+            var settingsBtnTextRt = settingsBtnTextGo.GetComponent<RectTransform>();
+
+            if (settingsBtnTextRt == null) settingsBtnTextRt = settingsBtnTextGo.AddComponent<RectTransform>();
             UIManager.StretchFull(settingsBtnTextRt);
             var settingsBtnTmp = settingsBtnTextGo.AddComponent<TextMeshProUGUI>();
             settingsBtnTmp.text = "\u2699";
@@ -1490,7 +1532,9 @@ namespace CatCatGo.Presentation.Screens
 
             var speedTextGo = new GameObject("Text");
             speedTextGo.transform.SetParent(speedGo.transform, false);
-            var speedTextRt = (speedTextGo.GetComponent<RectTransform>() ?? speedTextGo.AddComponent<RectTransform>());
+            var speedTextRt = speedTextGo.GetComponent<RectTransform>();
+
+            if (speedTextRt == null) speedTextRt = speedTextGo.AddComponent<RectTransform>();
             speedTextRt.anchorMin = Vector2.zero;
             speedTextRt.anchorMax = Vector2.one;
             speedTextRt.offsetMin = Vector2.zero;
@@ -1517,7 +1561,9 @@ namespace CatCatGo.Presentation.Screens
 
             var graphTextGo = new GameObject("Text");
             graphTextGo.transform.SetParent(graphGo.transform, false);
-            var graphTextRt = (graphTextGo.GetComponent<RectTransform>() ?? graphTextGo.AddComponent<RectTransform>());
+            var graphTextRt = graphTextGo.GetComponent<RectTransform>();
+
+            if (graphTextRt == null) graphTextRt = graphTextGo.AddComponent<RectTransform>();
             graphTextRt.anchorMin = Vector2.zero;
             graphTextRt.anchorMax = Vector2.one;
             graphTextRt.offsetMin = Vector2.zero;
@@ -1537,7 +1583,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("EncounterPanel");
             go.transform.SetParent(parent, false);
-            _encounterPanel = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _encounterPanel = go.GetComponent<RectTransform>();
+
+            if (_encounterPanel == null) _encounterPanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.flexibleHeight = 1f;
 
@@ -1584,7 +1632,9 @@ namespace CatCatGo.Presentation.Screens
 
             var optionsGo = new GameObject("Options");
             optionsGo.transform.SetParent(go.transform, false);
-            _optionsContainer = (optionsGo.GetComponent<RectTransform>() ?? optionsGo.AddComponent<RectTransform>());
+            _optionsContainer = optionsGo.GetComponent<RectTransform>();
+
+            if (_optionsContainer == null) _optionsContainer = optionsGo.AddComponent<RectTransform>();
             var optionsLayout = optionsGo.AddComponent<VerticalLayoutGroup>();
             optionsLayout.spacing = 4f;
             optionsLayout.childForceExpandWidth = true;
@@ -1605,7 +1655,9 @@ namespace CatCatGo.Presentation.Screens
 
             var rerollTextGo = new GameObject("Text");
             rerollTextGo.transform.SetParent(rerollGo.transform, false);
-            var rerollTextRt = (rerollTextGo.GetComponent<RectTransform>() ?? rerollTextGo.AddComponent<RectTransform>());
+            var rerollTextRt = rerollTextGo.GetComponent<RectTransform>();
+
+            if (rerollTextRt == null) rerollTextRt = rerollTextGo.AddComponent<RectTransform>();
             rerollTextRt.anchorMin = Vector2.zero;
             rerollTextRt.anchorMax = Vector2.one;
             rerollTextRt.offsetMin = Vector2.zero;
@@ -1623,7 +1675,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("EliteRewardPanel");
             go.transform.SetParent(parent, false);
-            _eliteRewardPanel = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _eliteRewardPanel = go.GetComponent<RectTransform>();
+
+            if (_eliteRewardPanel == null) _eliteRewardPanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.flexibleHeight = 1f;
 
@@ -1648,7 +1702,9 @@ namespace CatCatGo.Presentation.Screens
 
             var optionsGo = new GameObject("EliteOptions");
             optionsGo.transform.SetParent(go.transform, false);
-            _eliteOptionsContainer = (optionsGo.GetComponent<RectTransform>() ?? optionsGo.AddComponent<RectTransform>());
+            _eliteOptionsContainer = optionsGo.GetComponent<RectTransform>();
+
+            if (_eliteOptionsContainer == null) _eliteOptionsContainer = optionsGo.AddComponent<RectTransform>();
             var optionsLayout = optionsGo.AddComponent<VerticalLayoutGroup>();
             optionsLayout.spacing = 6f;
             optionsLayout.childForceExpandWidth = true;
@@ -1673,7 +1729,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("SessionSkills");
             go.transform.SetParent(parent, false);
-            _sessionSkillsContainer = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _sessionSkillsContainer = go.GetComponent<RectTransform>();
+
+            if (_sessionSkillsContainer == null) _sessionSkillsContainer = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 34f;
 
@@ -1691,7 +1749,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("GraphContainer");
             go.transform.SetParent(parent, false);
-            _graphContainer = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _graphContainer = go.GetComponent<RectTransform>();
+
+            if (_graphContainer == null) _graphContainer = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.flexibleHeight = 0f;
 
@@ -1726,7 +1786,9 @@ namespace CatCatGo.Presentation.Screens
         {
             var go = new GameObject("ResultPanel");
             go.transform.SetParent(parent, false);
-            _resultPanel = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            _resultPanel = go.GetComponent<RectTransform>();
+
+            if (_resultPanel == null) _resultPanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 220f;
 
@@ -1804,7 +1866,9 @@ namespace CatCatGo.Presentation.Screens
 
             var textGo = new GameObject("Text");
             textGo.transform.SetParent(go.transform, false);
-            var textRt = (textGo.GetComponent<RectTransform>() ?? textGo.AddComponent<RectTransform>());
+            var textRt = textGo.GetComponent<RectTransform>();
+
+            if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
             textRt.anchorMin = Vector2.zero;
             textRt.anchorMax = Vector2.one;
             textRt.offsetMin = Vector2.zero;

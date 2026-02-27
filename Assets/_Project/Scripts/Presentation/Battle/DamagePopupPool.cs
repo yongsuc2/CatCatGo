@@ -19,7 +19,9 @@ namespace CatCatGo.Presentation.Battle
             {
                 var go = new GameObject("DamagePopup");
                 go.transform.SetParent(parent, false);
-                var rt = (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+                var rt = go.GetComponent<RectTransform>();
+
+                if (rt == null) rt = go.AddComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(120f, 30f);
                 popup = go.AddComponent<DamagePopup>();
                 popup.OnAnimationComplete = Return;

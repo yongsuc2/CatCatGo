@@ -32,7 +32,9 @@ namespace CatCatGo.Presentation.Battle
 
         private void BuildUI()
         {
-            var rt = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
+            var rt = gameObject.GetComponent<RectTransform>();
+
+            if (rt == null) rt = gameObject.AddComponent<RectTransform>();
             rt.sizeDelta = new Vector2(36f, 36f);
 
             _background = gameObject.AddComponent<Image>();
@@ -41,7 +43,9 @@ namespace CatCatGo.Presentation.Battle
 
             var textGo = new GameObject("Label");
             textGo.transform.SetParent(transform, false);
-            var textRt = (textGo.GetComponent<RectTransform>() ?? textGo.AddComponent<RectTransform>());
+            var textRt = textGo.GetComponent<RectTransform>();
+
+            if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
             textRt.anchorMin = Vector2.zero;
             textRt.anchorMax = Vector2.one;
             textRt.offsetMin = Vector2.zero;

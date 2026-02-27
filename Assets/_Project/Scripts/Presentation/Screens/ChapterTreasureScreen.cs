@@ -57,13 +57,17 @@ namespace CatCatGo.Presentation.Screens
 
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = (viewportGo.GetComponent<RectTransform>() ?? viewportGo.AddComponent<RectTransform>());
+            var viewportRt = viewportGo.GetComponent<RectTransform>();
+
+            if (viewportRt == null) viewportRt = viewportGo.AddComponent<RectTransform>();
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
-            _chapterListContent = (contentGo.GetComponent<RectTransform>() ?? contentGo.AddComponent<RectTransform>());
+            _chapterListContent = contentGo.GetComponent<RectTransform>();
+
+            if (_chapterListContent == null) _chapterListContent = contentGo.AddComponent<RectTransform>();
             _chapterListContent.anchorMin = new Vector2(0, 1);
             _chapterListContent.anchorMax = new Vector2(1, 1);
             _chapterListContent.pivot = new Vector2(0.5f, 1);

@@ -17,7 +17,9 @@ namespace CatCatGo.Presentation.Battle
 
             _rectTransform = gameObject.GetComponent<RectTransform>();
             if (_rectTransform == null)
-                _rectTransform = (gameObject.GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>());
+                _rectTransform = gameObject.GetComponent<RectTransform>();
+
+                if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
             _rectTransform.sizeDelta = new Vector2(16f, 16f);
 
             _image = gameObject.GetComponent<Image>();
