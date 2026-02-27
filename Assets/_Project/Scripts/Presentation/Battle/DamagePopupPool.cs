@@ -22,7 +22,7 @@ namespace CatCatGo.Presentation.Battle
                 var rt = go.GetComponent<RectTransform>();
 
                 if (rt == null) rt = go.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(120f, 30f);
+                rt.sizeDelta = new Vector2(140f, 36f);
                 popup = go.AddComponent<DamagePopup>();
                 popup.OnAnimationComplete = Return;
             }

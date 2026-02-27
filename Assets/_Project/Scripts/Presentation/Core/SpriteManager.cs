@@ -65,16 +65,51 @@ namespace CatCatGo.Presentation.Core
 
             _skillIconByKey = new Dictionary<string, Sprite>();
             var skillSprites = Resources.LoadAll<Sprite>("Icons/skill");
+            Debug.Log($"[SpriteManager] Raw skill sprites loaded: {skillSprites.Length}");
             foreach (var sprite in skillSprites)
             {
-                string name = StripSpriteModeSuffix(sprite.name);
-                if (!name.StartsWith("icon_skill_")) continue;
+                string rawName = sprite.name;
+                string name = StripSpriteModeSuffix(rawName);
+                if (!name.StartsWith("icon_skill_"))
+                {
+                    Debug.LogWarning($"[SpriteManager] Skipping skill sprite (no prefix): raw='{rawName}' stripped='{name}'");
+                    continue;
+                }
                 string key = name.Substring(11);
                 if (!_skillIconByKey.ContainsKey(key))
                     _skillIconByKey[key] = sprite;
             }
 
+            if (_skillIconByKey.Count == 0 && skillSprites.Length == 0)
+            {
+                var skillTextures = Resources.LoadAll<Texture2D>("Icons/skill");
+                Debug.Log($"[SpriteManager] Skill Texture2D fallback: {skillTextures.Length}");
+                foreach (var tex in skillTextures)
+                {
+                    string rawName = tex.name;
+                    string name = StripSpriteModeSuffix(rawName);
+                    if (!name.StartsWith("icon_skill_")) continue;
+                    string key = name.Substring(11);
+                    if (!_skillIconByKey.ContainsKey(key))
+                    {
+                        var s = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                        s.name = rawName;
+                        _skillIconByKey[key] = s;
+                    }
+                }
+            }
+
             Debug.Log($"[SpriteManager] Icons loaded: {_iconLookup.Count} (sprites: {iconSprites.Length}), equip: {_equipIconByKey.Count}, skill: {_skillIconByKey.Count}");
+            if (_skillIconByKey.Count > 0)
+            {
+                var sampleKeys = new List<string>();
+                foreach (var k in _skillIconByKey.Keys)
+                {
+                    sampleKeys.Add(k);
+                    if (sampleKeys.Count >= 5) break;
+                }
+                Debug.Log($"[SpriteManager] Skill icon sample keys: {string.Join(", ", sampleKeys)}");
+            }
 
             if (iconSprites.Length == 0)
             {
@@ -217,6 +252,12 @@ namespace CatCatGo.Presentation.Core
         {
             if (_skillIconByKey != null && _skillIconByKey.TryGetValue(skillId, out var sprite))
                 return sprite;
+
+            if (!string.IsNullOrEmpty(skillId))
+            {
+                Debug.LogWarning($"[SpriteManager] Skill icon not found: '{skillId}' (loaded keys: {_skillIconByKey?.Count ?? 0})");
+                return PlaceholderGenerator.CreateRect(48, 48, new Color(1f, 0.3f, 0.3f), skillId.Length > 4 ? skillId.Substring(0, 4) : skillId);
+            }
             return null;
         }
 

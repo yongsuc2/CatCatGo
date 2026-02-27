@@ -39,8 +39,8 @@ namespace CatCatGo.Presentation.Battle
             _iconImage.preserveAspect = true;
             _iconImage.raycastTarget = false;
             var iconLe = iconGo.AddComponent<LayoutElement>();
-            iconLe.preferredWidth = 24f;
-            iconLe.preferredHeight = 24f;
+            iconLe.preferredWidth = 32f;
+            iconLe.preferredHeight = 32f;
             iconGo.SetActive(false);
 
             var textGo = new GameObject("Text");
@@ -64,8 +64,13 @@ namespace CatCatGo.Presentation.Battle
             gameObject.SetActive(true);
 
             Sprite skillSprite = null;
-            if (!string.IsNullOrEmpty(skillId) && SpriteManager.Instance != null)
-                skillSprite = SpriteManager.Instance.GetSkillIcon(skillId);
+            if (!string.IsNullOrEmpty(skillId))
+            {
+                if (SpriteManager.Instance != null)
+                    skillSprite = SpriteManager.Instance.GetSkillIcon(skillId);
+                else
+                    Debug.LogWarning($"[DamagePopup] SpriteManager.Instance is null for skillId='{skillId}'");
+            }
 
             if (skillSprite != null)
             {
