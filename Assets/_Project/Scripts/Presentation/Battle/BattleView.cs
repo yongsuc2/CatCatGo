@@ -143,7 +143,7 @@ namespace CatCatGo.Presentation.Battle
         {
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            go.AddComponent<RectTransform>();
             var view = go.AddComponent<CharacterView>();
             go.SetActive(false);
             return view;

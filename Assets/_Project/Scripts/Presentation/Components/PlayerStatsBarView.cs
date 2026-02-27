@@ -115,7 +115,7 @@ namespace CatCatGo.Presentation.Components
         {
             var go = new GameObject(prefix);
             go.transform.SetParent(parent, false);
-            (go.GetComponent<RectTransform>() ?? go.AddComponent<RectTransform>());
+            go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 28f;
             var tmp = go.AddComponent<TextMeshProUGUI>();

@@ -40,7 +40,7 @@ namespace CatCatGo.Presentation.Components
             {
                 var headerGo = new GameObject("Header");
                 headerGo.transform.SetParent(transform, false);
-                (headerGo.GetComponent<RectTransform>() ?? headerGo.AddComponent<RectTransform>());
+                headerGo.AddComponent<RectTransform>();
                 var headerLe = headerGo.AddComponent<LayoutElement>();
                 headerLe.preferredHeight = 30f;
                 var headerLayout = headerGo.AddComponent<HorizontalLayoutGroup>();
@@ -50,7 +50,7 @@ namespace CatCatGo.Presentation.Components
 
                 var titleGo = new GameObject("Title");
                 titleGo.transform.SetParent(headerGo.transform, false);
-                (titleGo.GetComponent<RectTransform>() ?? titleGo.AddComponent<RectTransform>());
+                titleGo.AddComponent<RectTransform>();
                 var titleLe = titleGo.AddComponent<LayoutElement>();
                 titleLe.flexibleWidth = 1f;
                 _titleText = titleGo.AddComponent<TextMeshProUGUI>();
@@ -63,7 +63,7 @@ namespace CatCatGo.Presentation.Components
 
                 var totalGo = new GameObject("Total");
                 totalGo.transform.SetParent(headerGo.transform, false);
-                (totalGo.GetComponent<RectTransform>() ?? totalGo.AddComponent<RectTransform>());
+                totalGo.AddComponent<RectTransform>();
                 var totalLe = totalGo.AddComponent<LayoutElement>();
                 totalLe.preferredWidth = 120f;
                 _totalText = totalGo.AddComponent<TextMeshProUGUI>();
@@ -131,7 +131,7 @@ namespace CatCatGo.Presentation.Components
 
             var labelGo = new GameObject("Label");
             labelGo.transform.SetParent(rowGo.transform, false);
-            (labelGo.GetComponent<RectTransform>() ?? labelGo.AddComponent<RectTransform>());
+            labelGo.AddComponent<RectTransform>();
             var labelLe = labelGo.AddComponent<LayoutElement>();
             labelLe.preferredWidth = 160f;
             labelLe.minWidth = 100f;
@@ -148,7 +148,7 @@ namespace CatCatGo.Presentation.Components
 
             var barWrapper = new GameObject("BarWrapper");
             barWrapper.transform.SetParent(rowGo.transform, false);
-            (barWrapper.GetComponent<RectTransform>() ?? barWrapper.AddComponent<RectTransform>());
+            barWrapper.AddComponent<RectTransform>();
             var wrapperLe = barWrapper.AddComponent<LayoutElement>();
             wrapperLe.flexibleWidth = 1f;
             wrapperLe.preferredHeight = 16f;
@@ -177,7 +177,7 @@ namespace CatCatGo.Presentation.Components
 
             var valueGo = new GameObject("Value");
             valueGo.transform.SetParent(rowGo.transform, false);
-            (valueGo.GetComponent<RectTransform>() ?? valueGo.AddComponent<RectTransform>());
+            valueGo.AddComponent<RectTransform>();
             var valueLe = valueGo.AddComponent<LayoutElement>();
             valueLe.preferredWidth = 110f;
             valueLe.preferredHeight = 32f;
