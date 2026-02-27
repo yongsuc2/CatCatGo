@@ -47,6 +47,11 @@ namespace CatCatGo.Presentation.Screens
         private Button _upgradeButton;
         private TextMeshProUGUI _upgradeButtonText;
         private Button _unequipButton;
+        private GameObject _equippedButtonRow;
+        private GameObject _inventoryButtonRow;
+        private Button _equipButton;
+        private Button _sellButton;
+        private TextMeshProUGUI _sellButtonText;
         private Equipment _selectedEquipment;
         private bool _selectedIsEquipped;
         private SlotType _selectedSlotType;
@@ -94,14 +99,14 @@ namespace CatCatGo.Presentation.Screens
             var tabGo = new GameObject("TabBar");
             tabGo.transform.SetParent(transform, false);
             var tabLe = tabGo.AddComponent<LayoutElement>();
-            tabLe.preferredHeight = 36;
+            tabLe.preferredHeight = 28;
             tabGo.AddComponent<Image>().color = ColorPalette.Card;
 
             var tabLayout = tabGo.AddComponent<HorizontalLayoutGroup>();
-            tabLayout.spacing = 4;
+            tabLayout.spacing = 2;
             tabLayout.childForceExpandWidth = true;
             tabLayout.childForceExpandHeight = true;
-            tabLayout.padding = new RectOffset(4, 4, 3, 3);
+            tabLayout.padding = new RectOffset(2, 2, 2, 2);
 
             var equipTabGo = new GameObject("Tab_Equip");
             equipTabGo.transform.SetParent(tabGo.transform, false);
@@ -115,7 +120,7 @@ namespace CatCatGo.Presentation.Screens
             equipTextGo.transform.SetParent(equipTabGo.transform, false);
             _equipTabText = equipTextGo.AddComponent<TextMeshProUGUI>();
             _equipTabText.text = "\uc7a5\ube44";
-            _equipTabText.fontSize = 20;
+            _equipTabText.fontSize = 14;
             _equipTabText.color = Color.white;
             _equipTabText.alignment = TextAlignmentOptions.Center;
             _equipTabText.raycastTarget = false;
@@ -134,7 +139,7 @@ namespace CatCatGo.Presentation.Screens
             forgeTextGo.transform.SetParent(forgeTabGo.transform, false);
             _forgeTabText = forgeTextGo.AddComponent<TextMeshProUGUI>();
             _forgeTabText.text = "\ud569\uc131 (0)";
-            _forgeTabText.fontSize = 20;
+            _forgeTabText.fontSize = 14;
             _forgeTabText.color = ColorPalette.TextDim;
             _forgeTabText.alignment = TextAlignmentOptions.Center;
             _forgeTabText.raycastTarget = false;
@@ -207,7 +212,7 @@ namespace CatCatGo.Presentation.Screens
             var dollGo = new GameObject("PaperDoll");
             dollGo.transform.SetParent(parent, false);
             var dollLe = dollGo.AddComponent<LayoutElement>();
-            dollLe.preferredHeight = 280;
+            dollLe.preferredHeight = 440;
             dollGo.AddComponent<Image>().color = ColorPalette.Card;
 
             var dollLayout = dollGo.AddComponent<VerticalLayoutGroup>();
@@ -220,11 +225,11 @@ namespace CatCatGo.Presentation.Screens
             var gridGo = new GameObject("Grid");
             gridGo.transform.SetParent(dollGo.transform, false);
             var gridLe = gridGo.AddComponent<LayoutElement>();
-            gridLe.preferredHeight = 264;
+            gridLe.preferredHeight = 420;
 
             var grid = gridGo.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(56, 56);
-            grid.spacing = new Vector2(8, 8);
+            grid.cellSize = new Vector2(96, 96);
+            grid.spacing = new Vector2(10, 10);
             grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
             grid.startAxis = GridLayoutGroup.Axis.Horizontal;
             grid.childAlignment = TextAnchor.UpperCenter;
@@ -263,8 +268,8 @@ namespace CatCatGo.Presentation.Screens
             var innerRt = innerGo.GetComponent<RectTransform>();
             innerRt.anchorMin = Vector2.zero;
             innerRt.anchorMax = Vector2.one;
-            innerRt.offsetMin = new Vector2(2, 2);
-            innerRt.offsetMax = new Vector2(-2, -2);
+            innerRt.offsetMin = new Vector2(3, 3);
+            innerRt.offsetMax = new Vector2(-3, -3);
 
             var slotLabelGo = new GameObject("SlotLabel");
             slotLabelGo.transform.SetParent(cellGo.transform, false);
@@ -274,7 +279,7 @@ namespace CatCatGo.Presentation.Screens
             if (slotType == SlotType.RING)
                 label = index == 0 ? "\ubc18\uc9c01" : "\ubc18\uc9c02";
             slotLabel.text = label ?? "";
-            slotLabel.fontSize = 22;
+            slotLabel.fontSize = 26;
             slotLabel.color = ColorPalette.TextDim;
             slotLabel.alignment = TextAlignmentOptions.Center;
             slotLabel.raycastTarget = false;
@@ -352,18 +357,17 @@ namespace CatCatGo.Presentation.Screens
             _detailStatsText.alignment = TextAlignmentOptions.Left;
             _detailStatsText.raycastTarget = false;
 
-            var btnRowGo = new GameObject("ButtonRow");
-            btnRowGo.transform.SetParent(detailGo.transform, false);
-            var btnRowLe = btnRowGo.AddComponent<LayoutElement>();
-            btnRowLe.preferredHeight = 40;
-
-            var btnRowLayout = btnRowGo.AddComponent<HorizontalLayoutGroup>();
-            btnRowLayout.spacing = 8;
-            btnRowLayout.childForceExpandWidth = true;
-            btnRowLayout.childForceExpandHeight = true;
+            _equippedButtonRow = new GameObject("EquippedButtonRow");
+            _equippedButtonRow.transform.SetParent(detailGo.transform, false);
+            var eqBtnRowLe = _equippedButtonRow.AddComponent<LayoutElement>();
+            eqBtnRowLe.preferredHeight = 40;
+            var eqBtnRowLayout = _equippedButtonRow.AddComponent<HorizontalLayoutGroup>();
+            eqBtnRowLayout.spacing = 8;
+            eqBtnRowLayout.childForceExpandWidth = true;
+            eqBtnRowLayout.childForceExpandHeight = true;
 
             var upgradeGo = new GameObject("UpgradeBtn");
-            upgradeGo.transform.SetParent(btnRowGo.transform, false);
+            upgradeGo.transform.SetParent(_equippedButtonRow.transform, false);
             var upgradeBg = upgradeGo.AddComponent<Image>();
             upgradeBg.color = ColorPalette.ButtonPrimary;
             _upgradeButton = upgradeGo.AddComponent<Button>();
@@ -382,7 +386,7 @@ namespace CatCatGo.Presentation.Screens
             UIManager.StretchFull(upgradeTextRt);
 
             var unequipGo = new GameObject("UnequipBtn");
-            unequipGo.transform.SetParent(btnRowGo.transform, false);
+            unequipGo.transform.SetParent(_equippedButtonRow.transform, false);
             var unequipBg = unequipGo.AddComponent<Image>();
             unequipBg.color = ColorPalette.Hp;
             _unequipButton = unequipGo.AddComponent<Button>();
@@ -399,6 +403,69 @@ namespace CatCatGo.Presentation.Screens
             unequipText.raycastTarget = false;
             var unequipTextRt = unequipTextGo.GetComponent<RectTransform>();
             UIManager.StretchFull(unequipTextRt);
+
+            _inventoryButtonRow = new GameObject("InventoryButtonRow");
+            _inventoryButtonRow.transform.SetParent(detailGo.transform, false);
+            var invBtnRowLe = _inventoryButtonRow.AddComponent<LayoutElement>();
+            invBtnRowLe.preferredHeight = 40;
+            var invBtnRowLayout = _inventoryButtonRow.AddComponent<HorizontalLayoutGroup>();
+            invBtnRowLayout.spacing = 8;
+            invBtnRowLayout.childForceExpandWidth = true;
+            invBtnRowLayout.childForceExpandHeight = true;
+
+            var equipGo = new GameObject("EquipBtn");
+            equipGo.transform.SetParent(_inventoryButtonRow.transform, false);
+            var equipBg = equipGo.AddComponent<Image>();
+            equipBg.color = ColorPalette.ButtonPrimary;
+            _equipButton = equipGo.AddComponent<Button>();
+            _equipButton.targetGraphic = equipBg;
+            _equipButton.onClick.AddListener(OnEquipClicked);
+
+            var equipTextGo = new GameObject("Text");
+            equipTextGo.transform.SetParent(equipGo.transform, false);
+            var equipText = equipTextGo.AddComponent<TextMeshProUGUI>();
+            equipText.text = "\uc7a5\ucc29";
+            equipText.fontSize = 22;
+            equipText.color = Color.white;
+            equipText.alignment = TextAlignmentOptions.Center;
+            equipText.raycastTarget = false;
+            UIManager.StretchFull(equipTextGo.GetComponent<RectTransform>());
+
+            var sellGo = new GameObject("SellBtn");
+            sellGo.transform.SetParent(_inventoryButtonRow.transform, false);
+            var sellBg = sellGo.AddComponent<Image>();
+            sellBg.color = ColorPalette.Hp;
+            _sellButton = sellGo.AddComponent<Button>();
+            _sellButton.targetGraphic = sellBg;
+            _sellButton.onClick.AddListener(OnSellClicked);
+
+            var sellTextGo = new GameObject("Text");
+            sellTextGo.transform.SetParent(sellGo.transform, false);
+            _sellButtonText = sellTextGo.AddComponent<TextMeshProUGUI>();
+            _sellButtonText.text = "\ud310\ub9e4";
+            _sellButtonText.fontSize = 22;
+            _sellButtonText.color = Color.white;
+            _sellButtonText.alignment = TextAlignmentOptions.Center;
+            _sellButtonText.raycastTarget = false;
+            UIManager.StretchFull(sellTextGo.GetComponent<RectTransform>());
+
+            var cancelGo = new GameObject("CancelBtn");
+            cancelGo.transform.SetParent(_inventoryButtonRow.transform, false);
+            var cancelBg = cancelGo.AddComponent<Image>();
+            cancelBg.color = ColorPalette.ButtonSecondary;
+            var cancelBtn = cancelGo.AddComponent<Button>();
+            cancelBtn.targetGraphic = cancelBg;
+            cancelBtn.onClick.AddListener(OnDetailCancelClicked);
+
+            var cancelTextGo = new GameObject("Text");
+            cancelTextGo.transform.SetParent(cancelGo.transform, false);
+            var cancelText = cancelTextGo.AddComponent<TextMeshProUGUI>();
+            cancelText.text = "\ub2eb\uae30";
+            cancelText.fontSize = 22;
+            cancelText.color = Color.white;
+            cancelText.alignment = TextAlignmentOptions.Center;
+            cancelText.raycastTarget = false;
+            UIManager.StretchFull(cancelTextGo.GetComponent<RectTransform>());
 
             _detailPanel.gameObject.SetActive(false);
         }
@@ -465,10 +532,10 @@ namespace CatCatGo.Presentation.Screens
             var filterGo = new GameObject("FilterBar");
             filterGo.transform.SetParent(parent, false);
             var filterLe = filterGo.AddComponent<LayoutElement>();
-            filterLe.preferredHeight = 36;
+            filterLe.preferredHeight = 30;
 
             var filterLayout = filterGo.AddComponent<HorizontalLayoutGroup>();
-            filterLayout.spacing = 4;
+            filterLayout.spacing = 2;
             filterLayout.childForceExpandWidth = true;
             filterLayout.childForceExpandHeight = true;
             filterLayout.padding = new RectOffset(2, 2, 2, 2);
@@ -492,7 +559,7 @@ namespace CatCatGo.Presentation.Screens
                 textGo.transform.SetParent(btnGo.transform, false);
                 _filterTexts[i] = textGo.AddComponent<TextMeshProUGUI>();
                 _filterTexts[i].text = filterLabels[i];
-                _filterTexts[i].fontSize = 22;
+                _filterTexts[i].fontSize = 16;
                 _filterTexts[i].color = i == 0 ? Color.white : ColorPalette.TextDim;
                 _filterTexts[i].alignment = TextAlignmentOptions.Center;
                 _filterTexts[i].raycastTarget = false;
@@ -512,13 +579,13 @@ namespace CatCatGo.Presentation.Screens
             invLe.preferredHeight = 400;
 
             var grid = invGo.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(56, 84);
-            grid.spacing = new Vector2(6, 6);
+            grid.cellSize = new Vector2(120, 160);
+            grid.spacing = new Vector2(8, 8);
             grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
             grid.startAxis = GridLayoutGroup.Axis.Horizontal;
-            grid.childAlignment = TextAnchor.UpperLeft;
+            grid.childAlignment = TextAnchor.UpperCenter;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 5;
+            grid.constraintCount = 4;
         }
 
         private void BuildForgeTab()
@@ -672,11 +739,37 @@ namespace CatCatGo.Presentation.Screens
 
         private void OnInventoryItemClicked(Equipment equipment)
         {
-            Game.Player.EquipFromInventory(equipment.Id);
+            _selectedEquipment = equipment;
+            _selectedIsEquipped = false;
+            ShowDetail(equipment);
+        }
+
+        private void OnEquipClicked()
+        {
+            if (_selectedEquipment == null || _selectedIsEquipped) return;
+
+            Game.Player.EquipFromInventory(_selectedEquipment.Id);
             Game.SaveGame();
             _selectedEquipment = null;
             _detailPanel.gameObject.SetActive(false);
             UI.Refresh();
+        }
+
+        private void OnSellClicked()
+        {
+            if (_selectedEquipment == null || _selectedIsEquipped) return;
+
+            Game.Player.SellEquipment(_selectedEquipment.Id);
+            Game.SaveGame();
+            _selectedEquipment = null;
+            _detailPanel.gameObject.SetActive(false);
+            UI.Refresh();
+        }
+
+        private void OnDetailCancelClicked()
+        {
+            _selectedEquipment = null;
+            _detailPanel.gameObject.SetActive(false);
         }
 
         private void ShowDetail(Equipment equipment)
@@ -685,7 +778,8 @@ namespace CatCatGo.Presentation.Screens
 
             Color gradeColor = ColorPalette.GetEquipmentGradeColor(equipment.Grade);
             string gradeLabel = EquipmentDataTable.GetGradeLabel(equipment.Grade);
-            _detailNameText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(gradeColor)}>{gradeLabel} {equipment.Name}</color> +{equipment.Level}";
+            string levelStr = equipment.Level > 0 ? $" +{equipment.Level}" : "";
+            _detailNameText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(gradeColor)}>{gradeLabel} {equipment.Name}</color>{levelStr}";
 
             var stats = equipment.GetStats();
             var sb = new System.Text.StringBuilder();
@@ -695,12 +789,22 @@ namespace CatCatGo.Presentation.Screens
             if (stats.Crit > 0) sb.Append($"CRIT +{stats.Crit:F1}%");
             _detailStatsText.text = sb.ToString();
 
-            int upgradeCost = equipment.GetUpgradeCost();
-            _upgradeButtonText.text = $"\uac15\ud654 {NumberFormatter.FormatInt(upgradeCost)}\uc11d";
+            _equippedButtonRow.SetActive(_selectedIsEquipped);
+            _inventoryButtonRow.SetActive(!_selectedIsEquipped);
 
-            int stones = (int)Game.Player.Resources.EquipmentStones;
-            _upgradeButton.interactable = _selectedIsEquipped && stones >= upgradeCost && !equipment.NeedsPromote();
-            _unequipButton.interactable = _selectedIsEquipped;
+            if (_selectedIsEquipped)
+            {
+                int upgradeCost = equipment.GetUpgradeCost();
+                _upgradeButtonText.text = $"\uac15\ud654 {NumberFormatter.FormatInt(upgradeCost)}\uc11d";
+                int stones = (int)Game.Player.Resources.EquipmentStones;
+                _upgradeButton.interactable = stones >= upgradeCost && !equipment.NeedsPromote();
+                _unequipButton.interactable = true;
+            }
+            else
+            {
+                int sellPrice = EquipmentDataTable.GetSellPrice(equipment.Grade);
+                _sellButtonText.text = $"\ud310\ub9e4 {NumberFormatter.FormatInt(sellPrice)}G";
+            }
         }
 
         private void OnUpgradeClicked()
@@ -917,7 +1021,7 @@ namespace CatCatGo.Presentation.Screens
                 var iconGo = new GameObject("Icon");
                 iconGo.transform.SetParent(itemGo.transform, false);
                 var iconLe = iconGo.AddComponent<LayoutElement>();
-                iconLe.preferredHeight = 56;
+                iconLe.preferredHeight = 120;
 
                 Color gradeColor = ColorPalette.GetEquipmentGradeColor(eq.Grade);
 
@@ -957,13 +1061,13 @@ namespace CatCatGo.Presentation.Screens
                     badgeRt.anchorMin = new Vector2(1, 1);
                     badgeRt.anchorMax = new Vector2(1, 1);
                     badgeRt.pivot = new Vector2(1, 1);
-                    badgeRt.sizeDelta = new Vector2(20, 16);
+                    badgeRt.sizeDelta = new Vector2(36, 28);
 
                     var badgeTextGo = new GameObject("Text");
                     badgeTextGo.transform.SetParent(badgeGo.transform, false);
                     var badgeText = badgeTextGo.AddComponent<TextMeshProUGUI>();
                     badgeText.text = $"+{eq.MergeLevel}";
-                    badgeText.fontSize = 14;
+                    badgeText.fontSize = 20;
                     badgeText.color = Color.white;
                     badgeText.alignment = TextAlignmentOptions.Center;
                     badgeText.raycastTarget = false;
@@ -975,12 +1079,13 @@ namespace CatCatGo.Presentation.Screens
                 var labelGo = new GameObject("Label");
                 labelGo.transform.SetParent(itemGo.transform, false);
                 var labelLe = labelGo.AddComponent<LayoutElement>();
-                labelLe.preferredHeight = 20;
+                labelLe.preferredHeight = 36;
                 var labelText = labelGo.AddComponent<TextMeshProUGUI>();
-                string lvStr = eq.Level > 0 ? $"+{eq.Level}" : slotAbbr;
-                labelText.text = lvStr;
-                labelText.fontSize = 18;
-                labelText.color = eq.Level > 0 ? ColorPalette.GetEquipmentGradeColor(eq.Grade) : ColorPalette.TextDim;
+                string gradeStr = EquipmentDataTable.GetGradeLabel(eq.Grade);
+                string lvStr = eq.Level > 0 ? $" +{eq.Level}" : "";
+                labelText.text = $"{slotAbbr}{lvStr}";
+                labelText.fontSize = 22;
+                labelText.color = ColorPalette.GetEquipmentGradeColor(eq.Grade);
                 labelText.alignment = TextAlignmentOptions.Center;
                 labelText.raycastTarget = false;
 
@@ -992,8 +1097,8 @@ namespace CatCatGo.Presentation.Screens
                 _inventoryItems.Add(itemGo);
             }
 
-            int rows = Mathf.CeilToInt(sorted.Count / 5f);
-            float gridHeight = Mathf.Max(200, rows * 90 + 12);
+            int rows = Mathf.CeilToInt(sorted.Count / 4f);
+            float gridHeight = Mathf.Max(200, rows * 168 + 12);
             var gridLe = _inventoryGrid.GetComponent<LayoutElement>();
             gridLe.preferredHeight = gridHeight;
         }
