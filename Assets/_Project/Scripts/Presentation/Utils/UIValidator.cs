@@ -21,11 +21,42 @@ namespace CatCatGo.Presentation.Utils
 
     public static class UIValidator
     {
+        public static List<UIViolation> ValidateAll(Transform root, float minButtonHeight = UIConstants.MIN_BUTTON_HEIGHT)
+        {
+            var violations = new List<UIViolation>();
+            ValidateRecursive(root, violations, minButtonHeight);
+            return violations;
+        }
+
         public static List<UIViolation> ValidateButtons(Transform root, float minHeight = UIConstants.MIN_BUTTON_HEIGHT)
         {
             var violations = new List<UIViolation>();
             ValidateButtonsRecursive(root, violations, minHeight);
             return violations;
+        }
+
+        public static List<UIViolation> ValidateFontSizes(Transform root, float minFontSize = UIConstants.MIN_FONT_SIZE)
+        {
+            var violations = new List<UIViolation>();
+            ValidateFontSizesRecursive(root, violations, minFontSize);
+            return violations;
+        }
+
+        private static void ValidateRecursive(Transform node, List<UIViolation> violations, float minButtonHeight)
+        {
+            var button = node.GetComponent<Button>();
+            if (button != null)
+            {
+                ValidateButtonHeight(node, violations, minButtonHeight);
+                ValidateButtonFontSize(node, violations);
+            }
+
+            var tmp = node.GetComponent<TextMeshProUGUI>();
+            if (tmp != null)
+                ValidateFontSize(node, tmp, violations, UIConstants.MIN_FONT_SIZE);
+
+            for (int i = 0; i < node.childCount; i++)
+                ValidateRecursive(node.GetChild(i), violations, minButtonHeight);
         }
 
         private static void ValidateButtonsRecursive(Transform node, List<UIViolation> violations, float minHeight)
@@ -39,6 +70,16 @@ namespace CatCatGo.Presentation.Utils
 
             for (int i = 0; i < node.childCount; i++)
                 ValidateButtonsRecursive(node.GetChild(i), violations, minHeight);
+        }
+
+        private static void ValidateFontSizesRecursive(Transform node, List<UIViolation> violations, float minFontSize)
+        {
+            var tmp = node.GetComponent<TextMeshProUGUI>();
+            if (tmp != null)
+                ValidateFontSize(node, tmp, violations, minFontSize);
+
+            for (int i = 0; i < node.childCount; i++)
+                ValidateFontSizesRecursive(node.GetChild(i), violations, minFontSize);
         }
 
         private static void ValidateButtonHeight(Transform node, List<UIViolation> violations, float minHeight)
@@ -74,6 +115,20 @@ namespace CatCatGo.Presentation.Utils
                     Rule = "ButtonFontSize",
                     Actual = tmp.fontSize,
                     Expected = UIConstants.MIN_BUTTON_FONT_SIZE,
+                });
+            }
+        }
+
+        private static void ValidateFontSize(Transform node, TextMeshProUGUI tmp, List<UIViolation> violations, float minFontSize)
+        {
+            if (tmp.fontSize < minFontSize)
+            {
+                violations.Add(new UIViolation
+                {
+                    Path = GetPath(node),
+                    Rule = "FontSize",
+                    Actual = tmp.fontSize,
+                    Expected = minFontSize,
                 });
             }
         }

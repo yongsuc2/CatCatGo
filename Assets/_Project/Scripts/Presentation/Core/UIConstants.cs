@@ -5,5 +5,6 @@ namespace CatCatGo.Presentation.Core
         public const float MIN_BUTTON_HEIGHT = 120f;
         public const float MIN_BATTLE_CONTROL_HEIGHT = 60f;
         public const float MIN_BUTTON_FONT_SIZE = 28f;
+        public const float MIN_FONT_SIZE = 20f;
     }
 }

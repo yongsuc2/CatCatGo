@@ -181,6 +181,116 @@ namespace CatCatGo.Tests.Presentation
         }
 
         [Test]
+        public void UIConstants_MinFontSize_IsAtLeast20()
+        {
+            Assert.GreaterOrEqual(UIConstants.MIN_FONT_SIZE, 20f);
+        }
+
+        [Test]
+        public void ValidateFontSizes_ProperFont_NoViolations()
+        {
+            CreateText(_root.transform, "GoodText", 24f);
+            var violations = UIValidator.ValidateFontSizes(_root.transform);
+            Assert.AreEqual(0, violations.Count);
+        }
+
+        [Test]
+        public void ValidateFontSizes_TooSmallFont_ReportsViolation()
+        {
+            CreateText(_root.transform, "TinyText", 12f);
+            var violations = UIValidator.ValidateFontSizes(_root.transform);
+            Assert.AreEqual(1, violations.Count);
+            Assert.AreEqual("FontSize", violations[0].Rule);
+            Assert.AreEqual(12f, violations[0].Actual);
+            Assert.AreEqual(UIConstants.MIN_FONT_SIZE, violations[0].Expected);
+        }
+
+        [Test]
+        public void ValidateFontSizes_ExactMinimum_Passes()
+        {
+            CreateText(_root.transform, "ExactMinText", UIConstants.MIN_FONT_SIZE);
+            var violations = UIValidator.ValidateFontSizes(_root.transform);
+            Assert.AreEqual(0, violations.Count);
+        }
+
+        [Test]
+        public void ValidateFontSizes_MultipleTexts_AllChecked()
+        {
+            CreateText(_root.transform, "Good1", 24f);
+            CreateText(_root.transform, "Bad1", 10f);
+            CreateText(_root.transform, "Good2", 30f);
+            CreateText(_root.transform, "Bad2", 14f);
+
+            var violations = UIValidator.ValidateFontSizes(_root.transform);
+            Assert.AreEqual(2, violations.Count);
+
+            bool foundBad1 = false;
+            bool foundBad2 = false;
+            foreach (var v in violations)
+            {
+                if (v.Path.Contains("Bad1")) foundBad1 = true;
+                if (v.Path.Contains("Bad2")) foundBad2 = true;
+            }
+            Assert.IsTrue(foundBad1 && foundBad2, "Should detect both small texts");
+        }
+
+        [Test]
+        public void ValidateFontSizes_NestedText_Found()
+        {
+            var parent = new GameObject("Panel");
+            parent.transform.SetParent(_root.transform, false);
+            var child = new GameObject("Inner");
+            child.transform.SetParent(parent.transform, false);
+            CreateText(child.transform, "DeepText", 8f);
+
+            var violations = UIValidator.ValidateFontSizes(_root.transform);
+            Assert.AreEqual(1, violations.Count);
+            Assert.IsTrue(violations[0].Path.Contains("DeepText"));
+        }
+
+        [Test]
+        public void ValidateFontSizes_CustomMinimum_Used()
+        {
+            CreateText(_root.transform, "MediumText", 18f);
+            var passViolations = UIValidator.ValidateFontSizes(_root.transform, 16f);
+            Assert.AreEqual(0, passViolations.Count, "18pt should pass with min 16");
+
+            var failViolations = UIValidator.ValidateFontSizes(_root.transform, 20f);
+            Assert.AreEqual(1, failViolations.Count, "18pt should fail with min 20");
+        }
+
+        [Test]
+        public void ValidateAll_CombinesButtonAndFontChecks()
+        {
+            CreateButton(_root.transform, "SmallBtn", 40f, 14f);
+            CreateText(_root.transform, "TinyLabel", 10f);
+
+            var violations = UIValidator.ValidateAll(_root.transform);
+
+            bool hasButtonHeight = false;
+            bool hasButtonFont = false;
+            bool hasFontSize = false;
+            foreach (var v in violations)
+            {
+                if (v.Rule == "ButtonHeight") hasButtonHeight = true;
+                if (v.Rule == "ButtonFontSize") hasButtonFont = true;
+                if (v.Rule == "FontSize") hasFontSize = true;
+            }
+            Assert.IsTrue(hasButtonHeight, "Should detect button height violation");
+            Assert.IsTrue(hasButtonFont, "Should detect button font violation");
+            Assert.IsTrue(hasFontSize, "Should detect general font violation");
+        }
+
+        [Test]
+        public void ValidateAll_NoIssues_Empty()
+        {
+            CreateButton(_root.transform, "GoodBtn", 120f, 30f);
+            CreateText(_root.transform, "GoodLabel", 24f);
+            var violations = UIValidator.ValidateAll(_root.transform);
+            Assert.AreEqual(0, violations.Count);
+        }
+
+        [Test]
         public void UIViolation_ToString_ContainsAllInfo()
         {
             var violation = new UIViolation
@@ -210,6 +320,15 @@ namespace CatCatGo.Tests.Presentation
             var tmp = textGo.AddComponent<TextMeshProUGUI>();
             tmp.fontSize = fontSize;
 
+            return go;
+        }
+
+        private GameObject CreateText(Transform parent, string name, float fontSize)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.fontSize = fontSize;
             return go;
         }
     }
