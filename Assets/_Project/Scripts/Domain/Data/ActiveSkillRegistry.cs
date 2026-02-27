@@ -109,7 +109,7 @@ namespace CatCatGo.Domain.Data
                     BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
                     BuildEffects = t => new[]
                     {
-                        new ActiveSkillEffect { Type = SkillEffectType.HEAL_HP, Amount = (int)V(Td("hp_recovery", t), "amount") },
+                        new ActiveSkillEffect { Type = SkillEffectType.HEAL_HP, Coefficient = (float)V(Td("hp_recovery", t), "amount") },
                     },
                     BuildDescription = t => $"\ucd5c\ub300\uccb4\ub825\uc758 {Pct(V(Td("hp_recovery", t), "amount"))} \ud68c\ubcf5",
                 },
