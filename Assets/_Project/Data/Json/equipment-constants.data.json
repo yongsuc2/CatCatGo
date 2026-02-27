@@ -1,0 +1,27 @@
+{
+  "upgradeFlatPerLevel": 8,
+  "upgradeCostBase": 1,
+  "upgradeCostTiers": [
+    { "upToLevel": 5, "rate": 1.15 },
+    { "upToLevel": 10, "rate": 1.25 },
+    { "upToLevel": 15, "rate": 1.35 },
+    { "upToLevel": 20, "rate": 1.45 },
+    { "upToLevel": 25, "rate": 1.55 },
+    { "upToLevel": 30, "rate": 1.65 }
+  ],
+  "mergeCount": {
+    "COMMON": 3,
+    "UNCOMMON": 3,
+    "RARE": 3,
+    "EPIC": 2,
+    "LEGENDARY": 2,
+    "MYTHIC": 0
+  },
+  "mergeEnhanceMax": 2,
+  "highGradeMergeGrades": ["EPIC", "LEGENDARY"],
+  "gradeOrder": ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"],
+  "promoteLevels": [10, 20, 30],
+  "slotMaxCount": {
+    "RING": 2
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "templates": [
+    { "id": "elsa", "name": "Elsa", "tier": "S", "atk": 8, "maxHp": 40, "def": 0, "crit": 0, "weight": 2, "ability": { "passiveType": "SHIELD_ON_START", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } },
+    { "id": "piggy", "name": "Piggy", "tier": "S", "atk": 5, "maxHp": 30, "def": 0, "crit": 0, "weight": 2, "ability": { "passiveType": "LIFESTEAL", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } },
+    { "id": "freya", "name": "Freya", "tier": "S", "atk": 12, "maxHp": 20, "def": 0, "crit": 0, "weight": 2, "ability": { "passiveType": "STAT_MODIFIER", "stat": "ATK", "baseValue": 0.08, "gradeScale": 0.08, "isPercentage": true } },
+    { "id": "slime_king", "name": "Slime King", "tier": "S", "atk": 0, "maxHp": 60, "def": 5, "crit": 0, "weight": 2, "ability": { "passiveType": "STAT_MODIFIER", "stat": "DEF", "baseValue": 0.10, "gradeScale": 0.10, "isPercentage": true } },
+    { "id": "flash", "name": "Flash", "tier": "S", "atk": 10, "maxHp": 0, "def": 0, "crit": 0.03, "weight": 2, "ability": { "passiveType": "MULTI_HIT", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } },
+    { "id": "unicorn", "name": "Unicorn", "tier": "S", "atk": 0, "maxHp": 80, "def": 0, "crit": 0, "weight": 2, "ability": { "passiveType": "REGEN", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": false } },
+    { "id": "ice_wind_fox", "name": "Ice Wind Fox", "tier": "S", "atk": 7, "maxHp": 35, "def": 0, "crit": 0, "weight": 3, "ability": { "passiveType": "COUNTER", "baseValue": 0.08, "gradeScale": 0.08, "isPercentage": true } },
+    { "id": "little_elle", "name": "Little Elle", "tier": "S", "atk": 6, "maxHp": 40, "def": 0, "crit": 0, "weight": 3, "ability": { "passiveType": "REVIVE", "baseValue": 0.15, "gradeScale": 0.15, "isPercentage": true } },
+    { "id": "cleopatra", "name": "Cleopatra", "tier": "S", "atk": 9, "maxHp": 30, "def": 0, "crit": 0, "weight": 2, "ability": { "passiveType": "STAT_MODIFIER", "stat": "CRIT", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": true } },
+
+    { "id": "purple_demon_fox", "name": "Purple Demon Fox", "tier": "A", "atk": 6, "maxHp": 25, "def": 0, "crit": 0, "weight": 8, "ability": { "passiveType": "LIFESTEAL", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": true } },
+    { "id": "baby_dragon", "name": "Baby Dragon", "tier": "A", "atk": 7, "maxHp": 20, "def": 0, "crit": 0, "weight": 8, "ability": { "passiveType": "STAT_MODIFIER", "stat": "ATK", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } },
+    { "id": "monopoly", "name": "Monopoly", "tier": "A", "atk": 4, "maxHp": 30, "def": 0, "crit": 0, "weight": 8, "ability": { "passiveType": "SHIELD_ON_START", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": true } },
+    { "id": "glazed_shroom", "name": "Glazed Shroom", "tier": "A", "atk": 5, "maxHp": 25, "def": 0, "crit": 0, "weight": 8, "ability": { "passiveType": "REGEN", "baseValue": 0.02, "gradeScale": 0.02, "isPercentage": false } },
+    { "id": "flame_fox", "name": "Flame Fox", "tier": "A", "atk": 8, "maxHp": 15, "def": 0, "crit": 0, "weight": 8, "ability": { "passiveType": "MULTI_HIT", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": true } },
+    { "id": "cactus_fighter", "name": "Cactus Fighter", "tier": "A", "atk": 0, "maxHp": 35, "def": 3, "crit": 0, "weight": 8, "ability": { "passiveType": "COUNTER", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } },
+
+    { "id": "brown_bunny", "name": "Brown Bunny", "tier": "B", "atk": 3, "maxHp": 15, "def": 0, "crit": 0, "weight": 15, "ability": { "passiveType": "STAT_MODIFIER", "stat": "ATK", "baseValue": 0.03, "gradeScale": 0.03, "isPercentage": true } },
+    { "id": "blue_bird", "name": "Blue Bird", "tier": "B", "atk": 2, "maxHp": 20, "def": 0, "crit": 0, "weight": 15, "ability": { "passiveType": "REGEN", "baseValue": 0.01, "gradeScale": 0.01, "isPercentage": false } },
+    { "id": "green_frog", "name": "Green Frog", "tier": "B", "atk": 0, "maxHp": 18, "def": 2, "crit": 0, "weight": 15, "ability": { "passiveType": "STAT_MODIFIER", "stat": "DEF", "baseValue": 0.05, "gradeScale": 0.05, "isPercentage": true } }
+  ],
+  "gradeMultipliers": {
+    "COMMON": 1,
+    "RARE": 1.5,
+    "EPIC": 2,
+    "LEGENDARY": 3,
+    "IMMORTAL": 5
+  },
+  "abilityLabels": {
+    "STAT_MODIFIER": "스탯 강화",
+    "COUNTER": "반격",
+    "LIFESTEAL": "흡혈",
+    "SHIELD_ON_START": "방어막",
+    "REVIVE": "부활",
+    "REGEN": "재생",
+    "MULTI_HIT": "연타"
+  },
+  "statLabels": {
+    "ATK": "공격력",
+    "DEF": "방어력",
+    "CRIT": "치명타",
+    "HP": "체력"
+  }
+}

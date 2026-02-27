@@ -1,0 +1,15 @@
+{
+  "daily": [
+    { "id": "daily_chapter", "description": "챕터 3회 클리어", "target": 3, "rewardType": "GEMS", "rewardAmount": 30 },
+    { "id": "daily_dungeon", "description": "던전 3회 완료", "target": 3, "rewardType": "GOLD", "rewardAmount": 450 },
+    { "id": "daily_tower", "description": "탑 2회 도전", "target": 2, "rewardType": "EQUIPMENT_STONE", "rewardAmount": 3 },
+    { "id": "daily_arena", "description": "아레나 1회 전투", "target": 1, "rewardType": "GEMS", "rewardAmount": 20 },
+    { "id": "daily_travel", "description": "여행 5회", "target": 5, "rewardType": "GOLD", "rewardAmount": 350 }
+  ],
+  "weekly": [
+    { "id": "weekly_chapter", "description": "챕터 15회 클리어", "target": 15, "rewardType": "GEMS", "rewardAmount": 200 },
+    { "id": "weekly_gacha", "description": "장비 뽑기 20회", "target": 20, "rewardType": "EQUIPMENT_STONE", "rewardAmount": 10 },
+    { "id": "weekly_sell", "description": "장비 판매 10회", "target": 10, "rewardType": "GOLD", "rewardAmount": 500 },
+    { "id": "weekly_tower", "description": "탑 10회 도전", "target": 10, "rewardType": "POWER_STONE", "rewardAmount": 3 }
+  ]
+}

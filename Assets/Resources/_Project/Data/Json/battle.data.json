@@ -1,0 +1,33 @@
+{
+  "damage": {
+    "defenseConstant": 100,
+    "magicDefenseConstant": 150,
+    "baseMagicCoefficient": 0.5,
+    "varianceMin": 0.9,
+    "varianceMax": 1.1,
+    "critMultiplier": 1.5
+  },
+  "rage": {
+    "maxRage": 100,
+    "playerRagePerAttack": 20,
+    "attackMultiplier": 1.2
+  },
+  "skill": {
+    "onAttackAtkRatio": 0.3,
+    "onRageAtkRatio": 0.3,
+    "turnStartAtkRatio": 0.2
+  },
+  "enemy": {
+    "dualSpawnChance": 0.5,
+    "dualStatMultiplier": 0.7,
+    "scalingPerChapter": 1.25,
+    "scalingPerTowerFloor": 1.08,
+    "dayProgressMaxBonus": 0.3
+  },
+  "combatGoldReward": {
+    "base": 10,
+    "perChapter": 2,
+    "perDay": 0.5
+  },
+  "maxTurns": 100
+}

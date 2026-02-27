@@ -1,0 +1,32 @@
+{
+  "gradeLabels": {
+    "COMMON": "일반",
+    "UNCOMMON": "우수",
+    "RARE": "희귀",
+    "EPIC": "에픽",
+    "LEGENDARY": "전설",
+    "MYTHIC": "신화"
+  },
+  "slotLabels": {
+    "WEAPON": "무기",
+    "ARMOR": "방어구",
+    "RING": "반지",
+    "NECKLACE": "목걸이",
+    "SHOES": "신발",
+    "GLOVES": "장갑",
+    "HAT": "모자"
+  },
+  "weaponSubTypeLabels": {
+    "SWORD": "검",
+    "STAFF": "지팡이",
+    "BOW": "활"
+  },
+  "sellPrices": {
+    "COMMON": 10,
+    "UNCOMMON": 30,
+    "RARE": 100,
+    "EPIC": 300,
+    "LEGENDARY": 1000,
+    "MYTHIC": 3000
+  }
+}

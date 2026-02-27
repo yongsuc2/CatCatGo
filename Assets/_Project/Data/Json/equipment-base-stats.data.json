@@ -1,0 +1,50 @@
+[
+  { "slot": "WEAPON", "grade": "COMMON", "atk": 10, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "WEAPON", "grade": "UNCOMMON", "atk": 25, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "WEAPON", "grade": "RARE", "atk": 50, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "WEAPON", "grade": "EPIC", "atk": 100, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "WEAPON", "grade": "LEGENDARY", "atk": 200, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "WEAPON", "grade": "MYTHIC", "atk": 400, "maxHp": 0, "def": 0, "crit": 0 },
+
+  { "slot": "ARMOR", "grade": "COMMON", "atk": 0, "maxHp": 50, "def": 0, "crit": 0 },
+  { "slot": "ARMOR", "grade": "UNCOMMON", "atk": 0, "maxHp": 120, "def": 0, "crit": 0 },
+  { "slot": "ARMOR", "grade": "RARE", "atk": 0, "maxHp": 250, "def": 0, "crit": 0 },
+  { "slot": "ARMOR", "grade": "EPIC", "atk": 0, "maxHp": 500, "def": 0, "crit": 0 },
+  { "slot": "ARMOR", "grade": "LEGENDARY", "atk": 0, "maxHp": 1000, "def": 0, "crit": 0 },
+  { "slot": "ARMOR", "grade": "MYTHIC", "atk": 0, "maxHp": 2000, "def": 0, "crit": 0 },
+
+  { "slot": "RING", "grade": "COMMON", "atk": 5, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "RING", "grade": "UNCOMMON", "atk": 12, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "RING", "grade": "RARE", "atk": 25, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "RING", "grade": "EPIC", "atk": 50, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "RING", "grade": "LEGENDARY", "atk": 100, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "RING", "grade": "MYTHIC", "atk": 200, "maxHp": 0, "def": 0, "crit": 0 },
+
+  { "slot": "NECKLACE", "grade": "COMMON", "atk": 3, "maxHp": 30, "def": 0, "crit": 0 },
+  { "slot": "NECKLACE", "grade": "UNCOMMON", "atk": 8, "maxHp": 70, "def": 0, "crit": 0 },
+  { "slot": "NECKLACE", "grade": "RARE", "atk": 15, "maxHp": 150, "def": 0, "crit": 0 },
+  { "slot": "NECKLACE", "grade": "EPIC", "atk": 30, "maxHp": 300, "def": 0, "crit": 0 },
+  { "slot": "NECKLACE", "grade": "LEGENDARY", "atk": 60, "maxHp": 600, "def": 0, "crit": 0 },
+  { "slot": "NECKLACE", "grade": "MYTHIC", "atk": 120, "maxHp": 1200, "def": 0, "crit": 0 },
+
+  { "slot": "SHOES", "grade": "COMMON", "atk": 0, "maxHp": 40, "def": 0, "crit": 0 },
+  { "slot": "SHOES", "grade": "UNCOMMON", "atk": 0, "maxHp": 90, "def": 0, "crit": 0 },
+  { "slot": "SHOES", "grade": "RARE", "atk": 0, "maxHp": 190, "def": 0, "crit": 0 },
+  { "slot": "SHOES", "grade": "EPIC", "atk": 0, "maxHp": 380, "def": 0, "crit": 0 },
+  { "slot": "SHOES", "grade": "LEGENDARY", "atk": 0, "maxHp": 760, "def": 0, "crit": 0 },
+  { "slot": "SHOES", "grade": "MYTHIC", "atk": 0, "maxHp": 1520, "def": 0, "crit": 0 },
+
+  { "slot": "GLOVES", "grade": "COMMON", "atk": 7, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "GLOVES", "grade": "UNCOMMON", "atk": 18, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "GLOVES", "grade": "RARE", "atk": 35, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "GLOVES", "grade": "EPIC", "atk": 70, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "GLOVES", "grade": "LEGENDARY", "atk": 140, "maxHp": 0, "def": 0, "crit": 0 },
+  { "slot": "GLOVES", "grade": "MYTHIC", "atk": 280, "maxHp": 0, "def": 0, "crit": 0 },
+
+  { "slot": "HAT", "grade": "COMMON", "atk": 0, "maxHp": 35, "def": 0, "crit": 0 },
+  { "slot": "HAT", "grade": "UNCOMMON", "atk": 0, "maxHp": 80, "def": 0, "crit": 0 },
+  { "slot": "HAT", "grade": "RARE", "atk": 0, "maxHp": 170, "def": 0, "crit": 0 },
+  { "slot": "HAT", "grade": "EPIC", "atk": 0, "maxHp": 340, "def": 0, "crit": 0 },
+  { "slot": "HAT", "grade": "LEGENDARY", "atk": 0, "maxHp": 680, "def": 0, "crit": 0 },
+  { "slot": "HAT", "grade": "MYTHIC", "atk": 0, "maxHp": 1360, "def": 0, "crit": 0 }
+]

@@ -1,0 +1,143 @@
+[
+  { "skill": "ilban_attack", "tier": 1, "coefficient": 1.0 },
+  { "skill": "ilban_attack", "tier": 2, "coefficient": 1.0 },
+  { "skill": "ilban_attack", "tier": 3, "coefficient": 1.0 },
+  { "skill": "ilban_attack", "tier": 4, "coefficient": 1.0 },
+
+  { "skill": "bunno_attack", "tier": 1, "coefficient": 0.75 },
+  { "skill": "bunno_attack", "tier": 2, "coefficient": 1.73 },
+  { "skill": "bunno_attack", "tier": 3, "coefficient": 3.0 },
+  { "skill": "bunno_attack", "tier": 4, "coefficient": 4.5 },
+
+  { "skill": "rage_accumulate", "tier": 1, "amount": 25 },
+  { "skill": "rage_accumulate", "tier": 2, "amount": 58 },
+  { "skill": "rage_accumulate", "tier": 3, "amount": 100 },
+  { "skill": "rage_accumulate", "tier": 4, "amount": 150 },
+
+  { "skill": "hp_recovery", "tier": 1, "amount": 0.02 },
+  { "skill": "hp_recovery", "tier": 2, "amount": 0.046 },
+  { "skill": "hp_recovery", "tier": 3, "amount": 0.08 },
+  { "skill": "hp_recovery", "tier": 4, "amount": 0.12 },
+
+  { "skill": "lightning_summon", "tier": 1, "coefficient": 0.2 },
+  { "skill": "lightning_summon", "tier": 2, "coefficient": 0.46 },
+  { "skill": "lightning_summon", "tier": 3, "coefficient": 0.8 },
+  { "skill": "lightning_summon", "tier": 4, "coefficient": 1.2 },
+
+  { "skill": "lance_summon", "tier": 1, "coefficient": 0.15 },
+  { "skill": "lance_summon", "tier": 2, "coefficient": 0.35 },
+  { "skill": "lance_summon", "tier": 3, "coefficient": 0.6 },
+  { "skill": "lance_summon", "tier": 4, "coefficient": 0.9 },
+
+  { "skill": "sword_aura_summon", "tier": 1, "coefficient": 0.15 },
+  { "skill": "sword_aura_summon", "tier": 2, "coefficient": 0.35 },
+  { "skill": "sword_aura_summon", "tier": 3, "coefficient": 0.6 },
+  { "skill": "sword_aura_summon", "tier": 4, "coefficient": 0.9 },
+
+  { "skill": "poison_inject", "tier": 1, "coefficient": 0.06, "duration": 3 },
+  { "skill": "poison_inject", "tier": 2, "coefficient": 0.14, "duration": 4 },
+  { "skill": "poison_inject", "tier": 3, "coefficient": 0.24, "duration": 5 },
+  { "skill": "poison_inject", "tier": 4, "coefficient": 0.36, "duration": 6 },
+
+  { "skill": "flame_summon", "tier": 1, "coefficient": 0.08, "duration": 4 },
+  { "skill": "flame_summon", "tier": 2, "coefficient": 0.18, "duration": 4 },
+  { "skill": "flame_summon", "tier": 3, "coefficient": 0.32, "duration": 5 },
+  { "skill": "flame_summon", "tier": 4, "coefficient": 0.48, "duration": 5 },
+
+  { "skill": "shuriken_summon", "tier": 1, "coefficient": 0.1 },
+  { "skill": "shuriken_summon", "tier": 2, "coefficient": 0.23 },
+  { "skill": "shuriken_summon", "tier": 3, "coefficient": 0.4 },
+  { "skill": "shuriken_summon", "tier": 4, "coefficient": 0.6 },
+
+  { "skill": "thunder_shuriken", "tier": 1, "injectedProbability": 0.17 },
+  { "skill": "thunder_shuriken", "tier": 2, "injectedProbability": 0.39 },
+  { "skill": "thunder_shuriken", "tier": 3, "injectedProbability": 0.68 },
+  { "skill": "thunder_shuriken", "tier": 4, "injectedProbability": 1.0 },
+
+  { "skill": "rage_shuriken", "tier": 1, "injectedProbability": 0.17 },
+  { "skill": "rage_shuriken", "tier": 2, "injectedProbability": 0.39 },
+  { "skill": "rage_shuriken", "tier": 3, "injectedProbability": 0.68 },
+  { "skill": "rage_shuriken", "tier": 4, "injectedProbability": 1.0 },
+
+  { "skill": "recovery_shuriken", "tier": 1, "injectedProbability": 0.17 },
+  { "skill": "recovery_shuriken", "tier": 2, "injectedProbability": 0.39 },
+  { "skill": "recovery_shuriken", "tier": 3, "injectedProbability": 0.68 },
+  { "skill": "recovery_shuriken", "tier": 4, "injectedProbability": 1.0 },
+
+  { "skill": "shuriken_strike", "tier": 1, "count": 1 },
+  { "skill": "shuriken_strike", "tier": 2, "count": 2 },
+  { "skill": "shuriken_strike", "tier": 3, "count": 4 },
+  { "skill": "shuriken_strike", "tier": 4, "count": 6 },
+
+  { "skill": "poison_shuriken", "tier": 1, "injectedProbability": 0.17 },
+  { "skill": "poison_shuriken", "tier": 2, "injectedProbability": 0.39 },
+  { "skill": "poison_shuriken", "tier": 3, "injectedProbability": 0.68 },
+  { "skill": "poison_shuriken", "tier": 4, "injectedProbability": 1.0 },
+
+  { "skill": "thunder_strike", "tier": 1, "count": 1 },
+  { "skill": "thunder_strike", "tier": 2, "count": 2 },
+  { "skill": "thunder_strike", "tier": 3, "count": 4 },
+  { "skill": "thunder_strike", "tier": 4, "count": 6 },
+
+  { "skill": "lance_strike", "tier": 1, "count": 1 },
+  { "skill": "lance_strike", "tier": 2, "count": 2 },
+  { "skill": "lance_strike", "tier": 3, "count": 4 },
+  { "skill": "lance_strike", "tier": 4, "count": 6 },
+
+  { "skill": "aura_strike", "tier": 1, "count": 1 },
+  { "skill": "aura_strike", "tier": 2, "count": 2 },
+  { "skill": "aura_strike", "tier": 3, "count": 4 },
+  { "skill": "aura_strike", "tier": 4, "count": 6 },
+
+  { "skill": "bunno_thunder", "tier": 1, "count": 1 },
+  { "skill": "bunno_thunder", "tier": 2, "count": 2 },
+  { "skill": "bunno_thunder", "tier": 3, "count": 4 },
+  { "skill": "bunno_thunder", "tier": 4, "count": 6 },
+
+  { "skill": "bunno_lance", "tier": 1, "count": 1 },
+  { "skill": "bunno_lance", "tier": 2, "count": 2 },
+  { "skill": "bunno_lance", "tier": 3, "count": 4 },
+  { "skill": "bunno_lance", "tier": 4, "count": 6 },
+
+  { "skill": "bunno_flame", "tier": 1, "count": 1 },
+  { "skill": "bunno_flame", "tier": 2, "count": 2 },
+  { "skill": "bunno_flame", "tier": 3, "count": 4 },
+  { "skill": "bunno_flame", "tier": 4, "count": 6 },
+
+  { "skill": "rage_gauge_boost", "tier": 1, "amount": 15 },
+  { "skill": "rage_gauge_boost", "tier": 2, "amount": 35 },
+  { "skill": "rage_gauge_boost", "tier": 3, "amount": 60 },
+  { "skill": "rage_gauge_boost", "tier": 4, "amount": 90 },
+
+  { "skill": "venom_sword", "tier": 1, "duration": 3 },
+  { "skill": "venom_sword", "tier": 2, "duration": 4 },
+  { "skill": "venom_sword", "tier": 3, "duration": 5 },
+  { "skill": "venom_sword", "tier": 4, "duration": 6 },
+
+  { "skill": "tyrant", "tier": 1, "coefficient": 0.11 },
+  { "skill": "tyrant", "tier": 2, "coefficient": 0.25 },
+  { "skill": "tyrant", "tier": 3, "coefficient": 0.44 },
+  { "skill": "tyrant", "tier": 4, "coefficient": 0.66 },
+
+  { "skill": "shrink_magic", "tier": 1, "reduction": 0.1, "duration": 3 },
+  { "skill": "shrink_magic", "tier": 2, "reduction": 0.23, "duration": 3 },
+  { "skill": "shrink_magic", "tier": 3, "reduction": 0.4, "duration": 4 },
+  { "skill": "shrink_magic", "tier": 4, "reduction": 0.6, "duration": 5 },
+
+  { "skill": "demon_power", "tier": 4, "coefficient": 0.5 },
+
+  { "skill": "hp_crush", "tier": 1, "coefficient": 0.04 },
+  { "skill": "hp_crush", "tier": 2, "coefficient": 0.092 },
+  { "skill": "hp_crush", "tier": 3, "coefficient": 0.16 },
+  { "skill": "hp_crush", "tier": 4, "coefficient": 0.24 },
+
+  { "skill": "stun_apply", "tier": 1, "chance": 0.05, "duration": 1 },
+  { "skill": "stun_apply", "tier": 2, "chance": 0.115, "duration": 1 },
+  { "skill": "stun_apply", "tier": 3, "chance": 0.2, "duration": 1 },
+  { "skill": "stun_apply", "tier": 4, "chance": 0.3, "duration": 1 },
+
+  { "skill": "stun_strike", "tier": 1, "count": 1 },
+  { "skill": "stun_strike", "tier": 2, "count": 1 },
+  { "skill": "stun_strike", "tier": 3, "count": 1 },
+  { "skill": "stun_strike", "tier": 4, "count": 1 }
+]

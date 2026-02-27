@@ -1,0 +1,30 @@
+{
+  "templates": [
+    { "id": "slime", "name": "Slime", "hp": 110, "atk": 7, "def": 3, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "goblin", "name": "Goblin", "hp": 80, "atk": 10, "def": 4, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "skeleton", "name": "Skeleton", "hp": 60, "atk": 14, "def": 2, "crit": 0, "skillIds": ["poison_inject"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "orc", "name": "Orc", "hp": 90, "atk": 12, "def": 3, "crit": 0, "skillIds": ["multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "dark_knight", "name": "Dark Knight", "hp": 70, "atk": 8, "def": 8, "crit": 0, "skillIds": ["counter", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+
+    { "id": "elite_wolf", "name": "Alpha Wolf", "hp": 260, "atk": 24, "def": 9, "crit": 0, "skillIds": ["multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_mage", "name": "Dark Mage", "hp": 220, "atk": 28, "def": 6, "crit": 0, "skillIds": ["lightning_summon", "flame_summon"], "isBoss": false, "ragePerAttack": 25 },
+
+    { "id": "boss_dragon", "name": "Ancient Dragon", "hp": 750, "atk": 34, "def": 15, "crit": 0, "skillIds": ["lightning_summon", "flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_demon", "name": "Demon Lord", "hp": 650, "atk": 38, "def": 12, "crit": 0, "skillIds": ["poison_inject", "lifesteal", "flame_summon"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_golem", "name": "Stone Golem", "hp": 1000, "atk": 24, "def": 25, "crit": 0, "skillIds": ["counter", "iron_shield", "poison_inject"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "dungeon_dragon", "name": "Dungeon Dragon", "hp": 500, "atk": 28, "def": 12, "crit": 0, "skillIds": ["flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "world_tree", "name": "World Tree", "hp": 600, "atk": 22, "def": 18, "crit": 0, "skillIds": ["poison_inject", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "harpy", "name": "Harpy", "hp": 400, "atk": 32, "def": 8, "crit": 0, "skillIds": ["multi_hit", "lightning_summon"], "isBoss": true, "ragePerAttack": 25 }
+  ],
+  "pools": {
+    "enemy": ["slime", "goblin", "skeleton", "orc", "dark_knight"],
+    "elite": ["elite_wolf", "elite_mage"],
+    "boss": ["boss_dragon", "boss_demon", "boss_golem"]
+  },
+  "baseStats": {
+    "enemy": { "hp": 80, "atk": 8, "def": 3, "crit": 0 },
+    "elite": { "hp": 260, "atk": 24, "def": 9, "crit": 0 },
+    "boss": { "hp": 600, "atk": 32, "def": 14, "crit": 0 }
+  }
+}

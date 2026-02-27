@@ -1,0 +1,29 @@
+{
+  "equipment": {
+    "costPerPull": 150,
+    "pityThreshold": 180,
+    "gradeWeights": [
+      { "grade": "COMMON", "weight": 243 },
+      { "grade": "UNCOMMON", "weight": 81 },
+      { "grade": "RARE", "weight": 27 },
+      { "grade": "EPIC", "weight": 9 },
+      { "grade": "LEGENDARY", "weight": 3 },
+      { "grade": "MYTHIC", "weight": 1 }
+    ],
+    "sRate": 0.02,
+    "sEligibleGrades": ["EPIC", "LEGENDARY", "MYTHIC"]
+  },
+  "pet": {
+    "costPerPull": 298,
+    "pityThreshold": 0,
+    "eggAmount": 1,
+    "foodMin": 1,
+    "foodMax": 5
+  },
+  "gem": {
+    "costPerPull": 0,
+    "pityThreshold": 0,
+    "gemsMin": 20,
+    "gemsMax": 100
+  }
+}

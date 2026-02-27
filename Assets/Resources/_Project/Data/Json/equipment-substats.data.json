@@ -1,0 +1,46 @@
+{
+  "substatCountByGrade": {
+    "COMMON": 0,
+    "UNCOMMON": 1,
+    "RARE": 2,
+    "EPIC": 3,
+    "LEGENDARY": 4,
+    "MYTHIC": 5
+  },
+  "pools": {
+    "WEAPON": [
+      { "stat": "maxHp", "values": { "UNCOMMON": [5, 15], "RARE": [10, 30], "EPIC": [20, 60], "LEGENDARY": [40, 120], "MYTHIC": [80, 240] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "ARMOR": [
+      { "stat": "ATK", "values": { "UNCOMMON": [2, 5], "RARE": [4, 10], "EPIC": [8, 20], "LEGENDARY": [15, 40], "MYTHIC": [30, 80] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "RING": [
+      { "stat": "maxHp", "values": { "UNCOMMON": [5, 15], "RARE": [10, 30], "EPIC": [20, 60], "LEGENDARY": [40, 120], "MYTHIC": [80, 240] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "NECKLACE": [
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "SHOES": [
+      { "stat": "ATK", "values": { "UNCOMMON": [2, 5], "RARE": [4, 10], "EPIC": [8, 20], "LEGENDARY": [15, 40], "MYTHIC": [30, 80] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "GLOVES": [
+      { "stat": "maxHp", "values": { "UNCOMMON": [5, 15], "RARE": [10, 30], "EPIC": [20, 60], "LEGENDARY": [40, 120], "MYTHIC": [80, 240] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ],
+    "HAT": [
+      { "stat": "ATK", "values": { "UNCOMMON": [2, 5], "RARE": [4, 10], "EPIC": [8, 20], "LEGENDARY": [15, 40], "MYTHIC": [30, 80] } },
+      { "stat": "DEF", "values": { "UNCOMMON": [1, 3], "RARE": [2, 6], "EPIC": [4, 12], "LEGENDARY": [8, 24], "MYTHIC": [16, 48] } },
+      { "stat": "CRIT", "values": { "UNCOMMON": [0.005, 0.01], "RARE": [0.01, 0.02], "EPIC": [0.015, 0.03], "LEGENDARY": [0.02, 0.04], "MYTHIC": [0.025, 0.05] } }
+    ]
+  }
+}

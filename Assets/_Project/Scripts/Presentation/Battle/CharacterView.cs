@@ -1,0 +1,354 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using CatCatGo.Domain.Battle;
+using CatCatGo.Domain.Enums;
+using CatCatGo.Presentation.Core;
+using CatCatGo.Presentation.Utils;
+
+namespace CatCatGo.Presentation.Battle
+{
+    public class CharacterView : MonoBehaviour
+    {
+        private RectTransform _rectTransform;
+        private Image _spriteImage;
+        private Slider _hpBar;
+        private Image _hpFill;
+        private Slider _rageBar;
+        private Image _rageFill;
+        private RectTransform _shieldOverlay;
+        private Image _shieldImage;
+        private TextMeshProUGUI _nameLabel;
+        private RectTransform _statusContainer;
+        private TextMeshProUGUI _hpText;
+
+        private Vector2 _originalPosition;
+        private Coroutine _phaseCoroutine;
+
+        private readonly List<StatusEffectIconView> _statusIcons = new List<StatusEffectIconView>();
+        private int _maxHp;
+        private bool _hasRage;
+
+        public Vector2 OriginalPosition => _originalPosition;
+
+        public void Setup(string name, int maxHp, int maxRage, bool isBoss, Color placeholderColor)
+        {
+            _maxHp = maxHp;
+            _hasRage = maxRage > 0;
+
+            if (_rectTransform == null)
+                BuildUI(isBoss, placeholderColor);
+
+            _nameLabel.text = name;
+            _hpBar.maxValue = maxHp;
+            _hpBar.value = maxHp;
+            UpdateHpText(maxHp, maxHp);
+
+            if (_hasRage && _rageBar != null)
+            {
+                _rageBar.maxValue = maxRage;
+                _rageBar.value = 0;
+                _rageBar.gameObject.SetActive(true);
+            }
+            else if (_rageBar != null)
+            {
+                _rageBar.gameObject.SetActive(false);
+            }
+
+            _shieldOverlay.gameObject.SetActive(false);
+            ClearStatusEffects();
+        }
+
+        public void UpdateHp(int current, int max)
+        {
+            _maxHp = max;
+            _hpBar.maxValue = max;
+            _hpBar.value = Mathf.Max(0, current);
+
+            float ratio = max > 0 ? (float)current / max : 0f;
+            if (ratio > 0.5f)
+                _hpFill.color = ColorPalette.Heal;
+            else if (ratio > 0.2f)
+                _hpFill.color = ColorPalette.Gold;
+            else
+                _hpFill.color = ColorPalette.Hp;
+
+            UpdateHpText(current, max);
+        }
+
+        public void UpdateRage(int current, int max)
+        {
+            if (!_hasRage || _rageBar == null) return;
+            _rageBar.maxValue = max;
+            _rageBar.value = Mathf.Max(0, current);
+        }
+
+        public void UpdateShield(int shield, int maxHp)
+        {
+            if (shield <= 0)
+            {
+                _shieldOverlay.gameObject.SetActive(false);
+                return;
+            }
+
+            _shieldOverlay.gameObject.SetActive(true);
+            float ratio = maxHp > 0 ? Mathf.Clamp01((float)shield / maxHp) : 0f;
+            _shieldOverlay.anchorMin = new Vector2(0f, 0f);
+            _shieldOverlay.anchorMax = new Vector2(ratio, 1f);
+            _shieldOverlay.offsetMin = Vector2.zero;
+            _shieldOverlay.offsetMax = Vector2.zero;
+        }
+
+        public void UpdateStatusEffects(List<StatusEffect> effects)
+        {
+            ClearStatusEffects();
+
+            var grouped = new Dictionary<StatusEffectType, (int count, int maxTurns)>();
+            foreach (var eff in effects)
+            {
+                if (grouped.TryGetValue(eff.Type, out var existing))
+                    grouped[eff.Type] = (existing.count + 1, Mathf.Max(existing.maxTurns, eff.RemainingTurns));
+                else
+                    grouped[eff.Type] = (1, eff.RemainingTurns);
+            }
+
+            foreach (var kvp in grouped)
+            {
+                var iconGo = new GameObject($"Status_{kvp.Key}");
+                iconGo.transform.SetParent(_statusContainer, false);
+                var icon = iconGo.AddComponent<StatusEffectIconView>();
+                icon.Setup(kvp.Key, kvp.Value.count, kvp.Value.maxTurns);
+                _statusIcons.Add(icon);
+            }
+        }
+
+        public void SetPhase(AttackPhase phase, float duration, Vector2 targetPosition)
+        {
+            if (_phaseCoroutine != null)
+                StopCoroutine(_phaseCoroutine);
+
+            switch (phase)
+            {
+                case AttackPhase.Approach:
+                    _phaseCoroutine = StartCoroutine(SlideTo(targetPosition, duration));
+                    break;
+                case AttackPhase.Hit:
+                    _phaseCoroutine = StartCoroutine(Shake(duration));
+                    break;
+                case AttackPhase.Retreat:
+                    _phaseCoroutine = StartCoroutine(SlideTo(_originalPosition, duration));
+                    break;
+                case AttackPhase.Idle:
+                    _rectTransform.anchoredPosition = _originalPosition;
+                    break;
+            }
+        }
+
+        public void SetOriginalPosition(Vector2 pos)
+        {
+            _originalPosition = pos;
+            if (_rectTransform != null)
+                _rectTransform.anchoredPosition = pos;
+        }
+
+        public void ResetToOriginalPosition()
+        {
+            if (_phaseCoroutine != null)
+            {
+                StopCoroutine(_phaseCoroutine);
+                _phaseCoroutine = null;
+            }
+            if (_rectTransform != null)
+                _rectTransform.anchoredPosition = _originalPosition;
+        }
+
+        private IEnumerator SlideTo(Vector2 target, float duration)
+        {
+            Vector2 start = _rectTransform.anchoredPosition;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                float t = elapsed / duration;
+                _rectTransform.anchoredPosition = Vector2.Lerp(start, target, t);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            _rectTransform.anchoredPosition = target;
+            _phaseCoroutine = null;
+        }
+
+        private IEnumerator Shake(float duration)
+        {
+            Vector2 origin = _rectTransform.anchoredPosition;
+            float elapsed = 0f;
+            float intensity = 4f;
+            while (elapsed < duration)
+            {
+                float offsetX = Random.Range(-intensity, intensity);
+                float offsetY = Random.Range(-intensity, intensity);
+                _rectTransform.anchoredPosition = origin + new Vector2(offsetX, offsetY);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            _rectTransform.anchoredPosition = origin;
+            _phaseCoroutine = null;
+        }
+
+        private void ClearStatusEffects()
+        {
+            foreach (var icon in _statusIcons)
+            {
+                if (icon != null && icon.gameObject != null)
+                    Destroy(icon.gameObject);
+            }
+            _statusIcons.Clear();
+        }
+
+        private void UpdateHpText(int current, int max)
+        {
+            if (_hpText != null)
+                _hpText.text = $"{NumberFormatter.FormatInt(Mathf.Max(0, current))}/{NumberFormatter.FormatInt(max)}";
+        }
+
+        private void BuildUI(bool isBoss, Color placeholderColor)
+        {
+            _rectTransform = gameObject.GetComponent<RectTransform>();
+            if (_rectTransform == null)
+                _rectTransform = gameObject.AddComponent<RectTransform>();
+
+            float charSize = isBoss ? 100f : 72f;
+            _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
+
+            var spriteGo = new GameObject("Sprite");
+            spriteGo.transform.SetParent(transform, false);
+            var spriteRt = spriteGo.AddComponent<RectTransform>();
+            spriteRt.anchoredPosition = new Vector2(0f, 20f);
+            spriteRt.sizeDelta = new Vector2(charSize, charSize);
+            _spriteImage = spriteGo.AddComponent<Image>();
+            _spriteImage.sprite = PlaceholderGenerator.CreateRect((int)charSize, (int)charSize, placeholderColor, "C");
+            _spriteImage.raycastTarget = false;
+
+            var nameGo = new GameObject("Name");
+            nameGo.transform.SetParent(transform, false);
+            var nameRt = nameGo.AddComponent<RectTransform>();
+            nameRt.anchoredPosition = new Vector2(0f, -charSize / 2f + 10f);
+            nameRt.sizeDelta = new Vector2(140f, 28f);
+            _nameLabel = nameGo.AddComponent<TextMeshProUGUI>();
+            _nameLabel.fontSize = 22f;
+            _nameLabel.color = ColorPalette.Text;
+            _nameLabel.alignment = TextAlignmentOptions.Center;
+            _nameLabel.enableWordWrapping = false;
+            _nameLabel.overflowMode = TextOverflowModes.Ellipsis;
+            _nameLabel.raycastTarget = false;
+
+            float barY = -charSize / 2f - 4f;
+
+            _hpBar = CreateBar("HpBar", barY, new Vector2(charSize + 20f, 26f), ColorPalette.Hp);
+            _hpFill = _hpBar.fillRect.GetComponent<Image>();
+
+            var hpTextGo = new GameObject("HpText");
+            hpTextGo.transform.SetParent(_hpBar.transform, false);
+            var hpTextRt = hpTextGo.AddComponent<RectTransform>();
+            hpTextRt.anchorMin = Vector2.zero;
+            hpTextRt.anchorMax = Vector2.one;
+            hpTextRt.offsetMin = Vector2.zero;
+            hpTextRt.offsetMax = Vector2.zero;
+            _hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
+            _hpText.fontSize = 18f;
+            _hpText.color = Color.white;
+            _hpText.alignment = TextAlignmentOptions.Center;
+            _hpText.enableWordWrapping = false;
+            _hpText.overflowMode = TextOverflowModes.Ellipsis;
+            _hpText.raycastTarget = false;
+
+            _shieldOverlay = CreateOverlay("Shield", _hpBar.transform, new Color(0.3f, 0.6f, 1f, 0.5f));
+            _shieldOverlay.gameObject.SetActive(false);
+
+            _rageBar = CreateBar("RageBar", barY - 10f, new Vector2(charSize + 10f, 5f), ColorPalette.Rage);
+            _rageFill = _rageBar.fillRect.GetComponent<Image>();
+            _rageBar.gameObject.SetActive(false);
+
+            var statusGo = new GameObject("StatusContainer");
+            statusGo.transform.SetParent(transform, false);
+            _statusContainer = statusGo.AddComponent<RectTransform>();
+            _statusContainer.anchoredPosition = new Vector2(0f, barY - 20f);
+            _statusContainer.sizeDelta = new Vector2(100f, 20f);
+            var layout = statusGo.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 2f;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+        }
+
+        private Slider CreateBar(string name, float yOffset, Vector2 size, Color fillColor)
+        {
+            var barGo = new GameObject(name);
+            barGo.transform.SetParent(transform, false);
+            var barRt = barGo.AddComponent<RectTransform>();
+            barRt.anchoredPosition = new Vector2(0f, yOffset);
+            barRt.sizeDelta = size;
+
+            var bgGo = new GameObject("Background");
+            bgGo.transform.SetParent(barGo.transform, false);
+            var bgRt = bgGo.AddComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
+            var bgImage = bgGo.AddComponent<Image>();
+            bgImage.color = ColorPalette.ProgressBarBackground;
+
+            var fillAreaGo = new GameObject("FillArea");
+            fillAreaGo.transform.SetParent(barGo.transform, false);
+            var fillAreaRt = fillAreaGo.AddComponent<RectTransform>();
+            fillAreaRt.anchorMin = Vector2.zero;
+            fillAreaRt.anchorMax = Vector2.one;
+            fillAreaRt.offsetMin = Vector2.zero;
+            fillAreaRt.offsetMax = Vector2.zero;
+
+            var fillGo = new GameObject("Fill");
+            fillGo.transform.SetParent(fillAreaGo.transform, false);
+            var fillRt = fillGo.AddComponent<RectTransform>();
+            fillRt.anchorMin = Vector2.zero;
+            fillRt.anchorMax = Vector2.one;
+            fillRt.offsetMin = Vector2.zero;
+            fillRt.offsetMax = Vector2.zero;
+            var fillImage = fillGo.AddComponent<Image>();
+            fillImage.color = fillColor;
+
+            var slider = barGo.AddComponent<Slider>();
+            slider.fillRect = fillRt;
+            slider.targetGraphic = fillImage;
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = 0;
+            slider.maxValue = 1;
+            slider.wholeNumbers = false;
+            slider.interactable = false;
+
+            return slider;
+        }
+
+        private RectTransform CreateOverlay(string name, Transform parent, Color color)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            var img = go.AddComponent<Image>();
+            img.color = color;
+            img.raycastTarget = false;
+            _shieldImage = img;
+            return rt;
+        }
+
+        private void OnDestroy()
+        {
+            ClearStatusEffects();
+        }
+    }
+}

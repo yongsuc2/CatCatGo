@@ -1,0 +1,100 @@
+{
+  "typeInfo": {
+    "DEMON": { "label": "악마", "description": "악마가 체력을 대가로 강력한 스킬을 제안합니다." },
+    "CHANCE": { "label": "우연", "description": "행운의 이벤트가 발생했습니다!" },
+    "COMBAT": { "label": "전투", "description": "적과 조우했습니다." },
+    "JUNGBAK_ROULETTE": { "label": "중박 룰렛", "description": "중박이 누적되어 특별 보상 룰렛이 발동합니다!" },
+    "DAEBAK_ROULETTE": { "label": "대박 룰렛", "description": "대박이 누적되어 전설적인 룰렛이 발동합니다!" }
+  },
+  "weights": {
+    "SIXTY_DAY": [
+      { "type": "COMBAT", "weight": 40 },
+      { "type": "DEMON", "weight": 7 },
+      { "type": "CHANCE", "weight": 53 }
+    ],
+    "THIRTY_DAY": [
+      { "type": "COMBAT", "weight": 40 },
+      { "type": "DEMON", "weight": 7 },
+      { "type": "CHANCE", "weight": 53 }
+    ],
+    "FIVE_DAY": [
+      { "type": "COMBAT", "weight": 70 },
+      { "type": "CHANCE", "weight": 30 }
+    ]
+  },
+  "demon": {
+    "hpCostPercent": 0.2,
+    "rejectLabel": "거절",
+    "rejectDescription": "안전하게 떠나기"
+  },
+  "chance": {
+    "springHealPercent": 0.15,
+    "springLabel": "치유의 샘",
+    "springDescription": "최대 체력의 15% 회복",
+    "blessingGoldBase": 50,
+    "blessingGoldPerChapter": 100,
+    "blessingLabel": "축복",
+    "blessingDescription": "챕터에 따른 랜덤 골드 획득",
+    "subWeights": {
+      "skillBox": 60,
+      "spring": 15,
+      "blessing": 15,
+      "skillSwap": 10
+    }
+  },
+  "jungbakRoulette": {
+    "healPercent": 0.5,
+    "healLabel": "체력 회복",
+    "healDescription": "최대 체력의 50% 회복",
+    "goldAmount": 500,
+    "goldLabel": "골드 보상",
+    "goldDescription": "골드 500 획득"
+  },
+  "daebakRoulette": {
+    "normalRate": 0.8,
+    "angelRate": 0.1,
+    "demonRate": 0.1,
+    "normalLabel": "일반 돌리기",
+    "normalDescription": "80% 확률로 신화 스킬 획득",
+    "angelLabel": "😇 천사의 힘",
+    "angelDescription": "10% 확률로 천사의 힘 획득",
+    "demonLabel": "😈 악마의 힘",
+    "demonDescription": "10% 확률로 악마의 힘 획득",
+    "skipLabel": "건너뛰기",
+    "skipDescription": "그냥 지나가기"
+  },
+  "combat": {
+    "fightLabel": "전투",
+    "fightDescription": "전투에 돌입",
+    "avoidLabel": "회피",
+    "avoidDescription": "이번 전투 건너뛰기"
+  },
+  "rerollsPerSession": 2,
+  "skillSwap": {
+    "skipLabel": "건너뛰기",
+    "skipDescription": "교환하지 않기"
+  },
+  "counterThreshold": {
+    "jungbak": 12,
+    "daebak": 7
+  },
+  "forcedBattleDays": {
+    "elite": 20,
+    "midBoss": 30
+  },
+  "optionalEliteDays": [
+    { "day": 40, "chance": 0.3 },
+    { "day": 50, "chance": 0.3 }
+  ],
+  "chapterBossAssignment": [
+    { "elite": "elite_wolf", "midBoss": "boss_demon", "boss": "boss_dragon" },
+    { "elite": "elite_mage", "midBoss": "boss_golem", "boss": "boss_demon" },
+    { "elite": "elite_wolf", "midBoss": "boss_dragon", "boss": "boss_golem" }
+  ],
+  "chapterClearReward": {
+    "goldBase": 200,
+    "goldPerChapter": 300,
+    "gemsBase": 10,
+    "gemsPerChapter": 5
+  }
+}

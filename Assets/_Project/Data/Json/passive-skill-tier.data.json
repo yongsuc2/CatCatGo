@@ -1,0 +1,93 @@
+[
+  { "skill": "lifesteal", "tier": 1, "rate": 0.08 },
+  { "skill": "lifesteal", "tier": 2, "rate": 0.18 },
+  { "skill": "lifesteal", "tier": 3, "rate": 0.32 },
+  { "skill": "lifesteal", "tier": 4, "rate": 0.48 },
+
+  { "skill": "regen", "tier": 1, "healPerTurn": 0.02 },
+  { "skill": "regen", "tier": 2, "healPerTurn": 0.046 },
+  { "skill": "regen", "tier": 3, "healPerTurn": 0.08 },
+  { "skill": "regen", "tier": 4, "healPerTurn": 0.12 },
+
+  { "skill": "counter", "tier": 1, "triggerChance": 0.1 },
+  { "skill": "counter", "tier": 2, "triggerChance": 0.23 },
+  { "skill": "counter", "tier": 3, "triggerChance": 0.4 },
+  { "skill": "counter", "tier": 4, "triggerChance": 0.6 },
+
+  { "skill": "iron_shield", "tier": 1, "hpPercent": 0.1 },
+  { "skill": "iron_shield", "tier": 2, "hpPercent": 0.23 },
+  { "skill": "iron_shield", "tier": 3, "hpPercent": 0.4 },
+  { "skill": "iron_shield", "tier": 4, "hpPercent": 0.6 },
+
+  { "skill": "multi_hit", "tier": 1, "chance": 0.07 },
+  { "skill": "multi_hit", "tier": 2, "chance": 0.16 },
+  { "skill": "multi_hit", "tier": 3, "chance": 0.28 },
+  { "skill": "multi_hit", "tier": 4, "chance": 0.42 },
+
+  { "skill": "crit_mastery", "tier": 1, "value": 0.07 },
+  { "skill": "crit_mastery", "tier": 2, "value": 0.16 },
+  { "skill": "crit_mastery", "tier": 3, "value": 0.28 },
+  { "skill": "crit_mastery", "tier": 4, "value": 0.42 },
+
+  { "skill": "rage_mastery", "tier": 1, "value": 0.15 },
+  { "skill": "rage_mastery", "tier": 2, "value": 0.35 },
+  { "skill": "rage_mastery", "tier": 3, "value": 0.6 },
+  { "skill": "rage_mastery", "tier": 4, "value": 0.9 },
+
+  { "skill": "revive", "tier": 1, "hpPercent": 0.17 },
+  { "skill": "revive", "tier": 2, "hpPercent": 0.39 },
+  { "skill": "revive", "tier": 3, "hpPercent": 0.68 },
+  { "skill": "revive", "tier": 4, "hpPercent": 1.0 },
+
+  { "skill": "lightning_mastery", "tier": 1, "damageBonus": 0.08 },
+  { "skill": "lightning_mastery", "tier": 2, "damageBonus": 0.18 },
+  { "skill": "lightning_mastery", "tier": 3, "damageBonus": 0.32 },
+  { "skill": "lightning_mastery", "tier": 4, "damageBonus": 0.48 },
+
+  { "skill": "shuriken_mastery", "tier": 1, "damageBonus": 0.08 },
+  { "skill": "shuriken_mastery", "tier": 2, "damageBonus": 0.18 },
+  { "skill": "shuriken_mastery", "tier": 3, "damageBonus": 0.32 },
+  { "skill": "shuriken_mastery", "tier": 4, "damageBonus": 0.48 },
+
+  { "skill": "lance_mastery", "tier": 1, "damageBonus": 0.08 },
+  { "skill": "lance_mastery", "tier": 2, "damageBonus": 0.18 },
+  { "skill": "lance_mastery", "tier": 3, "damageBonus": 0.32 },
+  { "skill": "lance_mastery", "tier": 4, "damageBonus": 0.48 },
+
+  { "skill": "angel_power", "tier": 4, "value": 0.3 },
+
+  { "skill": "magic_mastery", "tier": 1, "value": 0.1 },
+  { "skill": "magic_mastery", "tier": 2, "value": 0.23 },
+  { "skill": "magic_mastery", "tier": 3, "value": 0.4 },
+  { "skill": "magic_mastery", "tier": 4, "value": 0.6 },
+
+  { "skill": "hp_fortify", "tier": 1, "value": 0.05 },
+  { "skill": "hp_fortify", "tier": 2, "value": 0.12 },
+  { "skill": "hp_fortify", "tier": 3, "value": 0.2 },
+  { "skill": "hp_fortify", "tier": 4, "value": 0.3 },
+
+  { "skill": "atk_fortify", "tier": 1, "value": 0.06 },
+  { "skill": "atk_fortify", "tier": 2, "value": 0.14 },
+  { "skill": "atk_fortify", "tier": 3, "value": 0.24 },
+  { "skill": "atk_fortify", "tier": 4, "value": 0.36 },
+
+  { "skill": "def_fortify", "tier": 1, "value": 0.08 },
+  { "skill": "def_fortify", "tier": 2, "value": 0.18 },
+  { "skill": "def_fortify", "tier": 3, "value": 0.32 },
+  { "skill": "def_fortify", "tier": 4, "value": 0.48 },
+
+  { "skill": "low_hp_atk", "tier": 1, "maxBonus": 0.4 },
+  { "skill": "low_hp_atk", "tier": 2, "maxBonus": 0.92 },
+  { "skill": "low_hp_atk", "tier": 3, "maxBonus": 1.6 },
+  { "skill": "low_hp_atk", "tier": 4, "maxBonus": 2.4 },
+
+  { "skill": "low_hp_def", "tier": 1, "maxBonus": 0.4 },
+  { "skill": "low_hp_def", "tier": 2, "maxBonus": 0.92 },
+  { "skill": "low_hp_def", "tier": 3, "maxBonus": 1.6 },
+  { "skill": "low_hp_def", "tier": 4, "maxBonus": 2.4 },
+
+  { "skill": "max_hp_damage", "tier": 1, "coefficient": 0.02 },
+  { "skill": "max_hp_damage", "tier": 2, "coefficient": 0.046 },
+  { "skill": "max_hp_damage", "tier": 3, "coefficient": 0.08 },
+  { "skill": "max_hp_damage", "tier": 4, "coefficient": 0.12 }
+]

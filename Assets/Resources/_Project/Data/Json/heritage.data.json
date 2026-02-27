@@ -1,0 +1,18 @@
+{
+  "bookTypeMap": {
+    "SKULL": "SKULL_BOOK",
+    "KNIGHT": "KNIGHT_BOOK",
+    "RANGER": "RANGER_BOOK",
+    "GHOST": "GHOST_BOOK"
+  },
+  "baseUpgradeCost": 1,
+  "costGrowth": 1,
+  "passivePerLevel": {
+    "SKULL": { "atk": 3, "def": 0, "maxHp": 0, "crit": 0 },
+    "KNIGHT": { "atk": 0, "def": 2, "maxHp": 10, "crit": 0 },
+    "RANGER": { "atk": 2, "def": 0, "maxHp": 0, "crit": 0.005 },
+    "GHOST": { "atk": 1, "def": 0, "maxHp": 5, "crit": 0 }
+  },
+  "baseSkillMultiplier": 1.0,
+  "synergyMultiplierPerLevel": 0.02
+}

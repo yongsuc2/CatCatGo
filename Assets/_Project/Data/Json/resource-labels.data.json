@@ -1,0 +1,45 @@
+{
+  "labels": {
+    "GOLD": "골드",
+    "GEMS": "보석",
+    "STAMINA": "스태미나",
+    "CHALLENGE_TOKEN": "도전 토큰",
+    "ARENA_TICKET": "투기장 티켓",
+    "PICKAXE": "곡괭이",
+    "EQUIPMENT_STONE": "장비석",
+    "POWER_STONE": "파워스톤",
+    "SKULL_BOOK": "해골 서적",
+    "KNIGHT_BOOK": "기사 서적",
+    "RANGER_BOOK": "레인저 서적",
+    "GHOST_BOOK": "유령 서적",
+    "PET_EGG": "펫 알",
+    "PET_FOOD": "사료"
+  },
+  "shortLabels": {
+    "GOLD": "G",
+    "GEMS": "보석",
+    "STAMINA": "스태미나",
+    "CHALLENGE_TOKEN": "토큰",
+    "ARENA_TICKET": "티켓",
+    "PICKAXE": "곡괭이",
+    "EQUIPMENT_STONE": "장비석",
+    "POWER_STONE": "파워스톤",
+    "SKULL_BOOK": "해골 서적",
+    "KNIGHT_BOOK": "기사 서적",
+    "RANGER_BOOK": "레인저 서적",
+    "GHOST_BOOK": "유령 서적",
+    "PET_EGG": "펫 알",
+    "PET_FOOD": "사료"
+  },
+  "colors": {
+    "GOLD": "#ffd700",
+    "GEMS": "#e040fb",
+    "EQUIPMENT_STONE": "#4fc3f7",
+    "POWER_STONE": "#ff7043"
+  },
+  "dungeonLabels": {
+    "DRAGON_NEST": "용의 둥지",
+    "CELESTIAL_TREE": "세계수",
+    "SKY_ISLAND": "하늘섬"
+  }
+}

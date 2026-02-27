@@ -1,0 +1,33 @@
+{
+  "dailyLimit": 3,
+  "dungeons": {
+    "DRAGON_NEST": {
+      "enemyId": "dungeon_dragon",
+      "baseRewards": [
+        { "type": "STAMINA", "amount": 20 },
+        { "type": "GEMS", "amount": 50 }
+      ],
+      "rewardScaling": 0.15
+    },
+    "CELESTIAL_TREE": {
+      "enemyId": "world_tree",
+      "baseRewards": [
+        { "type": "PET_EGG", "amount": 1 },
+        { "type": "PET_FOOD", "amount": 5 }
+      ],
+      "rewardScaling": 0.15
+    },
+    "SKY_ISLAND": {
+      "enemyId": "harpy",
+      "baseRewards": [
+        { "type": "EQUIPMENT_STONE", "amount": 5 },
+        { "type": "GOLD", "amount": 200 }
+      ],
+      "rewardScaling": 0.15
+    }
+  },
+  "stageScaling": {
+    "statMultiplierBase": 1.0,
+    "statMultiplierPerStage": 0.12
+  }
+}

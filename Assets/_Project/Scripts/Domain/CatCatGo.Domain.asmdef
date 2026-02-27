@@ -1,0 +1,16 @@
+{
+    "name": "CatCatGo.Domain",
+    "rootNamespace": "CatCatGo.Domain",
+    "references": [
+        "CatCatGo.Infrastructure"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
