@@ -4,7 +4,9 @@
     "references": [
         "CatCatGo.Domain",
         "CatCatGo.Infrastructure",
-        "CatCatGo.Services"
+        "CatCatGo.Services",
+        "CatCatGo.Presentation",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],

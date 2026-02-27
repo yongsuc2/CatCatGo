@@ -3,7 +3,8 @@
     "rootNamespace": "CatCatGo.Editor",
     "references": [
         "CatCatGo.Domain",
-        "CatCatGo.Presentation"
+        "CatCatGo.Presentation",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": ["Editor"],
     "excludePlatforms": [],
