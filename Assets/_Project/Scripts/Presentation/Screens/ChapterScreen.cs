@@ -243,7 +243,7 @@ namespace CatCatGo.Presentation.Screens
                 var rt = iconGo.GetComponent<RectTransform>();
 
                 if (rt == null) rt = iconGo.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(36f, 36f);
+                rt.sizeDelta = new Vector2(144f, 144f);
 
                 var img = iconGo.AddComponent<Image>();
                 img.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
@@ -400,7 +400,7 @@ namespace CatCatGo.Presentation.Screens
                 labelRowGo.transform.SetParent(optGo.transform, false);
                 labelRowGo.AddComponent<RectTransform>();
                 var labelRowLe = labelRowGo.AddComponent<LayoutElement>();
-                labelRowLe.preferredHeight = 40f;
+                labelRowLe.preferredHeight = 76f;
                 var labelRowHlg = labelRowGo.AddComponent<HorizontalLayoutGroup>();
                 labelRowHlg.spacing = 8f;
                 labelRowHlg.childForceExpandWidth = false;
@@ -412,8 +412,8 @@ namespace CatCatGo.Presentation.Screens
                     var optIconGo = new GameObject("SkillIcon");
                     optIconGo.transform.SetParent(labelRowGo.transform, false);
                     var optIconLe = optIconGo.AddComponent<LayoutElement>();
-                    optIconLe.preferredWidth = 36f;
-                    optIconLe.preferredHeight = 36f;
+                    optIconLe.preferredWidth = 72f;
+                    optIconLe.preferredHeight = 72f;
                     var optIconImg = optIconGo.AddComponent<Image>();
                     optIconImg.sprite = SpriteManager.Instance.GetSkillIcon(opt.SkillId);
                     optIconImg.preserveAspect = true;
@@ -768,7 +768,7 @@ namespace CatCatGo.Presentation.Screens
                 nameRowGo.transform.SetParent(cardGo.transform, false);
                 nameRowGo.AddComponent<RectTransform>();
                 var nameRowLe = nameRowGo.AddComponent<LayoutElement>();
-                nameRowLe.preferredHeight = 36f;
+                nameRowLe.preferredHeight = 68f;
                 var nameRowLayout = nameRowGo.AddComponent<HorizontalLayoutGroup>();
                 nameRowLayout.spacing = 8f;
                 nameRowLayout.childForceExpandWidth = false;
@@ -778,8 +778,8 @@ namespace CatCatGo.Presentation.Screens
                 var iconImgGo = new GameObject("SkillIcon");
                 iconImgGo.transform.SetParent(nameRowGo.transform, false);
                 var iconImgLe = iconImgGo.AddComponent<LayoutElement>();
-                iconImgLe.preferredWidth = 32f;
-                iconImgLe.preferredHeight = 32f;
+                iconImgLe.preferredWidth = 64f;
+                iconImgLe.preferredHeight = 64f;
                 var iconImg = iconImgGo.AddComponent<Image>();
                 iconImg.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
                 iconImg.preserveAspect = true;
@@ -1004,7 +1004,7 @@ namespace CatCatGo.Presentation.Screens
                     var nameRowGo = new GameObject("NameRow");
                     nameRowGo.transform.SetParent(skillGo.transform, false);
                     var nameRowLe = nameRowGo.AddComponent<LayoutElement>();
-                    nameRowLe.preferredHeight = 30f;
+                    nameRowLe.preferredHeight = 60f;
                     var nameRowHlg = nameRowGo.AddComponent<HorizontalLayoutGroup>();
                     nameRowHlg.spacing = 8f;
                     nameRowHlg.childForceExpandWidth = false;
@@ -1014,8 +1014,8 @@ namespace CatCatGo.Presentation.Screens
                     var sIconGo = new GameObject("SkillIcon");
                     sIconGo.transform.SetParent(nameRowGo.transform, false);
                     var sIconLe = sIconGo.AddComponent<LayoutElement>();
-                    sIconLe.preferredWidth = 28f;
-                    sIconLe.preferredHeight = 28f;
+                    sIconLe.preferredWidth = 56f;
+                    sIconLe.preferredHeight = 56f;
                     var sIconImg = sIconGo.AddComponent<Image>();
                     sIconImg.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
                     sIconImg.preserveAspect = true;
