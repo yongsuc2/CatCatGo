@@ -231,17 +231,17 @@ namespace CatCatGo.Presentation.Screens
             var nodeAreaGo = new GameObject("NodeArea");
             nodeAreaGo.transform.SetParent(cardGo.transform, false);
             var nodeAreaLe = nodeAreaGo.AddComponent<LayoutElement>();
-            nodeAreaLe.preferredHeight = 80;
+            nodeAreaLe.preferredHeight = 52;
             _nodeContainer = nodeAreaGo.GetComponent<RectTransform>();
 
             if (_nodeContainer == null) _nodeContainer = nodeAreaGo.AddComponent<RectTransform>();
 
             var nodeLayout = nodeAreaGo.AddComponent<HorizontalLayoutGroup>();
-            nodeLayout.spacing = 4;
+            nodeLayout.spacing = 2;
             nodeLayout.childForceExpandWidth = true;
             nodeLayout.childForceExpandHeight = true;
             nodeLayout.childAlignment = TextAnchor.MiddleCenter;
-            nodeLayout.padding = new RectOffset(4, 4, 4, 4);
+            nodeLayout.padding = new RectOffset(2, 2, 2, 2);
 
             var barRowGo = new GameObject("ProgressBarRow");
             barRowGo.transform.SetParent(cardGo.transform, false);
@@ -360,7 +360,7 @@ namespace CatCatGo.Presentation.Screens
             go.transform.SetParent(parent, false);
 
             var bg = go.AddComponent<Image>();
-            bg.color = ColorPalette.ButtonPrimary;
+            bg.color = ColorPalette.CardLight;
 
             var btn = go.AddComponent<Button>();
             btn.targetGraphic = bg;
@@ -372,56 +372,57 @@ namespace CatCatGo.Presentation.Screens
             innerLayout.childForceExpandWidth = true;
             innerLayout.childForceExpandHeight = false;
             innerLayout.childAlignment = TextAnchor.MiddleCenter;
-            innerLayout.padding = new RectOffset(4, 4, 6, 6);
+            innerLayout.padding = new RectOffset(6, 6, 6, 6);
+
+            var lvGo = new GameObject("Level");
+            lvGo.transform.SetParent(go.transform, false);
+            var lvLe = lvGo.AddComponent<LayoutElement>();
+            lvLe.preferredHeight = 22f;
+            var lvTmp = lvGo.AddComponent<TextMeshProUGUI>();
+            lvTmp.fontSize = 20f;
+            lvTmp.color = ColorPalette.Text;
+            lvTmp.alignment = TextAlignmentOptions.Center;
+            lvTmp.raycastTarget = false;
+            _statLevelTexts[statType] = lvTmp;
 
             var iconGo = new GameObject("Icon");
             iconGo.transform.SetParent(go.transform, false);
             var iconLe = iconGo.AddComponent<LayoutElement>();
-            iconLe.preferredHeight = 32f;
+            iconLe.preferredHeight = 40f;
+            iconLe.preferredWidth = 40f;
             var iconImg = iconGo.AddComponent<Image>();
             iconImg.sprite = SpriteManager.Instance.GetIcon(STAT_ICON_ID[statType]);
             iconImg.preserveAspect = true;
             iconImg.raycastTarget = false;
 
-            var nameGo = new GameObject("Name");
-            nameGo.transform.SetParent(go.transform, false);
-            var nameLe = nameGo.AddComponent<LayoutElement>();
-            nameLe.preferredHeight = 28f;
-            var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-            nameTmp.text = STAT_NAME[statType];
-            nameTmp.fontSize = 22f;
-            nameTmp.color = Color.white;
-            nameTmp.alignment = TextAlignmentOptions.Center;
-            nameTmp.raycastTarget = false;
-
-            var lvGo = new GameObject("Level");
-            lvGo.transform.SetParent(go.transform, false);
-            var lvLe = lvGo.AddComponent<LayoutElement>();
-            lvLe.preferredHeight = 28f;
-            var lvTmp = lvGo.AddComponent<TextMeshProUGUI>();
-            lvTmp.fontSize = 22f;
-            lvTmp.color = ColorPalette.Gold;
-            lvTmp.alignment = TextAlignmentOptions.Center;
-            lvTmp.raycastTarget = false;
-            _statLevelTexts[statType] = lvTmp;
-
             var bonusGo = new GameObject("Bonus");
             bonusGo.transform.SetParent(go.transform, false);
             var bonusLe = bonusGo.AddComponent<LayoutElement>();
-            bonusLe.preferredHeight = 28f;
+            bonusLe.preferredHeight = 22f;
             var bonusTmp = bonusGo.AddComponent<TextMeshProUGUI>();
-            bonusTmp.fontSize = 22f;
-            bonusTmp.color = ColorPalette.TextDim;
+            bonusTmp.fontSize = 20f;
+            bonusTmp.color = ColorPalette.Gold;
             bonusTmp.alignment = TextAlignmentOptions.Center;
             bonusTmp.raycastTarget = false;
             _statBonusTexts[statType] = bonusTmp;
 
+            var nameGo = new GameObject("Name");
+            nameGo.transform.SetParent(go.transform, false);
+            var nameLe = nameGo.AddComponent<LayoutElement>();
+            nameLe.preferredHeight = 18f;
+            var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
+            nameTmp.text = STAT_NAME[statType];
+            nameTmp.fontSize = 16f;
+            nameTmp.color = ColorPalette.TextDim;
+            nameTmp.alignment = TextAlignmentOptions.Center;
+            nameTmp.raycastTarget = false;
+
             var costGo = new GameObject("Cost");
             costGo.transform.SetParent(go.transform, false);
             var costLe = costGo.AddComponent<LayoutElement>();
-            costLe.preferredHeight = 28f;
+            costLe.preferredHeight = 22f;
             var costTmp = costGo.AddComponent<TextMeshProUGUI>();
-            costTmp.fontSize = 22f;
+            costTmp.fontSize = 18f;
             costTmp.color = ColorPalette.TextDim;
             costTmp.alignment = TextAlignmentOptions.Center;
             costTmp.raycastTarget = false;
@@ -832,9 +833,10 @@ namespace CatCatGo.Presentation.Screens
                 var iconGo = new GameObject("Icon");
                 iconGo.transform.SetParent(nodeGo.transform, false);
                 var iconLe = iconGo.AddComponent<LayoutElement>();
-                iconLe.preferredHeight = 36f;
-                iconLe.preferredWidth = 36f;
+                iconLe.preferredHeight = 22f;
+                iconLe.preferredWidth = 22f;
                 var iconImg = iconGo.AddComponent<Image>();
+                iconImg.preserveAspect = true;
                 iconImg.raycastTarget = false;
                 if (SpriteManager.Instance != null)
                 {
@@ -851,10 +853,10 @@ namespace CatCatGo.Presentation.Screens
                 var descGo = new GameObject("Desc");
                 descGo.transform.SetParent(nodeGo.transform, false);
                 var descLe = descGo.AddComponent<LayoutElement>();
-                descLe.preferredHeight = 26f;
+                descLe.preferredHeight = 16f;
                 var descTmp = descGo.AddComponent<TextMeshProUGUI>();
                 descTmp.text = node.Description;
-                descTmp.fontSize = 18f;
+                descTmp.fontSize = 13f;
                 descTmp.color = node.Reached ? ColorPalette.Text : ColorPalette.TextDim;
                 descTmp.alignment = TextAlignmentOptions.Center;
                 descTmp.enableWordWrapping = false;

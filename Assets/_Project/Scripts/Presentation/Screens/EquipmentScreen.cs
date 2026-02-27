@@ -94,14 +94,14 @@ namespace CatCatGo.Presentation.Screens
             var tabGo = new GameObject("TabBar");
             tabGo.transform.SetParent(transform, false);
             var tabLe = tabGo.AddComponent<LayoutElement>();
-            tabLe.preferredHeight = 44;
+            tabLe.preferredHeight = 36;
             tabGo.AddComponent<Image>().color = ColorPalette.Card;
 
             var tabLayout = tabGo.AddComponent<HorizontalLayoutGroup>();
             tabLayout.spacing = 4;
             tabLayout.childForceExpandWidth = true;
             tabLayout.childForceExpandHeight = true;
-            tabLayout.padding = new RectOffset(4, 4, 2, 2);
+            tabLayout.padding = new RectOffset(4, 4, 3, 3);
 
             var equipTabGo = new GameObject("Tab_Equip");
             equipTabGo.transform.SetParent(tabGo.transform, false);
@@ -115,7 +115,7 @@ namespace CatCatGo.Presentation.Screens
             equipTextGo.transform.SetParent(equipTabGo.transform, false);
             _equipTabText = equipTextGo.AddComponent<TextMeshProUGUI>();
             _equipTabText.text = "\uc7a5\ube44";
-            _equipTabText.fontSize = 24;
+            _equipTabText.fontSize = 20;
             _equipTabText.color = Color.white;
             _equipTabText.alignment = TextAlignmentOptions.Center;
             _equipTabText.raycastTarget = false;
@@ -134,7 +134,7 @@ namespace CatCatGo.Presentation.Screens
             forgeTextGo.transform.SetParent(forgeTabGo.transform, false);
             _forgeTabText = forgeTextGo.AddComponent<TextMeshProUGUI>();
             _forgeTabText.text = "\ud569\uc131 (0)";
-            _forgeTabText.fontSize = 24;
+            _forgeTabText.fontSize = 20;
             _forgeTabText.color = ColorPalette.TextDim;
             _forgeTabText.alignment = TextAlignmentOptions.Center;
             _forgeTabText.raycastTarget = false;
@@ -811,6 +811,21 @@ namespace CatCatGo.Presentation.Screens
                 var innerImg = innerGo != null ? innerGo.GetComponent<Image>() : null;
                 var slotLabel = cellGo.transform.Find("SlotLabel")?.GetComponent<TextMeshProUGUI>();
 
+                var spriteImg = cellGo.transform.Find("EquipSprite")?.GetComponent<Image>();
+                if (spriteImg == null)
+                {
+                    var spriteGo = new GameObject("EquipSprite");
+                    spriteGo.transform.SetParent(cellGo.transform, false);
+                    spriteImg = spriteGo.AddComponent<Image>();
+                    spriteImg.preserveAspect = true;
+                    spriteImg.raycastTarget = false;
+                    var spriteRt = spriteGo.GetComponent<RectTransform>();
+                    spriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+                    spriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+                    spriteRt.offsetMin = Vector2.zero;
+                    spriteRt.offsetMax = Vector2.zero;
+                }
+
                 if (index < slot.Equipped.Length && slot.Equipped[index] != null)
                 {
                     var eq = slot.Equipped[index];
@@ -819,13 +834,18 @@ namespace CatCatGo.Presentation.Screens
                     if (innerImg != null)
                         innerImg.color = new Color(gradeColor.r * 0.3f, gradeColor.g * 0.3f, gradeColor.b * 0.3f, 1f);
 
-                    string abbr = EquipmentDataTable.GetSlotLabel(slotType);
-                    string levelStr = eq.Level > 0 ? $"\n+{eq.Level}" : "";
+                    string levelStr = eq.Level > 0 ? $"+{eq.Level}" : "";
                     if (slotLabel != null)
                     {
-                        slotLabel.text = $"{abbr}{levelStr}";
+                        slotLabel.text = levelStr;
                         slotLabel.color = gradeColor;
+                        slotLabel.alignment = TextAlignmentOptions.Bottom;
                     }
+
+                    spriteImg.gameObject.SetActive(true);
+                    spriteImg.color = Color.white;
+                    if (SpriteManager.Instance != null)
+                        spriteImg.sprite = SpriteManager.Instance.GetEquipmentIcon(eq.Slot, eq.Grade);
                 }
                 else
                 {
@@ -841,7 +861,10 @@ namespace CatCatGo.Presentation.Screens
                     {
                         slotLabel.text = label ?? "";
                         slotLabel.color = ColorPalette.TextDim;
+                        slotLabel.alignment = TextAlignmentOptions.Center;
                     }
+
+                    spriteImg.gameObject.SetActive(false);
                 }
             }
         }
@@ -911,20 +934,18 @@ namespace CatCatGo.Presentation.Screens
                 innerRt.offsetMin = new Vector2(2, 2);
                 innerRt.offsetMax = new Vector2(-2, -2);
 
-                string slotAbbr = EquipmentDataTable.GetSlotLabel(eq.Slot);
-                var abbrGo = new GameObject("Abbr");
-                abbrGo.transform.SetParent(iconGo.transform, false);
-                var abbrText = abbrGo.AddComponent<TextMeshProUGUI>();
-                abbrText.text = slotAbbr;
-                abbrText.fontSize = 22;
-                abbrText.color = gradeColor;
-                abbrText.alignment = TextAlignmentOptions.Center;
-                abbrText.raycastTarget = false;
-                var abbrRt = abbrGo.GetComponent<RectTransform>();
-                abbrRt.anchorMin = Vector2.zero;
-                abbrRt.anchorMax = Vector2.one;
-                abbrRt.offsetMin = Vector2.zero;
-                abbrRt.offsetMax = Vector2.zero;
+                var spriteGo = new GameObject("Sprite");
+                spriteGo.transform.SetParent(iconGo.transform, false);
+                var spriteImg = spriteGo.AddComponent<Image>();
+                spriteImg.preserveAspect = true;
+                spriteImg.raycastTarget = false;
+                if (SpriteManager.Instance != null)
+                    spriteImg.sprite = SpriteManager.Instance.GetEquipmentIcon(eq.Slot, eq.Grade);
+                var spriteRt = spriteGo.GetComponent<RectTransform>();
+                spriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+                spriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+                spriteRt.offsetMin = Vector2.zero;
+                spriteRt.offsetMax = Vector2.zero;
 
                 if (eq.MergeLevel > 0)
                 {
@@ -942,7 +963,7 @@ namespace CatCatGo.Presentation.Screens
                     badgeTextGo.transform.SetParent(badgeGo.transform, false);
                     var badgeText = badgeTextGo.AddComponent<TextMeshProUGUI>();
                     badgeText.text = $"+{eq.MergeLevel}";
-                    badgeText.fontSize = 22;
+                    badgeText.fontSize = 14;
                     badgeText.color = Color.white;
                     badgeText.alignment = TextAlignmentOptions.Center;
                     badgeText.raycastTarget = false;
@@ -950,14 +971,16 @@ namespace CatCatGo.Presentation.Screens
                     UIManager.StretchFull(badgeTextRt);
                 }
 
+                string slotAbbr = EquipmentDataTable.GetSlotLabel(eq.Slot);
                 var labelGo = new GameObject("Label");
                 labelGo.transform.SetParent(itemGo.transform, false);
                 var labelLe = labelGo.AddComponent<LayoutElement>();
-                labelLe.preferredHeight = 28;
+                labelLe.preferredHeight = 20;
                 var labelText = labelGo.AddComponent<TextMeshProUGUI>();
-                labelText.text = slotAbbr;
-                labelText.fontSize = 22;
-                labelText.color = ColorPalette.TextDim;
+                string lvStr = eq.Level > 0 ? $"+{eq.Level}" : slotAbbr;
+                labelText.text = lvStr;
+                labelText.fontSize = 18;
+                labelText.color = eq.Level > 0 ? ColorPalette.GetEquipmentGradeColor(eq.Grade) : ColorPalette.TextDim;
                 labelText.alignment = TextAlignmentOptions.Center;
                 labelText.raycastTarget = false;
 
@@ -1059,8 +1082,18 @@ namespace CatCatGo.Presentation.Screens
                 iconInnerRt.offsetMax = new Vector2(-2, -2);
 
                 string slotAbbr = EquipmentDataTable.GetSlotLabel(first.Slot);
-                var iconText = UIManager.CreateText(iconGo.transform, slotAbbr, 22f, gradeColor, "Abbr");
-                iconText.alignment = TextAlignmentOptions.Center;
+                var forgeSprite = new GameObject("Sprite");
+                forgeSprite.transform.SetParent(iconGo.transform, false);
+                var forgeSpriteImg = forgeSprite.AddComponent<Image>();
+                forgeSpriteImg.preserveAspect = true;
+                forgeSpriteImg.raycastTarget = false;
+                if (SpriteManager.Instance != null)
+                    forgeSpriteImg.sprite = SpriteManager.Instance.GetEquipmentIcon(first.Slot, first.Grade);
+                var forgeSpriteRt = forgeSprite.GetComponent<RectTransform>();
+                forgeSpriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+                forgeSpriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+                forgeSpriteRt.offsetMin = Vector2.zero;
+                forgeSpriteRt.offsetMax = Vector2.zero;
 
                 int totalCount = 0;
                 foreach (var g in groups) totalCount += g.Count;
