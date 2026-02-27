@@ -83,12 +83,13 @@ namespace CatCatGo.Domain.Chapter
             {
                 options.Add(new EncounterOption
                 {
-                    Label = d.SkillLabel(skill.Icon, skill.Name),
+                    Label = d.SkillLabel(skill.Name),
                     Description = d.SkillDescription(skill.Description),
                     HpCostPercent = d.HpCostPercent,
                     GoldCost = 0,
                     SuccessRate = 1.0f,
                     Reward = SkillReward(new List<SessionSkillWrapper> { skill }),
+                    SkillId = skill.Id,
                 });
             }
 
@@ -160,12 +161,13 @@ namespace CatCatGo.Domain.Chapter
                     {
                         options.Add(new EncounterOption
                         {
-                            Label = $"{skill.Icon} {skill.Name}",
+                            Label = skill.Name,
                             Description = skill.Description,
                             HpCostPercent = 0,
                             GoldCost = 0,
                             SuccessRate = 1.0f,
                             Reward = SkillReward(new List<SessionSkillWrapper> { skill }),
+                            SkillId = skill.Id,
                         });
                     }
                     break;
@@ -217,12 +219,13 @@ namespace CatCatGo.Domain.Chapter
                     {
                         options.Add(new EncounterOption
                         {
-                            Label = $"{oldSkill.Icon} {oldSkill.Name} \u2192 {newSkill.Icon} {newSkill.Name}",
+                            Label = $"{oldSkill.Name} -> {newSkill.Name}",
                             Description = newSkill.Description,
                             HpCostPercent = 0,
                             GoldCost = 0,
                             SuccessRate = 1.0f,
                             Reward = SwapReward(newSkill, oldSkill.Id),
+                            SkillId = newSkill.Id,
                         });
                     }
                     options.Add(new EncounterOption
@@ -264,12 +267,13 @@ namespace CatCatGo.Domain.Chapter
             {
                 options.Add(new EncounterOption
                 {
-                    Label = d.SkillLabel(skill.Icon, skill.Name),
+                    Label = d.SkillLabel(skill.Name),
                     Description = d.SkillDescription(skill.Description),
                     HpCostPercent = 0,
                     GoldCost = 0,
                     SuccessRate = 1.0f,
                     Reward = SkillReward(new List<SessionSkillWrapper> { skill }),
+                    SkillId = skill.Id,
                 });
             }
 
@@ -318,7 +322,7 @@ namespace CatCatGo.Domain.Chapter
                 {
                     Label = d.NormalLabel,
                     Description = mythicSkill != null
-                        ? $"{mythicSkill.Icon} {mythicSkill.Name}: {mythicSkill.Description}"
+                        ? $"{mythicSkill.Name}: {mythicSkill.Description}"
                         : d.NormalDescription,
                     HpCostPercent = 0,
                     GoldCost = 0,
@@ -332,7 +336,7 @@ namespace CatCatGo.Domain.Chapter
                 options.Add(new EncounterOption
                 {
                     Label = d.AngelLabel,
-                    Description = $"{angelPower.Icon} {angelPower.Name}: {angelPower.Description}",
+                    Description = $"{angelPower.Name}: {angelPower.Description}",
                     HpCostPercent = 0,
                     GoldCost = 0,
                     SuccessRate = d.AngelRate,
@@ -345,7 +349,7 @@ namespace CatCatGo.Domain.Chapter
                 options.Add(new EncounterOption
                 {
                     Label = d.DemonLabel,
-                    Description = $"{demonPower.Icon} {demonPower.Name}: {demonPower.Description}",
+                    Description = $"{demonPower.Name}: {demonPower.Description}",
                     HpCostPercent = 0,
                     GoldCost = 0,
                     SuccessRate = d.DemonRate,

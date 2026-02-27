@@ -24,7 +24,7 @@ namespace CatCatGo.Domain.Data
         public string RejectLabel;
         public string RejectDescription;
 
-        public string SkillLabel(string icon, string name) => $"{icon} {name}";
+        public string SkillLabel(string name) => name;
         public string SkillDescription(string desc) => $"\uccb4\ub825 20% \uc18c\ubaa8 | {desc}";
     }
 
@@ -49,7 +49,7 @@ namespace CatCatGo.Domain.Data
         public string GoldLabel;
         public string GoldDescription;
 
-        public string SkillLabel(string icon, string name) => $"{icon} {name}";
+        public string SkillLabel(string name) => name;
         public string SkillDescription(string desc) => desc;
     }
 

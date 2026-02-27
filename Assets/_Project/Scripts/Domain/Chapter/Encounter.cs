@@ -49,6 +49,7 @@ namespace CatCatGo.Domain.Chapter
         public int GoldCost;
         public float SuccessRate;
         public EncounterReward Reward;
+        public string SkillId;
     }
 
     public class EncounterReward
