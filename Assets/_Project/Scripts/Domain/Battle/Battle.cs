@@ -342,6 +342,7 @@ namespace CatCatGo.Domain.Battle
                         Target = target.Name,
                         Value = rageDealt,
                         SkillName = "분노 공격",
+                        SkillId = "bunno_attack",
                         SkillIcon = "💢",
                         Message = $"{enemy.Name} RAGE ATTACK {target.Name} for {rageDealt}",
                     });
@@ -371,6 +372,7 @@ namespace CatCatGo.Domain.Battle
                             Target = tName,
                             Value = r.Damage,
                             SkillName = r.SkillName,
+                            SkillId = r.SkillId,
                             SkillIcon = r.SkillIcon,
                             Message = $"{source.Name} RAGE ATTACK {tName} for {r.Damage}",
                         });
@@ -385,6 +387,7 @@ namespace CatCatGo.Domain.Battle
                             Target = tName,
                             Value = r.Damage,
                             SkillName = r.SkillName,
+                            SkillId = r.SkillId,
                             SkillIcon = r.SkillIcon,
                             Message = $"{source.Name}'s {r.SkillName} CRIT {tName} for {r.Damage}",
                         });
@@ -399,6 +402,7 @@ namespace CatCatGo.Domain.Battle
                             Target = tName,
                             Value = r.Damage,
                             SkillName = r.SkillName,
+                            SkillId = r.SkillId,
                             SkillIcon = r.SkillIcon,
                             Message = $"{source.Name}'s {r.SkillName} deals {r.Damage} to {tName}",
                         });

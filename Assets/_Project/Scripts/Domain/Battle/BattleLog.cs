@@ -13,6 +13,7 @@ namespace CatCatGo.Domain.Battle
         public string Target;
         public int Value;
         public string SkillName;
+        public string SkillId;
         public string SkillIcon;
         public string Message;
     }

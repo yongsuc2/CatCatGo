@@ -517,7 +517,7 @@ namespace CatCatGo.Presentation.Battle
                 popupRt.anchorMin = new Vector2(0.5f, 0.5f);
                 popupRt.anchorMax = new Vector2(0.5f, 0.5f);
                 popupRt.anchoredPosition = targetPos + new Vector2(xJitter, 40f + yJitter);
-                popup.Show(entry.Value, isHeal, isCrit, isRage, entry.SkillIcon, _speedMultiplier);
+                popup.Show(entry.Value, isHeal, isCrit, isRage, entry.SkillId, _speedMultiplier);
             }
         }
 

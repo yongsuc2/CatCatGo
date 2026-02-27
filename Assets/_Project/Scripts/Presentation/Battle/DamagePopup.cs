@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Utils;
 
 namespace CatCatGo.Presentation.Battle
@@ -8,6 +10,7 @@ namespace CatCatGo.Presentation.Battle
     public class DamagePopup : MonoBehaviour
     {
         private TextMeshProUGUI _text;
+        private Image _iconImage;
         private RectTransform _rectTransform;
         private Coroutine _animCoroutine;
 
@@ -18,23 +21,40 @@ namespace CatCatGo.Presentation.Battle
             if (_rectTransform != null) return;
 
             _rectTransform = gameObject.GetComponent<RectTransform>();
-            if (_rectTransform == null)
-                _rectTransform = gameObject.GetComponent<RectTransform>();
+            if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
 
-                if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
-
-            _text = gameObject.GetComponent<TextMeshProUGUI>();
-            if (_text == null)
+            var layout = gameObject.GetComponent<HorizontalLayoutGroup>();
+            if (layout == null)
             {
-                _text = gameObject.AddComponent<TextMeshProUGUI>();
-                _text.alignment = TextAlignmentOptions.Center;
-                _text.enableWordWrapping = false;
-                _text.overflowMode = TextOverflowModes.Overflow;
-                _text.raycastTarget = false;
+                layout = gameObject.AddComponent<HorizontalLayoutGroup>();
+                layout.spacing = 2f;
+                layout.childForceExpandWidth = false;
+                layout.childForceExpandHeight = false;
+                layout.childAlignment = TextAnchor.MiddleCenter;
             }
+
+            var iconGo = new GameObject("Icon");
+            iconGo.transform.SetParent(transform, false);
+            _iconImage = iconGo.AddComponent<Image>();
+            _iconImage.preserveAspect = true;
+            _iconImage.raycastTarget = false;
+            var iconLe = iconGo.AddComponent<LayoutElement>();
+            iconLe.preferredWidth = 24f;
+            iconLe.preferredHeight = 24f;
+            iconGo.SetActive(false);
+
+            var textGo = new GameObject("Text");
+            textGo.transform.SetParent(transform, false);
+            _text = textGo.AddComponent<TextMeshProUGUI>();
+            _text.alignment = TextAlignmentOptions.MidlineLeft;
+            _text.enableWordWrapping = false;
+            _text.overflowMode = TextOverflowModes.Overflow;
+            _text.raycastTarget = false;
+            var textLe = textGo.AddComponent<LayoutElement>();
+            textLe.flexibleWidth = 1f;
         }
 
-        public void Show(int value, bool isHeal, bool isCrit, bool isRage, string skillIcon, float speed)
+        public void Show(int value, bool isHeal, bool isCrit, bool isRage, string skillId, float speed)
         {
             EnsureComponents();
 
@@ -43,12 +63,26 @@ namespace CatCatGo.Presentation.Battle
 
             gameObject.SetActive(true);
 
+            Sprite skillSprite = null;
+            if (!string.IsNullOrEmpty(skillId) && SpriteManager.Instance != null)
+                skillSprite = SpriteManager.Instance.GetSkillIcon(skillId);
+
+            if (skillSprite != null)
+            {
+                _iconImage.sprite = skillSprite;
+                _iconImage.color = Color.white;
+                _iconImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                _iconImage.gameObject.SetActive(false);
+            }
+
             string prefix = "";
             if (isCrit) prefix = "CRIT! ";
             if (isHeal) prefix = "+";
-            string icon = string.IsNullOrEmpty(skillIcon) ? "" : skillIcon + " ";
 
-            _text.text = $"{icon}{prefix}{NumberFormatter.FormatInt(value)}";
+            _text.text = $"{prefix}{NumberFormatter.FormatInt(value)}";
 
             if (isHeal)
             {
@@ -81,6 +115,9 @@ namespace CatCatGo.Presentation.Battle
             Vector3 endPos = startPos + new Vector3(0f, 60f, 0f);
             Color startColor = _text.color;
             Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+            Color iconStartColor = Color.white;
+            Color iconEndColor = new Color(1f, 1f, 1f, 0f);
+            bool hasIcon = _iconImage.gameObject.activeSelf;
 
             float elapsed = 0f;
             while (elapsed < duration)
@@ -88,11 +125,14 @@ namespace CatCatGo.Presentation.Battle
                 float t = elapsed / duration;
                 _rectTransform.anchoredPosition = Vector3.Lerp(startPos, endPos, t);
                 _text.color = Color.Lerp(startColor, endColor, t);
+                if (hasIcon)
+                    _iconImage.color = Color.Lerp(iconStartColor, iconEndColor, t);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
             _text.color = endColor;
+            if (hasIcon) _iconImage.color = iconEndColor;
             _rectTransform.anchoredPosition = endPos;
             gameObject.SetActive(false);
             _animCoroutine = null;

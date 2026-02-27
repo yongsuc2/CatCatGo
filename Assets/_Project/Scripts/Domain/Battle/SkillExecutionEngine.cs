@@ -32,6 +32,7 @@ namespace CatCatGo.Domain.Battle
     public class SkillDamageResult
     {
         public string SkillName;
+        public string SkillId;
         public string SkillIcon;
         public int Damage;
         public bool IsCrit;
@@ -169,6 +170,7 @@ namespace CatCatGo.Domain.Battle
                             results.Add(new SkillDamageResult
                             {
                                 SkillName = skill.Name,
+                                SkillId = skill.Id,
                                 SkillIcon = skill.Icon,
                                 Damage = dealt,
                                 IsCrit = calcResult.IsCrit,
@@ -223,6 +225,7 @@ namespace CatCatGo.Domain.Battle
                             results.Add(new SkillDamageResult
                             {
                                 SkillName = skill.Name,
+                                SkillId = skill.Id,
                                 SkillIcon = skill.Icon,
                                 Damage = 0,
                                 IsCrit = false,
@@ -240,6 +243,7 @@ namespace CatCatGo.Domain.Battle
                         results.Add(new SkillDamageResult
                         {
                             SkillName = skill.Name,
+                            SkillId = skill.Id,
                             SkillIcon = skill.Icon,
                             Damage = 0,
                             IsCrit = false,
@@ -269,6 +273,7 @@ namespace CatCatGo.Domain.Battle
                         results.Add(new SkillDamageResult
                         {
                             SkillName = skill.Name,
+                            SkillId = skill.Id,
                             SkillIcon = skill.Icon,
                             Damage = 0,
                             IsCrit = false,
@@ -287,6 +292,7 @@ namespace CatCatGo.Domain.Battle
                             results.Add(new SkillDamageResult
                             {
                                 SkillName = skill.Name,
+                                SkillId = skill.Id,
                                 SkillIcon = skill.Icon,
                                 Damage = 0,
                                 IsCrit = false,

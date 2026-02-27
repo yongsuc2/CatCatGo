@@ -99,14 +99,14 @@ namespace CatCatGo.Presentation.Screens
             var tabGo = new GameObject("TabBar");
             tabGo.transform.SetParent(transform, false);
             var tabLe = tabGo.AddComponent<LayoutElement>();
-            tabLe.preferredHeight = 28;
-            tabGo.AddComponent<Image>().color = ColorPalette.Card;
+            tabLe.preferredHeight = 22;
+            tabLe.flexibleHeight = 0;
 
             var tabLayout = tabGo.AddComponent<HorizontalLayoutGroup>();
             tabLayout.spacing = 2;
             tabLayout.childForceExpandWidth = true;
             tabLayout.childForceExpandHeight = true;
-            tabLayout.padding = new RectOffset(2, 2, 2, 2);
+            tabLayout.padding = new RectOffset(2, 2, 1, 1);
 
             var equipTabGo = new GameObject("Tab_Equip");
             equipTabGo.transform.SetParent(tabGo.transform, false);
@@ -120,7 +120,7 @@ namespace CatCatGo.Presentation.Screens
             equipTextGo.transform.SetParent(equipTabGo.transform, false);
             _equipTabText = equipTextGo.AddComponent<TextMeshProUGUI>();
             _equipTabText.text = "\uc7a5\ube44";
-            _equipTabText.fontSize = 14;
+            _equipTabText.fontSize = 13;
             _equipTabText.color = Color.white;
             _equipTabText.alignment = TextAlignmentOptions.Center;
             _equipTabText.raycastTarget = false;
@@ -139,7 +139,7 @@ namespace CatCatGo.Presentation.Screens
             forgeTextGo.transform.SetParent(forgeTabGo.transform, false);
             _forgeTabText = forgeTextGo.AddComponent<TextMeshProUGUI>();
             _forgeTabText.text = "\ud569\uc131 (0)";
-            _forgeTabText.fontSize = 14;
+            _forgeTabText.fontSize = 13;
             _forgeTabText.color = ColorPalette.TextDim;
             _forgeTabText.alignment = TextAlignmentOptions.Center;
             _forgeTabText.raycastTarget = false;
