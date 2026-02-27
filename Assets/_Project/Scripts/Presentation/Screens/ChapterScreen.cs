@@ -401,10 +401,10 @@ namespace CatCatGo.Presentation.Screens
                 var optRt = optGo.GetComponent<RectTransform>();
 
                 if (optRt == null) optRt = optGo.AddComponent<RectTransform>();
-                optRt.sizeDelta = new Vector2(0f, 60f);
+                optRt.sizeDelta = new Vector2(0f, 120f);
                 var optLe = optGo.AddComponent<LayoutElement>();
                 optLe.flexibleWidth = 1f;
-                optLe.preferredHeight = 60f;
+                optLe.preferredHeight = 120f;
 
                 var optBg = optGo.AddComponent<Image>();
                 optBg.color = ColorPalette.CardLight;
@@ -414,8 +414,8 @@ namespace CatCatGo.Presentation.Screens
                 optBtn.onClick.AddListener(() => SelectOption(idx));
 
                 var optLayout = optGo.AddComponent<VerticalLayoutGroup>();
-                optLayout.padding = new RectOffset(8, 8, 4, 4);
-                optLayout.spacing = 2f;
+                optLayout.padding = new RectOffset(12, 12, 8, 8);
+                optLayout.spacing = 4f;
                 optLayout.childForceExpandWidth = true;
                 optLayout.childForceExpandHeight = false;
 
@@ -423,10 +423,10 @@ namespace CatCatGo.Presentation.Screens
                 labelGo.transform.SetParent(optGo.transform, false);
                 labelGo.AddComponent<RectTransform>();
                 var labelLe = labelGo.AddComponent<LayoutElement>();
-                labelLe.preferredHeight = 28f;
+                labelLe.preferredHeight = 40f;
                 var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
                 labelTmp.text = opt.Label;
-                labelTmp.fontSize = 22f;
+                labelTmp.fontSize = 30f;
                 labelTmp.color = ColorPalette.Text;
                 labelTmp.fontStyle = FontStyles.Bold;
                 labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
@@ -437,10 +437,10 @@ namespace CatCatGo.Presentation.Screens
                 descGo.transform.SetParent(optGo.transform, false);
                 descGo.AddComponent<RectTransform>();
                 var descLe = descGo.AddComponent<LayoutElement>();
-                descLe.preferredHeight = 36f;
+                descLe.preferredHeight = 56f;
                 var descTmp = descGo.AddComponent<TextMeshProUGUI>();
                 descTmp.text = opt.Description;
-                descTmp.fontSize = 22f;
+                descTmp.fontSize = 26f;
                 descTmp.color = ColorPalette.TextDim;
                 descTmp.alignment = TextAlignmentOptions.TopLeft;
                 descTmp.enableWordWrapping = true;
@@ -963,7 +963,7 @@ namespace CatCatGo.Presentation.Screens
             var btnRowGo = new GameObject("ButtonRow");
             btnRowGo.transform.SetParent(innerGo.transform, false);
             var btnRowLe = btnRowGo.AddComponent<LayoutElement>();
-            btnRowLe.preferredHeight = 48f;
+            btnRowLe.preferredHeight = 120f;
             var btnRowLayout = btnRowGo.AddComponent<HorizontalLayoutGroup>();
             btnRowLayout.spacing = 12f;
             btnRowLayout.childForceExpandWidth = true;
@@ -1200,14 +1200,14 @@ namespace CatCatGo.Presentation.Screens
 
             if (_idlePanel == null) _idlePanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
-            le.preferredHeight = 120f;
+            le.preferredHeight = 420f;
 
             var bg = go.AddComponent<Image>();
             bg.color = ColorPalette.Card;
 
             var layout = go.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(12, 12, 12, 12);
-            layout.spacing = 8f;
+            layout.padding = new RectOffset(12, 12, 16, 16);
+            layout.spacing = 12f;
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
 
@@ -1215,9 +1215,9 @@ namespace CatCatGo.Presentation.Screens
             nextGo.transform.SetParent(go.transform, false);
             nextGo.AddComponent<RectTransform>();
             var nextLe = nextGo.AddComponent<LayoutElement>();
-            nextLe.preferredHeight = 24f;
+            nextLe.preferredHeight = 36f;
             _idleNextChapter = nextGo.AddComponent<TextMeshProUGUI>();
-            _idleNextChapter.fontSize = 24f;
+            _idleNextChapter.fontSize = 32f;
             _idleNextChapter.color = ColorPalette.Text;
             _idleNextChapter.alignment = TextAlignmentOptions.Center;
             _idleNextChapter.raycastTarget = false;
@@ -1226,10 +1226,10 @@ namespace CatCatGo.Presentation.Screens
             staminaGo.transform.SetParent(go.transform, false);
             staminaGo.AddComponent<RectTransform>();
             var staminaLe = staminaGo.AddComponent<LayoutElement>();
-            staminaLe.preferredHeight = 28f;
+            staminaLe.preferredHeight = 32f;
             var staminaTmp = staminaGo.AddComponent<TextMeshProUGUI>();
             staminaTmp.text = "\uc2a4\ud0dc\ubbf8\ub098 \uc18c\ubaa8: 5";
-            staminaTmp.fontSize = 22f;
+            staminaTmp.fontSize = 26f;
             staminaTmp.color = ColorPalette.TextDim;
             staminaTmp.alignment = TextAlignmentOptions.Center;
             staminaTmp.raycastTarget = false;
@@ -1238,7 +1238,7 @@ namespace CatCatGo.Presentation.Screens
             btnGo.transform.SetParent(go.transform, false);
             btnGo.AddComponent<RectTransform>();
             var btnLe = btnGo.AddComponent<LayoutElement>();
-            btnLe.preferredHeight = 40f;
+            btnLe.preferredHeight = 120f;
             var btnBg = btnGo.AddComponent<Image>();
             btnBg.color = ColorPalette.ButtonPrimary;
             _startButton = btnGo.AddComponent<Button>();
@@ -1255,7 +1255,7 @@ namespace CatCatGo.Presentation.Screens
             btnTextRt.offsetMin = Vector2.zero;
             btnTextRt.offsetMax = Vector2.zero;
             var btnTmp = btnText.AddComponent<TextMeshProUGUI>();
-            btnTmp.fontSize = 22f;
+            btnTmp.fontSize = 36f;
             btnTmp.color = Color.white;
             btnTmp.alignment = TextAlignmentOptions.Center;
             btnTmp.raycastTarget = false;
@@ -1267,7 +1267,7 @@ namespace CatCatGo.Presentation.Screens
             treasureGo.transform.SetParent(go.transform, false);
             treasureGo.AddComponent<RectTransform>();
             var treasureLe = treasureGo.AddComponent<LayoutElement>();
-            treasureLe.preferredHeight = 40f;
+            treasureLe.preferredHeight = 120f;
             var treasureBg = treasureGo.AddComponent<Image>();
             treasureBg.color = ColorPalette.ButtonSecondary;
             var treasureBtn = treasureGo.AddComponent<Button>();
@@ -1285,7 +1285,7 @@ namespace CatCatGo.Presentation.Screens
             treasureTextRt.offsetMax = Vector2.zero;
             var treasureTmp = treasureTextGo.AddComponent<TextMeshProUGUI>();
             treasureTmp.text = "\ubcf4\ubb3c\uc0c1\uc790";
-            treasureTmp.fontSize = 22f;
+            treasureTmp.fontSize = 36f;
             treasureTmp.color = Color.white;
             treasureTmp.alignment = TextAlignmentOptions.Center;
             treasureTmp.raycastTarget = false;
@@ -1471,7 +1471,7 @@ namespace CatCatGo.Presentation.Screens
             settingsBtnGo.AddComponent<RectTransform>();
             var settingsBtnLe = settingsBtnGo.AddComponent<LayoutElement>();
             settingsBtnLe.preferredWidth = 36f;
-            settingsBtnLe.preferredHeight = 28f;
+            settingsBtnLe.preferredHeight = 60f;
             var settingsBtnBg = settingsBtnGo.AddComponent<Image>();
             settingsBtnBg.color = ColorPalette.ButtonSecondary;
             var settingsBtn = settingsBtnGo.AddComponent<Button>();
@@ -1510,10 +1510,10 @@ namespace CatCatGo.Presentation.Screens
             controlsGo.transform.SetParent(parent, false);
             controlsGo.AddComponent<RectTransform>();
             var controlsLe = controlsGo.AddComponent<LayoutElement>();
-            controlsLe.preferredHeight = 26f;
+            controlsLe.preferredHeight = 60f;
 
             var controlsLayout = controlsGo.AddComponent<HorizontalLayoutGroup>();
-            controlsLayout.spacing = 6f;
+            controlsLayout.spacing = 8f;
             controlsLayout.childForceExpandWidth = false;
             controlsLayout.childForceExpandHeight = true;
             controlsLayout.childAlignment = TextAnchor.MiddleRight;
@@ -1522,8 +1522,8 @@ namespace CatCatGo.Presentation.Screens
             speedGo.transform.SetParent(controlsGo.transform, false);
             speedGo.AddComponent<RectTransform>();
             var speedLe = speedGo.AddComponent<LayoutElement>();
-            speedLe.preferredWidth = 40f;
-            speedLe.preferredHeight = 26f;
+            speedLe.preferredWidth = 80f;
+            speedLe.preferredHeight = 60f;
             var speedBg = speedGo.AddComponent<Image>();
             speedBg.color = _battleSpeed >= 2f ? ColorPalette.ButtonPrimary : ColorPalette.ButtonSecondary;
             _speedButton = speedGo.AddComponent<Button>();
@@ -1541,7 +1541,7 @@ namespace CatCatGo.Presentation.Screens
             speedTextRt.offsetMax = Vector2.zero;
             _speedButtonLabel = speedTextGo.AddComponent<TextMeshProUGUI>();
             _speedButtonLabel.text = _battleSpeed >= 2f ? "2x" : "1x";
-            _speedButtonLabel.fontSize = 22f;
+            _speedButtonLabel.fontSize = 28f;
             _speedButtonLabel.color = Color.white;
             _speedButtonLabel.alignment = TextAlignmentOptions.Center;
             _speedButtonLabel.fontStyle = FontStyles.Bold;
@@ -1551,8 +1551,8 @@ namespace CatCatGo.Presentation.Screens
             graphGo.transform.SetParent(controlsGo.transform, false);
             graphGo.AddComponent<RectTransform>();
             var graphLe = graphGo.AddComponent<LayoutElement>();
-            graphLe.preferredWidth = 80f;
-            graphLe.preferredHeight = 26f;
+            graphLe.preferredWidth = 120f;
+            graphLe.preferredHeight = 60f;
             var graphBg = graphGo.AddComponent<Image>();
             graphBg.color = _showDamageGraph ? ColorPalette.ButtonPrimary : ColorPalette.ButtonSecondary;
             _graphToggle = graphGo.AddComponent<Button>();
@@ -1570,7 +1570,7 @@ namespace CatCatGo.Presentation.Screens
             graphTextRt.offsetMax = Vector2.zero;
             var graphTmp = graphTextGo.AddComponent<TextMeshProUGUI>();
             graphTmp.text = "\uadf8\ub798\ud504";
-            graphTmp.fontSize = 22f;
+            graphTmp.fontSize = 28f;
             graphTmp.color = Color.white;
             graphTmp.alignment = TextAlignmentOptions.Center;
             graphTmp.raycastTarget = false;
@@ -1646,7 +1646,7 @@ namespace CatCatGo.Presentation.Screens
             rerollGo.transform.SetParent(go.transform, false);
             rerollGo.AddComponent<RectTransform>();
             var rerollLe = rerollGo.AddComponent<LayoutElement>();
-            rerollLe.preferredHeight = 30f;
+            rerollLe.preferredHeight = 100f;
             var rerollBg = rerollGo.AddComponent<Image>();
             rerollBg.color = ColorPalette.ButtonSecondary;
             _rerollButton = rerollGo.AddComponent<Button>();
@@ -1663,7 +1663,7 @@ namespace CatCatGo.Presentation.Screens
             rerollTextRt.offsetMin = Vector2.zero;
             rerollTextRt.offsetMax = Vector2.zero;
             _rerollText = rerollTextGo.AddComponent<TextMeshProUGUI>();
-            _rerollText.fontSize = 22f;
+            _rerollText.fontSize = 30f;
             _rerollText.color = Color.white;
             _rerollText.alignment = TextAlignmentOptions.Center;
             _rerollText.raycastTarget = false;
@@ -1790,7 +1790,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (_resultPanel == null) _resultPanel = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
-            le.preferredHeight = 220f;
+            le.preferredHeight = 400f;
 
             var bg = go.AddComponent<Image>();
             bg.color = ColorPalette.Card;
@@ -1806,9 +1806,9 @@ namespace CatCatGo.Presentation.Screens
             titleGo.transform.SetParent(go.transform, false);
             titleGo.AddComponent<RectTransform>();
             var titleLe = titleGo.AddComponent<LayoutElement>();
-            titleLe.preferredHeight = 36f;
+            titleLe.preferredHeight = 48f;
             _resultTitle = titleGo.AddComponent<TextMeshProUGUI>();
-            _resultTitle.fontSize = 38f;
+            _resultTitle.fontSize = 42f;
             _resultTitle.fontStyle = FontStyles.Bold;
             _resultTitle.alignment = TextAlignmentOptions.Center;
             _resultTitle.raycastTarget = false;
@@ -1817,9 +1817,9 @@ namespace CatCatGo.Presentation.Screens
             infoGo.transform.SetParent(go.transform, false);
             infoGo.AddComponent<RectTransform>();
             var infoLe = infoGo.AddComponent<LayoutElement>();
-            infoLe.preferredHeight = 50f;
+            infoLe.preferredHeight = 60f;
             _resultInfo = infoGo.AddComponent<TextMeshProUGUI>();
-            _resultInfo.fontSize = 22f;
+            _resultInfo.fontSize = 28f;
             _resultInfo.color = ColorPalette.Text;
             _resultInfo.alignment = TextAlignmentOptions.Center;
             _resultInfo.enableWordWrapping = true;
@@ -1829,9 +1829,9 @@ namespace CatCatGo.Presentation.Screens
             rewardsGo.transform.SetParent(go.transform, false);
             rewardsGo.AddComponent<RectTransform>();
             var rewardsLe = rewardsGo.AddComponent<LayoutElement>();
-            rewardsLe.preferredHeight = 30f;
+            rewardsLe.preferredHeight = 40f;
             _resultRewards = rewardsGo.AddComponent<TextMeshProUGUI>();
-            _resultRewards.fontSize = 22f;
+            _resultRewards.fontSize = 30f;
             _resultRewards.color = ColorPalette.Gold;
             _resultRewards.alignment = TextAlignmentOptions.Center;
             _resultRewards.raycastTarget = false;
@@ -1840,7 +1840,7 @@ namespace CatCatGo.Presentation.Screens
             btnRow.transform.SetParent(go.transform, false);
             btnRow.AddComponent<RectTransform>();
             var btnRowLe = btnRow.AddComponent<LayoutElement>();
-            btnRowLe.preferredHeight = 40f;
+            btnRowLe.preferredHeight = 120f;
             var btnRowLayout = btnRow.AddComponent<HorizontalLayoutGroup>();
             btnRowLayout.spacing = 10f;
             btnRowLayout.childForceExpandWidth = true;
@@ -1875,7 +1875,7 @@ namespace CatCatGo.Presentation.Screens
             textRt.offsetMax = Vector2.zero;
             var tmp = textGo.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
-            tmp.fontSize = 22f;
+            tmp.fontSize = 36f;
             tmp.color = Color.white;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.raycastTarget = false;
