@@ -316,6 +316,34 @@ namespace CatCatGo.Services
             return SaveManagerSystem.DeleteSave().IsOk();
         }
 
+        public void ResetToNewGame()
+        {
+            SaveManagerSystem.DeleteSave();
+            Player = new Player();
+            CurrentChapter = null;
+            Tower = new Tower();
+            Catacomb = new CatacombDungeon();
+            DungeonManager = new DailyDungeonManager();
+            ArenaSystem = new Arena();
+            TravelSystem = new Travel();
+            GoblinMinerSystem = new GoblinMiner();
+            EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
+            CollectionSystem = new Collection();
+            DailyResetSystem = new DailyResetSystem();
+            EventManagerSystem = new EventManager();
+            RoutineScheduler = new DailyRoutineScheduler();
+            OfflineCalc = new OfflineRewardCalculator();
+            ChapterTreasureSystem = new ChapterTreasure();
+            BattleManagerService = new BattleManager();
+            ForgeService = new Forge();
+            EquipmentManagerService = new EquipmentManager();
+            PetManagerService = new PetManager();
+            ResourceAllocatorService = new ResourceAllocator();
+            AttendanceSystem = new AttendanceSystem();
+            Rng = new SeededRandom(Environment.TickCount);
+            InitNewGame();
+        }
+
         public bool HasSave()
         {
             return SaveManagerSystem.HasSave();

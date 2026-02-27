@@ -227,7 +227,7 @@ namespace CatCatGo.Presentation.Screens
                     var doneLe = doneGo.AddComponent<LayoutElement>();
                     doneLe.preferredWidth = 70;
                     var doneText = doneGo.AddComponent<TextMeshProUGUI>();
-                    doneText.text = "\u2713";
+                    doneText.text = "V";
                     doneText.fontSize = 26;
                     doneText.color = ColorPalette.Heal;
                     doneText.alignment = TextAlignmentOptions.Center;

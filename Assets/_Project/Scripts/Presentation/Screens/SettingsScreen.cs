@@ -305,7 +305,7 @@ namespace CatCatGo.Presentation.Screens
         private void OnSave()
         {
             Game.SaveGame();
-            Refresh();
+            UI.Refresh();
         }
 
         private void OnLoad()
@@ -316,8 +316,8 @@ namespace CatCatGo.Presentation.Screens
 
         private void OnDelete()
         {
-            Game.DeleteSave();
-            Refresh();
+            Game.ResetToNewGame();
+            UI.Refresh();
         }
 
         private void OnExport()

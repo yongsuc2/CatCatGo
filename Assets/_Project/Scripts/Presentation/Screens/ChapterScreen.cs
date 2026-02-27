@@ -358,7 +358,7 @@ namespace CatCatGo.Presentation.Screens
 
             var ch = Game.CurrentChapter;
             if (ch != null)
-                _dayLabel.text = $"\u2500\u2500\u2500 {ch.CurrentDay}\uc77c\ucc28 \u2500\u2500\u2500";
+                _dayLabel.text = $"--- {ch.CurrentDay}\uc77c\ucc28 ---";
 
             _encounterTitle.text = EncounterDataTable.GetLabel(_encounter.Type);
             _encounterDesc.text = EncounterDataTable.GetDescription(_encounter.Type);

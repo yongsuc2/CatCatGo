@@ -215,7 +215,7 @@ namespace CatCatGo.Presentation.Screens
                 var checkLe = checkGo.AddComponent<LayoutElement>();
                 checkLe.preferredHeight = 28;
                 var checkText = checkGo.AddComponent<TextMeshProUGUI>();
-                checkText.text = checked_ ? "\u2713" : "";
+                checkText.text = checked_ ? "V" : "";
                 checkText.fontSize = 30;
                 checkText.color = ColorPalette.Heal;
                 checkText.alignment = TextAlignmentOptions.Center;

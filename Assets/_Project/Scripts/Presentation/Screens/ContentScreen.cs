@@ -100,7 +100,7 @@ namespace CatCatGo.Presentation.Screens
             var backTextGo = new GameObject("Text");
             backTextGo.transform.SetParent(backGo.transform, false);
             var backText = backTextGo.AddComponent<TextMeshProUGUI>();
-            backText.text = "\u2190";
+            backText.text = "<";
             backText.fontSize = 28;
             backText.color = ColorPalette.Text;
             backText.alignment = TextAlignmentOptions.Center;
