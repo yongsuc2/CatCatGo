@@ -64,13 +64,8 @@ namespace CatCatGo.Presentation.Battle
             gameObject.SetActive(true);
 
             Sprite skillSprite = null;
-            if (!string.IsNullOrEmpty(skillId))
-            {
-                if (SpriteManager.Instance != null)
-                    skillSprite = SpriteManager.Instance.GetSkillIcon(skillId);
-                else
-                    Debug.LogWarning($"[DamagePopup] SpriteManager.Instance is null for skillId='{skillId}'");
-            }
+            if (!string.IsNullOrEmpty(skillId) && SpriteManager.Instance != null)
+                skillSprite = SpriteManager.Instance.GetSkillIcon(skillId);
 
             if (skillSprite != null)
             {

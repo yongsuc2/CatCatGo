@@ -64,9 +64,17 @@ namespace CatCatGo.Presentation.Core
             }
 
             _skillIconByKey = new Dictionary<string, Sprite>();
-            LoadSkillIcons();
+            var skillSprites = Resources.LoadAll<Sprite>("Icons/skill");
+            foreach (var sprite in skillSprites)
+            {
+                string name = StripSpriteModeSuffix(sprite.name);
+                if (!name.StartsWith("icon_skill_")) continue;
+                string key = name.Substring(11);
+                if (!_skillIconByKey.ContainsKey(key))
+                    _skillIconByKey[key] = sprite;
+            }
 
-            Debug.Log($"[SpriteManager] Icons loaded: {_iconLookup.Count} (sprites: {iconSprites.Length}), equip: {_equipIconByKey.Count}, skill: {_skillIconByKey.Count}");
+            Debug.Log($"[SpriteManager] Icons loaded: {_iconLookup.Count}, equip: {_equipIconByKey.Count}, skill: {_skillIconByKey.Count}");
 
             if (iconSprites.Length == 0)
             {
@@ -197,57 +205,6 @@ namespace CatCatGo.Presentation.Core
             }
         }
 
-        private void LoadSkillIcons()
-        {
-            var skillSprites = Resources.LoadAll<Sprite>("Icons/skill");
-            int spriteCount = skillSprites.Length;
-            foreach (var sprite in skillSprites)
-            {
-                string key = ExtractSkillKey(sprite.name);
-                if (key != null && !_skillIconByKey.ContainsKey(key))
-                    _skillIconByKey[key] = sprite;
-            }
-
-            if (_skillIconByKey.Count == 0)
-            {
-                var allObjects = Resources.LoadAll("Icons/skill");
-                Debug.Log($"[SpriteManager] Skill LoadAll<Sprite>={spriteCount}, LoadAll<Object>={allObjects.Length}");
-                foreach (var obj in allObjects)
-                {
-                    if (obj is Sprite s)
-                    {
-                        string key = ExtractSkillKey(s.name);
-                        if (key != null && !_skillIconByKey.ContainsKey(key))
-                            _skillIconByKey[key] = s;
-                    }
-                }
-            }
-
-            if (_skillIconByKey.Count == 0)
-            {
-                var skillTextures = Resources.LoadAll<Texture2D>("Icons/skill");
-                Debug.Log($"[SpriteManager] Skill Texture2D fallback: {skillTextures.Length}");
-                foreach (var tex in skillTextures)
-                {
-                    string key = ExtractSkillKey(tex.name);
-                    if (key != null && !_skillIconByKey.ContainsKey(key))
-                    {
-                        var s = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
-                        s.name = tex.name;
-                        _skillIconByKey[key] = s;
-                    }
-                }
-            }
-        }
-
-        private string ExtractSkillKey(string assetName)
-        {
-            string name = StripSpriteModeSuffix(assetName);
-            if (name.StartsWith("icon_skill_"))
-                return name.Substring(11);
-            return null;
-        }
-
         private static string StripSpriteModeSuffix(string name)
         {
             int lastUnderscore = name.LastIndexOf('_');
@@ -258,21 +215,18 @@ namespace CatCatGo.Presentation.Core
 
         public Sprite GetSkillIcon(string skillId)
         {
-            if (_skillIconByKey != null && _skillIconByKey.TryGetValue(skillId, out var sprite))
+            if (string.IsNullOrEmpty(skillId)) return null;
+
+            if (_skillIconByKey.TryGetValue(skillId, out var sprite))
                 return sprite;
 
-            if (!string.IsNullOrEmpty(skillId))
+            var loaded = Resources.Load<Sprite>($"Icons/skill/icon_skill_{skillId}");
+            if (loaded != null)
             {
-                var directLoad = Resources.Load<Sprite>($"Icons/skill/icon_skill_{skillId}");
-                if (directLoad != null)
-                {
-                    _skillIconByKey[skillId] = directLoad;
-                    return directLoad;
-                }
-
-                Debug.LogWarning($"[SpriteManager] Skill icon not found: '{skillId}' (loaded: {_skillIconByKey?.Count ?? 0})");
-                return PlaceholderGenerator.CreateRect(48, 48, new Color(1f, 0.3f, 0.3f), skillId.Length > 4 ? skillId.Substring(0, 4) : skillId);
+                _skillIconByKey[skillId] = loaded;
+                return loaded;
             }
+
             return null;
         }
 
