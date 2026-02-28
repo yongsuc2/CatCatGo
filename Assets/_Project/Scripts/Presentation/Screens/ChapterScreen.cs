@@ -230,8 +230,8 @@ namespace CatCatGo.Presentation.Screens
 
         private void UpdateSessionSkillsDisplay()
         {
-            foreach (Transform child in _sessionSkillsContainer)
-                Destroy(child.gameObject);
+            for (int i = _sessionSkillsContainer.childCount - 1; i >= 0; i--)
+                DestroyImmediate(_sessionSkillsContainer.GetChild(i).gameObject);
 
             var chapter = Game.CurrentChapter;
             if (chapter == null || _state == ScreenState.Battling) return;
@@ -240,15 +240,12 @@ namespace CatCatGo.Presentation.Screens
             {
                 var iconGo = new GameObject($"Skill_{skill.Id}");
                 iconGo.transform.SetParent(_sessionSkillsContainer, false);
-                var rt = iconGo.GetComponent<RectTransform>();
-
-                if (rt == null) rt = iconGo.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(576f, 576f);
-
                 var img = iconGo.AddComponent<Image>();
                 img.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
                 img.preserveAspect = true;
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_sessionSkillsContainer);
         }
 
         private void StartChapter()
@@ -1726,11 +1723,11 @@ namespace CatCatGo.Presentation.Screens
 
             if (_sessionSkillsContainer == null) _sessionSkillsContainer = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
-            le.preferredHeight = 34f;
+            le.preferredHeight = 116f;
 
             var gridLayout = go.AddComponent<GridLayoutGroup>();
-            gridLayout.cellSize = new Vector2(28f, 28f);
-            gridLayout.spacing = new Vector2(3f, 3f);
+            gridLayout.cellSize = new Vector2(95f, 95f);
+            gridLayout.spacing = new Vector2(5f, 5f);
             gridLayout.constraint = GridLayoutGroup.Constraint.Flexible;
             gridLayout.childAlignment = TextAnchor.MiddleLeft;
 
