@@ -1292,7 +1292,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (_chapterHeader == null) _chapterHeader = go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
-            le.preferredHeight = 80f;
+            le.preferredHeight = 260f;
 
             var bg = go.AddComponent<Image>();
             bg.color = ColorPalette.Card;
@@ -1307,7 +1307,7 @@ namespace CatCatGo.Presentation.Screens
             titleRow.transform.SetParent(go.transform, false);
             titleRow.AddComponent<RectTransform>();
             var titleRowLe = titleRow.AddComponent<LayoutElement>();
-            titleRowLe.preferredHeight = 40f;
+            titleRowLe.preferredHeight = 80f;
             var titleRowLayout = titleRow.AddComponent<HorizontalLayoutGroup>();
             titleRowLayout.childForceExpandWidth = false;
             titleRowLayout.childForceExpandHeight = false;
@@ -1318,9 +1318,9 @@ namespace CatCatGo.Presentation.Screens
             chTitleGo.AddComponent<RectTransform>();
             var chTitleLe = chTitleGo.AddComponent<LayoutElement>();
             chTitleLe.flexibleWidth = 1f;
-            chTitleLe.preferredHeight = 40f;
+            chTitleLe.preferredHeight = 80f;
             _chapterTitle = chTitleGo.AddComponent<TextMeshProUGUI>();
-            _chapterTitle.fontSize = 33f;
+            _chapterTitle.fontSize = 36f;
             _chapterTitle.color = ColorPalette.Text;
             _chapterTitle.fontStyle = FontStyles.Bold;
             _chapterTitle.alignment = TextAlignmentOptions.MidlineLeft;
@@ -1330,10 +1330,10 @@ namespace CatCatGo.Presentation.Screens
             dayTextGo.transform.SetParent(titleRow.transform, false);
             dayTextGo.AddComponent<RectTransform>();
             var dayTextLe = dayTextGo.AddComponent<LayoutElement>();
-            dayTextLe.preferredWidth = 160f;
-            dayTextLe.preferredHeight = 40f;
+            dayTextLe.preferredWidth = 180f;
+            dayTextLe.preferredHeight = 80f;
             _dayProgress = dayTextGo.AddComponent<TextMeshProUGUI>();
-            _dayProgress.fontSize = 33f;
+            _dayProgress.fontSize = 36f;
             _dayProgress.color = ColorPalette.TextDim;
             _dayProgress.alignment = TextAlignmentOptions.MidlineRight;
             _dayProgress.raycastTarget = false;
@@ -1463,8 +1463,8 @@ namespace CatCatGo.Presentation.Screens
             settingsBtnGo.transform.SetParent(titleRow.transform, false);
             settingsBtnGo.AddComponent<RectTransform>();
             var settingsBtnLe = settingsBtnGo.AddComponent<LayoutElement>();
-            settingsBtnLe.preferredWidth = 72f;
-            settingsBtnLe.preferredHeight = 40f;
+            settingsBtnLe.preferredWidth = 100f;
+            settingsBtnLe.preferredHeight = 80f;
             var settingsBtnBg = settingsBtnGo.AddComponent<Image>();
             settingsBtnBg.color = ColorPalette.ButtonSecondary;
             var settingsBtn = settingsBtnGo.AddComponent<Button>();
@@ -1479,7 +1479,7 @@ namespace CatCatGo.Presentation.Screens
             UIManager.StretchFull(settingsBtnTextRt);
             var settingsBtnTmp = settingsBtnTextGo.AddComponent<TextMeshProUGUI>();
             settingsBtnTmp.text = "\uc124\uc815";
-            settingsBtnTmp.fontSize = 28f;
+            settingsBtnTmp.fontSize = 32f;
             settingsBtnTmp.color = Color.white;
             settingsBtnTmp.alignment = TextAlignmentOptions.Center;
             settingsBtnTmp.raycastTarget = false;
