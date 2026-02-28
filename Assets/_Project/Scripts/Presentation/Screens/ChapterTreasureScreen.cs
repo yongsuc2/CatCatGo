@@ -30,20 +30,22 @@ namespace CatCatGo.Presentation.Screens
             var headerGo = new GameObject("Header");
             headerGo.transform.SetParent(transform, false);
             var headerLe = headerGo.AddComponent<LayoutElement>();
-            headerLe.preferredHeight = 44;
+            headerLe.preferredHeight = 88;
+            headerLe.flexibleHeight = 0;
             headerGo.AddComponent<Image>().color = ColorPalette.Card;
 
             var headerLayout = headerGo.AddComponent<HorizontalLayoutGroup>();
             headerLayout.childForceExpandWidth = true;
             headerLayout.childForceExpandHeight = true;
-            headerLayout.padding = new RectOffset(16, 16, 8, 8);
+            headerLayout.padding = new RectOffset(16, 16, 12, 12);
 
             var titleGo = new GameObject("Title");
             titleGo.transform.SetParent(headerGo.transform, false);
             var titleText = titleGo.AddComponent<TextMeshProUGUI>();
             titleText.text = "\ucc55\ud130 \ubcf4\ubb3c";
-            titleText.fontSize = 30;
+            titleText.fontSize = 48;
             titleText.color = ColorPalette.Text;
+            titleText.fontStyle = FontStyles.Bold;
             titleText.alignment = TextAlignmentOptions.Center;
             titleText.raycastTarget = false;
 
@@ -75,7 +77,7 @@ namespace CatCatGo.Presentation.Screens
             _chapterListContent.offsetMax = Vector2.zero;
 
             var contentLayout = contentGo.AddComponent<VerticalLayoutGroup>();
-            contentLayout.spacing = 12;
+            contentLayout.spacing = 16;
             contentLayout.childForceExpandWidth = true;
             contentLayout.childForceExpandHeight = false;
             contentLayout.padding = new RectOffset(12, 12, 12, 12);
@@ -101,20 +103,21 @@ namespace CatCatGo.Presentation.Screens
             {
                 var chapterGo = new GameObject($"Chapter_{chapterId}");
                 chapterGo.transform.SetParent(_chapterListContent, false);
-                var chapterLe = chapterGo.AddComponent<LayoutElement>();
-                chapterLe.preferredHeight = 200;
                 chapterGo.AddComponent<Image>().color = ColorPalette.Card;
 
                 var chapterLayout = chapterGo.AddComponent<VerticalLayoutGroup>();
-                chapterLayout.spacing = 4;
+                chapterLayout.spacing = 8;
                 chapterLayout.childForceExpandWidth = true;
                 chapterLayout.childForceExpandHeight = false;
-                chapterLayout.padding = new RectOffset(12, 12, 8, 8);
+                chapterLayout.padding = new RectOffset(16, 16, 12, 12);
+
+                var chapterFitter = chapterGo.AddComponent<ContentSizeFitter>();
+                chapterFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
                 var chapterHeaderGo = new GameObject("ChapterHeader");
                 chapterHeaderGo.transform.SetParent(chapterGo.transform, false);
                 var chapterHeaderLe = chapterHeaderGo.AddComponent<LayoutElement>();
-                chapterHeaderLe.preferredHeight = 30;
+                chapterHeaderLe.preferredHeight = 60;
                 var chapterHeaderText = chapterHeaderGo.AddComponent<TextMeshProUGUI>();
 
                 int bestDay = Game.Player.BestSurvivalDays.TryGetValue(chapterId, out var val) ? val : 0;
@@ -125,17 +128,18 @@ namespace CatCatGo.Presentation.Screens
                 chapterHeaderText.text = cleared
                     ? $"\ucc55\ud130 {chapterId} - \ud074\ub9ac\uc5b4!"
                     : $"\ucc55\ud130 {chapterId} - \ucd5c\uace0 {bestDay}\uc77c/{totalDays}\uc77c";
-                chapterHeaderText.fontSize = 26;
+                chapterHeaderText.fontSize = 40;
                 chapterHeaderText.color = cleared ? ColorPalette.Heal : ColorPalette.Text;
+                chapterHeaderText.fontStyle = FontStyles.Bold;
                 chapterHeaderText.alignment = TextAlignmentOptions.Left;
                 chapterHeaderText.raycastTarget = false;
 
                 var progressGo = new GameObject("ProgressBar");
                 progressGo.transform.SetParent(chapterGo.transform, false);
                 var progressLe = progressGo.AddComponent<LayoutElement>();
-                progressLe.preferredHeight = 16;
+                progressLe.preferredHeight = 28;
                 var progressBar = progressGo.AddComponent<ProgressBarView>();
-                progressBar.Initialize(400, 16);
+                progressBar.Initialize(400, 28);
                 float progressValue = cleared ? totalDays : Mathf.Min(bestDay, totalDays);
                 progressBar.SetProgress(progressValue, totalDays);
                 progressBar.SetColor(cleared ? ColorPalette.Heal : ColorPalette.ProgressBarFill);
@@ -157,7 +161,7 @@ namespace CatCatGo.Presentation.Screens
             var rowGo = new GameObject("Milestone_" + milestone.Id);
             rowGo.transform.SetParent(parent, false);
             var rowLe = rowGo.AddComponent<LayoutElement>();
-            rowLe.preferredHeight = 40;
+            rowLe.preferredHeight = 72;
 
             Color bgColor;
             if (status == "claimed") bgColor = new Color(0.15f, 0.25f, 0.15f, 1f);
@@ -167,18 +171,18 @@ namespace CatCatGo.Presentation.Screens
             rowGo.AddComponent<Image>().color = bgColor;
 
             var rowLayout = rowGo.AddComponent<HorizontalLayoutGroup>();
-            rowLayout.spacing = 8;
+            rowLayout.spacing = 12;
             rowLayout.childForceExpandWidth = false;
             rowLayout.childForceExpandHeight = true;
-            rowLayout.padding = new RectOffset(8, 8, 2, 2);
+            rowLayout.padding = new RectOffset(12, 12, 4, 4);
 
             var labelGo = new GameObject("Label");
             labelGo.transform.SetParent(rowGo.transform, false);
             var labelLe = labelGo.AddComponent<LayoutElement>();
-            labelLe.preferredWidth = 80;
+            labelLe.preferredWidth = 140;
             var labelText = labelGo.AddComponent<TextMeshProUGUI>();
             labelText.text = milestone.Label;
-            labelText.fontSize = 20;
+            labelText.fontSize = 36;
             labelText.color = status == "claimed" ? ColorPalette.TextDim : ColorPalette.Text;
             labelText.alignment = TextAlignmentOptions.Left;
             labelText.raycastTarget = false;
@@ -192,7 +196,7 @@ namespace CatCatGo.Presentation.Screens
             foreach (var r in milestone.MilestoneReward.Resources)
                 sb.Append($"{NumberFormatter.FormatResourceType(r.Type)}: {r.Amount}  ");
             rewardText.text = sb.ToString();
-            rewardText.fontSize = 18;
+            rewardText.fontSize = 32;
             rewardText.color = status == "claimed" ? ColorPalette.TextDim : ColorPalette.Gold;
             rewardText.alignment = TextAlignmentOptions.Left;
             rewardText.raycastTarget = false;
@@ -202,7 +206,7 @@ namespace CatCatGo.Presentation.Screens
                 var claimGo = new GameObject("ClaimBtn");
                 claimGo.transform.SetParent(rowGo.transform, false);
                 var claimLe2 = claimGo.AddComponent<LayoutElement>();
-                claimLe2.preferredWidth = 60;
+                claimLe2.preferredWidth = 110;
                 var claimBg = claimGo.AddComponent<Image>();
                 claimBg.color = ColorPalette.Heal;
                 var claimBtn = claimGo.AddComponent<Button>();
@@ -213,8 +217,9 @@ namespace CatCatGo.Presentation.Screens
                 claimTextGo.transform.SetParent(claimGo.transform, false);
                 var claimText = claimTextGo.AddComponent<TextMeshProUGUI>();
                 claimText.text = "\uc218\ub839";
-                claimText.fontSize = 20;
+                claimText.fontSize = 34;
                 claimText.color = Color.white;
+                claimText.fontStyle = FontStyles.Bold;
                 claimText.alignment = TextAlignmentOptions.Center;
                 claimText.raycastTarget = false;
                 UIManager.StretchFull(claimTextGo.GetComponent<RectTransform>());
@@ -224,10 +229,10 @@ namespace CatCatGo.Presentation.Screens
                 var checkGo = new GameObject("Check");
                 checkGo.transform.SetParent(rowGo.transform, false);
                 var checkLe = checkGo.AddComponent<LayoutElement>();
-                checkLe.preferredWidth = 30;
+                checkLe.preferredWidth = 50;
                 var checkText = checkGo.AddComponent<TextMeshProUGUI>();
                 checkText.text = "V";
-                checkText.fontSize = 24;
+                checkText.fontSize = 40;
                 checkText.color = ColorPalette.Heal;
                 checkText.alignment = TextAlignmentOptions.Center;
                 checkText.raycastTarget = false;
