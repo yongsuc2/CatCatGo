@@ -34,6 +34,7 @@ namespace CatCatGo.Domain.Battle
         public Dictionary<SkillTag, float> SkillTagBonuses;
         public List<LowHpModifier> LowHpModifiers;
         public float HpDamageCoefficient;
+        public string TemplateId;
 
         public BattleUnit(
             string name,

@@ -77,23 +77,27 @@ namespace CatCatGo.Domain.Chapter
             {
                 scaledStats = scaledStats.Multiply(statMultiplier);
             }
-            return new BattleUnit(
+            var unit = new BattleUnit(
                 Name,
                 scaledStats,
                 ActiveSkills.ToArray(),
                 PassiveSkills.ToArray(),
                 false);
+            unit.TemplateId = Id;
+            return unit;
         }
 
         public BattleUnit CreateTowerInstance(int floor)
         {
             var scaledStats = EnemyTable.GetTowerScaledStats(BaseStats, floor);
-            return new BattleUnit(
+            var unit = new BattleUnit(
                 Name,
                 scaledStats,
                 ActiveSkills.ToArray(),
                 PassiveSkills.ToArray(),
                 false);
+            unit.TemplateId = Id;
+            return unit;
         }
     }
 }

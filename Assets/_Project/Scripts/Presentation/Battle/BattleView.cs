@@ -203,6 +203,15 @@ namespace CatCatGo.Presentation.Battle
                     bool thisIsBoss = isBoss && i == 0;
                     _enemyViews[i].gameObject.SetActive(true);
                     _enemyViews[i].Setup(enemy.Name, enemy.MaxHp, enemy.MaxRage, thisIsBoss, new Color(0.7f, 0.3f, 0.3f));
+
+                    if (SpriteManager.Instance != null && !string.IsNullOrEmpty(enemy.TemplateId))
+                    {
+                        var ew = SpriteManager.Instance.GetWalkFrames(enemy.TemplateId);
+                        var ea = SpriteManager.Instance.GetAttackFrames(enemy.TemplateId);
+                        if (ew.Length > 0)
+                            _enemyViews[i].SetFrames(ew, ea);
+                    }
+
                     _enemyViews[i].SetOriginalPosition(new Vector2(120f, enemyStartY - i * enemySpacing));
                     _enemyViews[i].UpdateHp(enemy.CurrentHp, enemy.MaxHp);
                     _enemyViews[i].UpdateRage(enemy.Rage, enemy.MaxRage);

@@ -44,8 +44,23 @@ namespace CatCatGo.Presentation.Battle
             _maxHp = maxHp;
             _hasRage = maxRage > 0;
 
+            StopFrameAnimation();
+            _walkFrames = null;
+            _attackFrames = null;
+            _useFrames = false;
+
             if (_rectTransform == null)
                 BuildUI(isBoss, placeholderColor);
+            else
+            {
+                float charSize = isBoss ? 100f : 72f;
+                _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
+                var spriteRt = _spriteImage.GetComponent<RectTransform>();
+                spriteRt.anchoredPosition = new Vector2(0f, 20f);
+                spriteRt.sizeDelta = new Vector2(charSize, charSize);
+                _spriteImage.preserveAspect = false;
+                _spriteImage.sprite = PlaceholderGenerator.CreateRect((int)charSize, (int)charSize, placeholderColor, "C");
+            }
 
             _nameLabel.text = name;
             _hpBar.maxValue = maxHp;

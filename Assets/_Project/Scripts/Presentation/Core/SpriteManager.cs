@@ -20,8 +20,8 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<string, Sprite> _equipIconByKey;
         private Dictionary<string, Sprite> _skillIconByKey;
 
-        private Sprite[] _playerWalkFrames;
-        private Sprite[] _playerAttackFrames;
+        private Dictionary<string, Sprite[]> _walkFramesCache;
+        private Dictionary<string, Sprite[]> _attackFramesCache;
 
         private void Awake()
         {
@@ -133,25 +133,48 @@ namespace CatCatGo.Presentation.Core
 
         public Sprite[] GetPlayerWalkFrames()
         {
-            if (_playerWalkFrames == null)
-                LoadPlayerSpriteSheet();
-            return _playerWalkFrames;
+            return GetWalkFrames("player");
         }
 
         public Sprite[] GetPlayerAttackFrames()
         {
-            if (_playerAttackFrames == null)
-                LoadPlayerSpriteSheet();
-            return _playerAttackFrames;
+            return GetAttackFrames("player");
         }
 
-        private void LoadPlayerSpriteSheet()
+        public Sprite[] GetWalkFrames(string id)
         {
-            var tex = Resources.Load<Texture2D>("Chars/player");
+            if (_walkFramesCache == null)
+                _walkFramesCache = new Dictionary<string, Sprite[]>();
+
+            if (!_walkFramesCache.ContainsKey(id))
+                LoadSpriteSheet(id);
+
+            return _walkFramesCache[id];
+        }
+
+        public Sprite[] GetAttackFrames(string id)
+        {
+            if (_attackFramesCache == null)
+                _attackFramesCache = new Dictionary<string, Sprite[]>();
+
+            if (!_attackFramesCache.ContainsKey(id))
+                LoadSpriteSheet(id);
+
+            return _attackFramesCache[id];
+        }
+
+        private void LoadSpriteSheet(string id)
+        {
+            if (_walkFramesCache == null)
+                _walkFramesCache = new Dictionary<string, Sprite[]>();
+            if (_attackFramesCache == null)
+                _attackFramesCache = new Dictionary<string, Sprite[]>();
+
+            var tex = Resources.Load<Texture2D>($"Chars/{id}");
             if (tex == null)
             {
-                _playerWalkFrames = new Sprite[0];
-                _playerAttackFrames = new Sprite[0];
+                _walkFramesCache[id] = new Sprite[0];
+                _attackFramesCache[id] = new Sprite[0];
                 return;
             }
 
@@ -160,25 +183,28 @@ namespace CatCatGo.Presentation.Core
             int frameW = tex.width / cols;
             int frameH = tex.height / rows;
 
-            _playerWalkFrames = new Sprite[cols];
-            _playerAttackFrames = new Sprite[cols];
+            var walkFrames = new Sprite[cols];
+            var attackFrames = new Sprite[cols];
 
             for (int i = 0; i < cols; i++)
             {
-                _playerWalkFrames[i] = Sprite.Create(
+                walkFrames[i] = Sprite.Create(
                     tex,
                     new Rect(i * frameW, frameH * 2, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
-                _playerWalkFrames[i].name = $"player_walk_{i}";
+                walkFrames[i].name = $"{id}_walk_{i}";
 
-                _playerAttackFrames[i] = Sprite.Create(
+                attackFrames[i] = Sprite.Create(
                     tex,
                     new Rect(i * frameW, frameH, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
-                _playerAttackFrames[i].name = $"player_attack_{i}";
+                attackFrames[i].name = $"{id}_attack_{i}";
             }
+
+            _walkFramesCache[id] = walkFrames;
+            _attackFramesCache[id] = attackFrames;
         }
 
         public Sprite GetIcon(string iconId)
