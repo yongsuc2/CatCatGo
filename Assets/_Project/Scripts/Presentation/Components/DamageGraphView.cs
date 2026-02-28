@@ -38,6 +38,9 @@ namespace CatCatGo.Presentation.Components
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
 
+            var rootFitter = gameObject.AddComponent<ContentSizeFitter>();
+            rootFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
             if (!string.IsNullOrEmpty(title))
             {
                 var headerGo = new GameObject("Header");

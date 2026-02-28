@@ -52,7 +52,7 @@ namespace CatCatGo.Presentation.Battle
             textRt.offsetMax = Vector2.zero;
 
             _label = textGo.AddComponent<TextMeshProUGUI>();
-            _label.fontSize = 55f;
+            _label.fontSize = 28f;
             _label.color = Color.white;
             _label.alignment = TextAlignmentOptions.Center;
             _label.enableWordWrapping = false;

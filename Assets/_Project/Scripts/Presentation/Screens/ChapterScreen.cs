@@ -97,6 +97,8 @@ namespace CatCatGo.Presentation.Screens
 
         private RectTransform _eliteOptionsContainer;
         private RectTransform _sessionSkillsContainer;
+        private RectTransform _skillTooltip;
+        private TextMeshProUGUI _skillTooltipText;
 
         private RectTransform _settingsOverlay;
         private RectTransform _settingsSkillList;
@@ -234,7 +236,7 @@ namespace CatCatGo.Presentation.Screens
                 DestroyImmediate(_sessionSkillsContainer.GetChild(i).gameObject);
 
             var chapter = Game.CurrentChapter;
-            if (chapter == null || _state == ScreenState.Battling) return;
+            if (chapter == null) return;
 
             foreach (var skill in chapter.SessionSkills)
             {
@@ -243,9 +245,30 @@ namespace CatCatGo.Presentation.Screens
                 var img = iconGo.AddComponent<Image>();
                 img.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
                 img.preserveAspect = true;
+
+                var btn = iconGo.AddComponent<Button>();
+                btn.transition = Selectable.Transition.None;
+                string skillName = skill.Name;
+                string skillDesc = skill.Description;
+                btn.onClick.AddListener(() => ShowSkillTooltip(skillName, skillDesc));
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(_sessionSkillsContainer);
+        }
+
+        private void ShowSkillTooltip(string skillName, string description)
+        {
+            if (_skillTooltip == null) return;
+
+            if (_skillTooltip.gameObject.activeSelf
+                && _skillTooltipText.text == $"<b>{skillName}</b>\n{description}")
+            {
+                _skillTooltip.gameObject.SetActive(false);
+                return;
+            }
+
+            _skillTooltipText.text = $"<b>{skillName}</b>\n{description}";
+            _skillTooltip.gameObject.SetActive(true);
         }
 
         private void StartChapter()
@@ -1747,6 +1770,40 @@ namespace CatCatGo.Presentation.Screens
 
             var fitter = go.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var tooltipGo = new GameObject("SkillTooltip");
+            tooltipGo.transform.SetParent(parent, false);
+            _skillTooltip = tooltipGo.GetComponent<RectTransform>();
+            if (_skillTooltip == null) _skillTooltip = tooltipGo.AddComponent<RectTransform>();
+            var tooltipLe = tooltipGo.AddComponent<LayoutElement>();
+            tooltipLe.flexibleHeight = 0f;
+
+            var tooltipBg = tooltipGo.AddComponent<Image>();
+            tooltipBg.color = new Color(0.1f, 0.1f, 0.15f, 0.95f);
+
+            var tooltipLayout = tooltipGo.AddComponent<VerticalLayoutGroup>();
+            tooltipLayout.padding = new RectOffset(12, 12, 8, 8);
+            tooltipLayout.childForceExpandWidth = true;
+            tooltipLayout.childForceExpandHeight = false;
+
+            var tooltipFitter = tooltipGo.AddComponent<ContentSizeFitter>();
+            tooltipFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var textGo = new GameObject("Text");
+            textGo.transform.SetParent(tooltipGo.transform, false);
+            textGo.AddComponent<RectTransform>();
+            _skillTooltipText = textGo.AddComponent<TextMeshProUGUI>();
+            _skillTooltipText.fontSize = 28f;
+            _skillTooltipText.color = Color.white;
+            _skillTooltipText.alignment = TextAlignmentOptions.TopLeft;
+            _skillTooltipText.enableWordWrapping = true;
+            _skillTooltipText.raycastTarget = false;
+
+            var dismissBtn = tooltipGo.AddComponent<Button>();
+            dismissBtn.transition = Selectable.Transition.None;
+            dismissBtn.onClick.AddListener(() => _skillTooltip.gameObject.SetActive(false));
+
+            _skillTooltip.gameObject.SetActive(false);
         }
 
         private void BuildGraphArea(Transform parent)
@@ -1770,16 +1827,16 @@ namespace CatCatGo.Presentation.Screens
             var dmgGo = new GameObject("DamageGraph");
             dmgGo.transform.SetParent(go.transform, false);
             dmgGo.AddComponent<RectTransform>();
-            var dmgLe = dmgGo.AddComponent<LayoutElement>();
-            dmgLe.preferredHeight = 100f;
+            var dmgFitter = dmgGo.AddComponent<ContentSizeFitter>();
+            dmgFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             _damageGraph = dmgGo.AddComponent<DamageGraphView>();
             _damageGraph.Initialize("\ub525 \uadf8\ub798\ud504", ColorPalette.Hp);
 
             var healGo = new GameObject("HealGraph");
             healGo.transform.SetParent(go.transform, false);
             healGo.AddComponent<RectTransform>();
-            var healLe = healGo.AddComponent<LayoutElement>();
-            healLe.preferredHeight = 100f;
+            var healFitter = healGo.AddComponent<ContentSizeFitter>();
+            healFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             _healGraph = healGo.AddComponent<DamageGraphView>();
             _healGraph.Initialize("\ud68c\ubcf5 \uadf8\ub798\ud504", ColorPalette.Heal);
 
