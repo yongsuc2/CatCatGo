@@ -1491,7 +1491,7 @@ namespace CatCatGo.Presentation.Screens
             go.transform.SetParent(parent, false);
             go.AddComponent<RectTransform>();
             var le = go.AddComponent<LayoutElement>();
-            le.preferredHeight = 260f;
+            le.preferredHeight = 520f;
 
             _battleView = go.AddComponent<BattleView>();
             _battleView.Initialize(go.transform);
