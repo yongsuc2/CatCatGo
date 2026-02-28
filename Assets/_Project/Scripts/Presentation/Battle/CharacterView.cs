@@ -53,7 +53,7 @@ namespace CatCatGo.Presentation.Battle
                 BuildUI(isBoss, placeholderColor);
             else
             {
-                float charSize = isBoss ? 100f : 72f;
+                float charSize = isBoss ? 150f : 108f;
                 _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
                 var spriteRt = _spriteImage.GetComponent<RectTransform>();
                 spriteRt.anchoredPosition = new Vector2(0f, 20f);
@@ -94,10 +94,10 @@ namespace CatCatGo.Presentation.Battle
             _spriteImage.sprite = walkFrames[0];
 
             var spriteRt = _spriteImage.GetComponent<RectTransform>();
-            spriteRt.sizeDelta = new Vector2(90f, 180f);
-            spriteRt.anchoredPosition = new Vector2(0f, 55f);
+            spriteRt.sizeDelta = new Vector2(135f, 270f);
+            spriteRt.anchoredPosition = new Vector2(0f, 80f);
 
-            _rectTransform.sizeDelta = new Vector2(90f, 230f);
+            _rectTransform.sizeDelta = new Vector2(135f, 340f);
 
             StartFrameAnimation(_walkFrames);
         }
@@ -299,7 +299,7 @@ namespace CatCatGo.Presentation.Battle
 
                 if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
 
-            float charSize = isBoss ? 100f : 72f;
+            float charSize = isBoss ? 150f : 108f;
             _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
 
             var spriteGo = new GameObject("Sprite");
