@@ -156,8 +156,9 @@ namespace CatCatGo.Presentation.Core
             }
 
             int cols = 4;
+            int rows = 3;
             int frameW = tex.width / cols;
-            int frameH = tex.height / 2;
+            int frameH = tex.height / rows;
 
             _playerWalkFrames = new Sprite[cols];
             _playerAttackFrames = new Sprite[cols];
@@ -166,14 +167,14 @@ namespace CatCatGo.Presentation.Core
             {
                 _playerWalkFrames[i] = Sprite.Create(
                     tex,
-                    new Rect(i * frameW, frameH, frameW, frameH),
+                    new Rect(i * frameW, frameH * 2, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
                 _playerWalkFrames[i].name = $"player_walk_{i}";
 
                 _playerAttackFrames[i] = Sprite.Create(
                     tex,
-                    new Rect(i * frameW, 0, frameW, frameH),
+                    new Rect(i * frameW, frameH, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
                 _playerAttackFrames[i].name = $"player_attack_{i}";
