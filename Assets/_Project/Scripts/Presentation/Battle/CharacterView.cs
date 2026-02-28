@@ -327,6 +327,7 @@ namespace CatCatGo.Presentation.Battle
             _nameLabel.enableWordWrapping = false;
             _nameLabel.overflowMode = TextOverflowModes.Ellipsis;
             _nameLabel.raycastTarget = false;
+            nameGo.SetActive(false);
 
             float barY = -charSize / 2f - 4f;
 
