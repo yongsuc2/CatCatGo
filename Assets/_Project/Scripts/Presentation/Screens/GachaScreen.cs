@@ -8,6 +8,7 @@ using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Data;
 using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Components;
+using CatCatGo.Presentation.Popups;
 using CatCatGo.Presentation.Utils;
 
 namespace CatCatGo.Presentation.Screens
@@ -24,10 +25,6 @@ namespace CatCatGo.Presentation.Screens
         private Button _pull10Button;
         private TextMeshProUGUI _pull1Label;
         private TextMeshProUGUI _pull10Label;
-
-        private RectTransform _resultPanel;
-        private RectTransform _resultContent;
-        private List<GameObject> _resultItems = new List<GameObject>();
 
         private void Awake()
         {
@@ -133,65 +130,6 @@ namespace CatCatGo.Presentation.Screens
             _pull10Label.alignment = TextAlignmentOptions.Center;
             _pull10Label.raycastTarget = false;
             UIManager.StretchFull(pull10TextGo.GetComponent<RectTransform>());
-
-            var resultHeaderGo = new GameObject("ResultHeader");
-            resultHeaderGo.transform.SetParent(transform, false);
-            var resultHeaderLe = resultHeaderGo.AddComponent<LayoutElement>();
-            resultHeaderLe.preferredHeight = 26;
-            var resultHeaderText = resultHeaderGo.AddComponent<TextMeshProUGUI>();
-            resultHeaderText.text = "\uacb0\uacfc";
-            resultHeaderText.fontSize = 26;
-            resultHeaderText.color = ColorPalette.Text;
-            resultHeaderText.alignment = TextAlignmentOptions.Left;
-            resultHeaderText.raycastTarget = false;
-
-            var resultGo = new GameObject("ResultPanel");
-            resultGo.transform.SetParent(transform, false);
-            _resultPanel = resultGo.GetComponent<RectTransform>();
-
-            if (_resultPanel == null) _resultPanel = resultGo.AddComponent<RectTransform>();
-            var resultPanelLe = resultGo.AddComponent<LayoutElement>();
-            resultPanelLe.flexibleHeight = 1;
-
-            var resultScrollGo = new GameObject("ResultScroll");
-            resultScrollGo.transform.SetParent(resultGo.transform, false);
-            var resultScrollRt = resultScrollGo.GetComponent<RectTransform>();
-
-            if (resultScrollRt == null) resultScrollRt = resultScrollGo.AddComponent<RectTransform>();
-            UIManager.StretchFull(resultScrollRt);
-            var resultScrollRect = resultScrollGo.AddComponent<ScrollRect>();
-            resultScrollRect.horizontal = false;
-            resultScrollRect.vertical = true;
-
-            var resultViewport = new GameObject("Viewport");
-            resultViewport.transform.SetParent(resultScrollGo.transform, false);
-            var resultViewportRt = resultViewport.GetComponent<RectTransform>();
-
-            if (resultViewportRt == null) resultViewportRt = resultViewport.AddComponent<RectTransform>();
-            UIManager.StretchFull(resultViewportRt);
-            resultViewport.AddComponent<RectMask2D>();
-
-            var resultContentGo = new GameObject("Content");
-            resultContentGo.transform.SetParent(resultViewport.transform, false);
-            _resultContent = resultContentGo.GetComponent<RectTransform>();
-
-            if (_resultContent == null) _resultContent = resultContentGo.AddComponent<RectTransform>();
-            _resultContent.anchorMin = new Vector2(0, 1);
-            _resultContent.anchorMax = new Vector2(1, 1);
-            _resultContent.pivot = new Vector2(0.5f, 1);
-            _resultContent.offsetMin = Vector2.zero;
-            _resultContent.offsetMax = Vector2.zero;
-
-            var resultContentLayout = resultContentGo.AddComponent<VerticalLayoutGroup>();
-            resultContentLayout.spacing = 4;
-            resultContentLayout.childForceExpandWidth = true;
-            resultContentLayout.childForceExpandHeight = false;
-
-            var resultContentFitter = resultContentGo.AddComponent<ContentSizeFitter>();
-            resultContentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            resultScrollRect.content = _resultContent;
-            resultScrollRect.viewport = resultViewportRt;
         }
 
         private void OnTabChanged(int index)
@@ -202,7 +140,6 @@ namespace CatCatGo.Presentation.Screens
                 case 1: _activeChest = ChestType.PET; break;
                 case 2: _activeChest = ChestType.GEM; break;
             }
-            ClearResults();
             Refresh();
         }
 
@@ -222,8 +159,8 @@ namespace CatCatGo.Presentation.Screens
                 Game.Player.Resources.Add(r.Type, r.Amount);
 
             Game.SaveGame();
-            ShowResults(new List<PullResult> { result });
             UI.Refresh();
+            ShowRewardPopup(new List<PullResult> { result }, OnPull1);
         }
 
         private void OnPull10()
@@ -240,64 +177,17 @@ namespace CatCatGo.Presentation.Screens
             }
 
             Game.SaveGame();
-            ShowResults(results);
             UI.Refresh();
+            ShowRewardPopup(results, OnPull10);
         }
 
-        private void ClearResults()
+        private void ShowRewardPopup(List<PullResult> results, System.Action pullAgainAction)
         {
-            foreach (var go in _resultItems)
-                Destroy(go);
-            _resultItems.Clear();
-        }
-
-        private void ShowResults(List<PullResult> results)
-        {
-            ClearResults();
-
-            foreach (var result in results)
+            UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
             {
-                var go = new GameObject("ResultItem");
-                go.transform.SetParent(_resultContent, false);
-                var le = go.AddComponent<LayoutElement>();
-                le.preferredHeight = 36;
-                go.AddComponent<Image>().color = ColorPalette.CardLight;
-
-                var layout = go.AddComponent<HorizontalLayoutGroup>();
-                layout.spacing = 8;
-                layout.childForceExpandWidth = true;
-                layout.childForceExpandHeight = true;
-                layout.padding = new RectOffset(8, 8, 4, 4);
-
-                if (result.Equipment != null)
-                {
-                    Color gradeColor = ColorPalette.GetEquipmentGradeColor(result.Equipment.Grade);
-                    var textGo = new GameObject("Text");
-                    textGo.transform.SetParent(go.transform, false);
-                    var tmp = textGo.AddComponent<TextMeshProUGUI>();
-                    string pityMark = result.IsPity ? " [PITY]" : "";
-                    string sMark = result.Equipment.IsS ? " [S]" : "";
-                    tmp.text = $"<color=#{ColorUtility.ToHtmlStringRGB(gradeColor)}>{result.Equipment.Name}{sMark}{pityMark}</color>";
-                    tmp.fontSize = 22;
-                    tmp.color = ColorPalette.Text;
-                    tmp.alignment = TextAlignmentOptions.Left;
-                    tmp.raycastTarget = false;
-                }
-
-                foreach (var r in result.Resources)
-                {
-                    var textGo = new GameObject("Resource");
-                    textGo.transform.SetParent(go.transform, false);
-                    var tmp = textGo.AddComponent<TextMeshProUGUI>();
-                    tmp.text = $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}";
-                    tmp.fontSize = 22;
-                    tmp.color = ColorPalette.Gold;
-                    tmp.alignment = TextAlignmentOptions.Left;
-                    tmp.raycastTarget = false;
-                }
-
-                _resultItems.Add(go);
-            }
+                Results = results,
+                OnPullAgain = pullAgainAction
+            });
         }
 
         public override void Refresh()
