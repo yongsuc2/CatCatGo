@@ -170,6 +170,9 @@ namespace CatCatGo.Presentation.Core
             if (_attackFramesCache == null)
                 _attackFramesCache = new Dictionary<string, Sprite[]>();
 
+            if (TryLoadIndividualFrames(id))
+                return;
+
             var tex = Resources.Load<Texture2D>($"Chars/{id}");
             if (tex == null)
             {
@@ -205,6 +208,58 @@ namespace CatCatGo.Presentation.Core
 
             _walkFramesCache[id] = walkFrames;
             _attackFramesCache[id] = attackFrames;
+        }
+
+        private bool TryLoadIndividualFrames(string id)
+        {
+            var first = Resources.Load<Texture2D>($"Chars/{id}/idle_0");
+            if (first == null) return false;
+
+            const int frameCount = 4;
+            var walkFrames = new Sprite[frameCount];
+            var attackFrames = new Sprite[frameCount];
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                var idleTex = Resources.Load<Texture2D>($"Chars/{id}/idle_{i}");
+                if (idleTex != null)
+                {
+                    walkFrames[i] = Sprite.Create(
+                        idleTex,
+                        new Rect(0, 0, idleTex.width, idleTex.height),
+                        new Vector2(0.5f, 0f),
+                        100f);
+                    walkFrames[i].name = $"{id}_walk_{i}";
+                }
+
+                var atkTex = Resources.Load<Texture2D>($"Chars/{id}/attack_{i}");
+                if (atkTex != null)
+                {
+                    attackFrames[i] = Sprite.Create(
+                        atkTex,
+                        new Rect(0, 0, atkTex.width, atkTex.height),
+                        new Vector2(0.5f, 0f),
+                        100f);
+                    attackFrames[i].name = $"{id}_attack_{i}";
+                }
+            }
+
+            if (walkFrames[0] == null)
+            {
+                _walkFramesCache[id] = new Sprite[0];
+                _attackFramesCache[id] = new Sprite[0];
+                return true;
+            }
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                if (walkFrames[i] == null) walkFrames[i] = walkFrames[0];
+                if (attackFrames[i] == null) attackFrames[i] = attackFrames[0] != null ? attackFrames[0] : walkFrames[0];
+            }
+
+            _walkFramesCache[id] = walkFrames;
+            _attackFramesCache[id] = attackFrames;
+            return true;
         }
 
         public Sprite GetIcon(string iconId)

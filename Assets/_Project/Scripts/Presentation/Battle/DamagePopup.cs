@@ -27,7 +27,7 @@ namespace CatCatGo.Presentation.Battle
             if (layout == null)
             {
                 layout = gameObject.AddComponent<HorizontalLayoutGroup>();
-                layout.spacing = 2f;
+                layout.spacing = 5f;
                 layout.childForceExpandWidth = false;
                 layout.childForceExpandHeight = false;
                 layout.childAlignment = TextAnchor.MiddleCenter;
@@ -39,8 +39,8 @@ namespace CatCatGo.Presentation.Battle
             _iconImage.preserveAspect = true;
             _iconImage.raycastTarget = false;
             var iconLe = iconGo.AddComponent<LayoutElement>();
-            iconLe.preferredWidth = 32f;
-            iconLe.preferredHeight = 32f;
+            iconLe.preferredWidth = 80f;
+            iconLe.preferredHeight = 80f;
             iconGo.SetActive(false);
 
             var textGo = new GameObject("Text");
@@ -87,22 +87,22 @@ namespace CatCatGo.Presentation.Battle
             if (isHeal)
             {
                 _text.color = ColorPalette.Heal;
-                _text.fontSize = 24f;
+                _text.fontSize = 60f;
             }
             else if (isCrit)
             {
                 _text.color = ColorPalette.Crit;
-                _text.fontSize = 28f;
+                _text.fontSize = 70f;
             }
             else if (isRage)
             {
                 _text.color = ColorPalette.Rage;
-                _text.fontSize = 26f;
+                _text.fontSize = 65f;
             }
             else
             {
                 _text.color = Color.white;
-                _text.fontSize = 22f;
+                _text.fontSize = 55f;
             }
 
             float duration = 0.6f / Mathf.Max(speed, 0.1f);
@@ -112,7 +112,7 @@ namespace CatCatGo.Presentation.Battle
         private IEnumerator AnimatePopup(float duration)
         {
             Vector3 startPos = _rectTransform.anchoredPosition;
-            Vector3 endPos = startPos + new Vector3(0f, 60f, 0f);
+            Vector3 endPos = startPos + new Vector3(0f, 150f, 0f);
             Color startColor = _text.color;
             Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
             Color iconStartColor = Color.white;

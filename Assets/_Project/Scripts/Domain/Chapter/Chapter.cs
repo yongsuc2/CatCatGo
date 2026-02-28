@@ -268,7 +268,7 @@ namespace CatCatGo.Domain.Chapter
             }
 
             float dayProgress = GetProgress();
-            var pool = EnemyTable.GetChapterEnemyPool();
+            var pool = EnemyTable.GetEnemyPoolForChapter(Id);
             int idx1 = _rng.NextInt(0, pool.Length - 1);
             string id1 = pool[idx1];
             var template1 = EnemyTemplate.FromId(id1);
@@ -296,7 +296,7 @@ namespace CatCatGo.Domain.Chapter
 
         public BattleInstance CreateEliteBattle(BattleUnit playerUnit)
         {
-            var assignment = EncounterDataTable.GetChapterBossAssignment(Id);
+            var assignment = EnemyTable.GetBossAssignmentForChapter(Id);
             var template = EnemyTemplate.FromId(assignment.Elite);
             if (template == null) return null;
 
@@ -307,7 +307,7 @@ namespace CatCatGo.Domain.Chapter
 
         public BattleInstance CreateMidBossBattle(BattleUnit playerUnit)
         {
-            var assignment = EncounterDataTable.GetChapterBossAssignment(Id);
+            var assignment = EnemyTable.GetBossAssignmentForChapter(Id);
             var template = EnemyTemplate.FromId(assignment.MidBoss);
             if (template == null) return null;
 
@@ -318,7 +318,7 @@ namespace CatCatGo.Domain.Chapter
 
         public BattleInstance CreateBossBattle(BattleUnit playerUnit)
         {
-            var assignment = EncounterDataTable.GetChapterBossAssignment(Id);
+            var assignment = EnemyTable.GetBossAssignmentForChapter(Id);
             var template = EnemyTemplate.FromId(assignment.Boss);
             if (template == null) return null;
 

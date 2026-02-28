@@ -18,6 +18,23 @@ namespace CatCatGo.Domain.Data
         public int RagePerAttack;
     }
 
+    public class ChapterTheme
+    {
+        public int MinChapter;
+        public int MaxChapter;
+        public string[] Enemy;
+        public string[] Elite;
+        public string[] Boss;
+        public List<BossRotationEntry> BossRotation;
+    }
+
+    public class BossRotationEntry
+    {
+        public string Elite;
+        public string MidBoss;
+        public string Boss;
+    }
+
     public static class EnemyTable
     {
         private static List<EnemyTemplateData> _templates;
@@ -26,6 +43,7 @@ namespace CatCatGo.Domain.Data
         private static string[] _bossPool;
         private static Stats _baseEnemyStats;
         private static Stats _baseBossStats;
+        private static List<ChapterTheme> _chapterThemes;
 
         private static void EnsureLoaded()
         {
@@ -71,6 +89,41 @@ namespace CatCatGo.Domain.Data
                 atk: b["atk"].Value<int>(), def: b["def"].Value<int>(),
                 crit: b["crit"]?.Value<float>() ?? 0f
             );
+
+            _chapterThemes = new List<ChapterTheme>();
+            var themesToken = data["chapterThemes"];
+            if (themesToken != null)
+            {
+                foreach (var th in themesToken)
+                {
+                    var theme = new ChapterTheme
+                    {
+                        MinChapter = th["minChapter"].Value<int>(),
+                        MaxChapter = th["maxChapter"].Value<int>(),
+                        Enemy = th["enemy"].Select(s => s.ToString()).ToArray(),
+                        Elite = th["elite"].Select(s => s.ToString()).ToArray(),
+                        Boss = th["boss"].Select(s => s.ToString()).ToArray(),
+                        BossRotation = new List<BossRotationEntry>(),
+                    };
+                    foreach (var rot in th["bossRotation"])
+                    {
+                        theme.BossRotation.Add(new BossRotationEntry
+                        {
+                            Elite = rot["elite"].ToString(),
+                            MidBoss = rot["midBoss"].ToString(),
+                            Boss = rot["boss"].ToString(),
+                        });
+                    }
+                    _chapterThemes.Add(theme);
+                }
+            }
+        }
+
+        private static ChapterTheme GetThemeForChapter(int chapterId)
+        {
+            EnsureLoaded();
+            if (_chapterThemes == null) return null;
+            return _chapterThemes.FirstOrDefault(t => chapterId >= t.MinChapter && chapterId <= t.MaxChapter);
         }
 
         public static EnemyTemplateData GetTemplate(string id)
@@ -91,6 +144,51 @@ namespace CatCatGo.Domain.Data
             EnsureLoaded();
             float factor = Mathf.Pow(BattleDataTable.Data.Enemy.ScalingPerTowerFloor, floor - 1);
             return baseStats.Multiply(factor);
+        }
+
+        public static string[] GetEnemyPoolForChapter(int chapterId)
+        {
+            var theme = GetThemeForChapter(chapterId);
+            if (theme != null) return theme.Enemy;
+            EnsureLoaded();
+            return _enemyPool;
+        }
+
+        public static string[] GetElitePoolForChapter(int chapterId)
+        {
+            var theme = GetThemeForChapter(chapterId);
+            if (theme != null) return theme.Elite;
+            EnsureLoaded();
+            return _elitePool;
+        }
+
+        public static string[] GetBossPoolForChapter(int chapterId)
+        {
+            var theme = GetThemeForChapter(chapterId);
+            if (theme != null) return theme.Boss;
+            EnsureLoaded();
+            return _bossPool;
+        }
+
+        public static BossRotationEntry GetBossAssignmentForChapter(int chapterId)
+        {
+            var theme = GetThemeForChapter(chapterId);
+            if (theme != null && theme.BossRotation.Count > 0)
+            {
+                int themeLocalIndex = chapterId - theme.MinChapter;
+                return theme.BossRotation[themeLocalIndex % theme.BossRotation.Count];
+            }
+            EnsureLoaded();
+            if (_chapterThemes != null && _chapterThemes.Count > 0 && _chapterThemes[0].BossRotation.Count > 0)
+            {
+                return _chapterThemes[0].BossRotation[(chapterId - 1) % _chapterThemes[0].BossRotation.Count];
+            }
+            return new BossRotationEntry
+            {
+                Elite = _elitePool[0],
+                MidBoss = _bossPool[0],
+                Boss = _bossPool[0],
+            };
         }
 
         public static string GetRandomEnemyId()

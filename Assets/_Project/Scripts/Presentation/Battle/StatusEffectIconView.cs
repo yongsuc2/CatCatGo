@@ -35,7 +35,7 @@ namespace CatCatGo.Presentation.Battle
             var rt = gameObject.GetComponent<RectTransform>();
 
             if (rt == null) rt = gameObject.AddComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(36f, 36f);
+            rt.sizeDelta = new Vector2(90f, 90f);
 
             _background = gameObject.AddComponent<Image>();
             _background.sprite = PlaceholderGenerator.CreateCircle(10, Color.white);
@@ -52,7 +52,7 @@ namespace CatCatGo.Presentation.Battle
             textRt.offsetMax = Vector2.zero;
 
             _label = textGo.AddComponent<TextMeshProUGUI>();
-            _label.fontSize = 22f;
+            _label.fontSize = 55f;
             _label.color = Color.white;
             _label.alignment = TextAlignmentOptions.Center;
             _label.enableWordWrapping = false;

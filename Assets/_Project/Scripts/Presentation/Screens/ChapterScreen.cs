@@ -243,7 +243,7 @@ namespace CatCatGo.Presentation.Screens
                 var rt = iconGo.GetComponent<RectTransform>();
 
                 if (rt == null) rt = iconGo.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(144f, 144f);
+                rt.sizeDelta = new Vector2(576f, 576f);
 
                 var img = iconGo.AddComponent<Image>();
                 img.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
