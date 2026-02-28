@@ -44,6 +44,7 @@ namespace CatCatGo.Presentation.Popups
             titleGo.transform.SetParent(transform, false);
             var titleLe = titleGo.AddComponent<LayoutElement>();
             titleLe.preferredHeight = 50f;
+            titleLe.flexibleHeight = 0;
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
             int count = popupData.Results.Count;
             titleTmp.text = count > 1 ? $"\ubd51\uae30 \uacb0\uacfc ({count}\ud68c)" : "\ubd51\uae30 \uacb0\uacfc";
@@ -105,6 +106,7 @@ namespace CatCatGo.Presentation.Popups
             var btnRowLe = btnRow.AddComponent<LayoutElement>();
             btnRowLe.minHeight = UISize.NormalButtonMinHeight;
             btnRowLe.preferredHeight = UISize.NormalButtonHeight;
+            btnRowLe.flexibleHeight = 0;
             var btnRowLayout = btnRow.AddComponent<HorizontalLayoutGroup>();
             btnRowLayout.spacing = 16f;
             btnRowLayout.childForceExpandWidth = true;
