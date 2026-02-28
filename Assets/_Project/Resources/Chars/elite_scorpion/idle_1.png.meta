@@ -8,12 +8,6 @@ TextureImporter:
   - first:
       213: 2787886163086387872
     second: idle_1_1
-  - first:
-      213: -3168912229988777216
-    second: idle_1_2
-  - first:
-      213: -6482940811032725436
-    second: idle_1_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,10 +119,10 @@ TextureImporter:
       name: idle_1_0
       rect:
         serializedVersion: 2
-        x: 417
-        y: 495
-        width: 78
-        height: 16
+        x: 58
+        y: 15
+        width: 396
+        height: 479
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -147,10 +141,10 @@ TextureImporter:
       name: idle_1_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 512
-        height: 489
+        x: 196
+        y: 1
+        width: 47
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -161,50 +155,6 @@ TextureImporter:
       bones: []
       spriteID: 0aaadf8c1bf80b620800000000000000
       internalID: 2787886163086387872
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_1_2
-      rect:
-        serializedVersion: 2
-        x: 245
-        y: 0
-        width: 90
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 003c02fcd13c504d0800000000000000
-      internalID: -3168912229988777216
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_1_3
-      rect:
-        serializedVersion: 2
-        x: 492
-        y: 5
-        width: 8
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 448f2823ea7f706a0800000000000000
-      internalID: -6482940811032725436
       vertices: []
       indices: 
       edges: []
@@ -225,8 +175,6 @@ TextureImporter:
     nameFileIdTable:
       idle_1_0: -4753702385071775785
       idle_1_1: 2787886163086387872
-      idle_1_2: -3168912229988777216
-      idle_1_3: -6482940811032725436
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

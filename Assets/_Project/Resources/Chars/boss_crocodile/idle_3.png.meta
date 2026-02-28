@@ -5,21 +5,6 @@ TextureImporter:
   - first:
       213: 2244847242733787956
     second: idle_3_0
-  - first:
-      213: -4218994467266859759
-    second: idle_3_1
-  - first:
-      213: 9014226229686443194
-    second: idle_3_2
-  - first:
-      213: 7901258135295474808
-    second: idle_3_3
-  - first:
-      213: -4821669098278433123
-    second: idle_3_4
-  - first:
-      213: -2684963918724456850
-    second: idle_3_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -131,10 +116,10 @@ TextureImporter:
       name: idle_3_0
       rect:
         serializedVersion: 2
-        x: 32
-        y: 253
-        width: 232
-        height: 241
+        x: 0
+        y: 0
+        width: 448
+        height: 475
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,116 +130,6 @@ TextureImporter:
       bones: []
       spriteID: 43b992e6cac472f10800000000000000
       internalID: 2244847242733787956
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_3_1
-      rect:
-        serializedVersion: 2
-        x: 223
-        y: 271
-        width: 42
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 11d683d92ee1375c0800000000000000
-      internalID: -4218994467266859759
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_3_2
-      rect:
-        serializedVersion: 2
-        x: 311
-        y: 255
-        width: 201
-        height: 234
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: abc18791ff6f81d70800000000000000
-      internalID: 9014226229686443194
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_3_3
-      rect:
-        serializedVersion: 2
-        x: 275
-        y: 13
-        width: 216
-        height: 217
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 87cb3f05968e6ad60800000000000000
-      internalID: 7901258135295474808
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_3_4
-      rect:
-        serializedVersion: 2
-        x: 409
-        y: 215
-        width: 48
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d9ec2ac508df51db0800000000000000
-      internalID: -4821669098278433123
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_3_5
-      rect:
-        serializedVersion: 2
-        x: 35
-        y: 10
-        width: 216
-        height: 193
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e6e10bd9a871dbad0800000000000000
-      internalID: -2684963918724456850
       vertices: []
       indices: 
       edges: []
@@ -274,11 +149,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       idle_3_0: 2244847242733787956
-      idle_3_1: -4218994467266859759
-      idle_3_2: 9014226229686443194
-      idle_3_3: 7901258135295474808
-      idle_3_4: -4821669098278433123
-      idle_3_5: -2684963918724456850
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

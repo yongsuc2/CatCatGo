@@ -5,15 +5,6 @@ TextureImporter:
   - first:
       213: -7451426116336585031
     second: idle_0_0
-  - first:
-      213: -6069315369603176628
-    second: idle_0_1
-  - first:
-      213: -2278703740257152110
-    second: idle_0_2
-  - first:
-      213: -7920898961270806591
-    second: idle_0_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,10 +116,10 @@ TextureImporter:
       name: idle_0_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 255
-        width: 233
-        height: 239
+        x: 0
+        y: 0
+        width: 448
+        height: 475
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -139,72 +130,6 @@ TextureImporter:
       bones: []
       spriteID: 9b670b13d67379890800000000000000
       internalID: -7451426116336585031
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_0_1
-      rect:
-        serializedVersion: 2
-        x: 196
-        y: 266
-        width: 69
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c47ebf4f3d575cba0800000000000000
-      internalID: -6069315369603176628
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_0_2
-      rect:
-        serializedVersion: 2
-        x: 274
-        y: 12
-        width: 238
-        height: 476
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2935e95750b6060e0800000000000000
-      internalID: -2278703740257152110
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: idle_0_3
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 10
-        width: 218
-        height: 195
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1c761b78c50531290800000000000000
-      internalID: -7920898961270806591
       vertices: []
       indices: 
       edges: []
@@ -224,9 +149,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       idle_0_0: -7451426116336585031
-      idle_0_1: -6069315369603176628
-      idle_0_2: -2278703740257152110
-      idle_0_3: -7920898961270806591
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

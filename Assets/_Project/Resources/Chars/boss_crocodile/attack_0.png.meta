@@ -5,15 +5,6 @@ TextureImporter:
   - first:
       213: 9034717776508967235
     second: attack_0_0
-  - first:
-      213: 5172927963229605325
-    second: attack_0_1
-  - first:
-      213: -6006936317945349116
-    second: attack_0_2
-  - first:
-      213: 152333444978185678
-    second: attack_0_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,10 +116,10 @@ TextureImporter:
       name: attack_0_0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 253
-        width: 235
-        height: 238
+        x: 67
+        y: 34
+        width: 392
+        height: 444
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -139,72 +130,6 @@ TextureImporter:
       bones: []
       spriteID: 34959b223f3c16d70800000000000000
       internalID: 9034717776508967235
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack_0_1
-      rect:
-        serializedVersion: 2
-        x: 312
-        y: 255
-        width: 195
-        height: 233
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dcd4cf0439ee9c740800000000000000
-      internalID: 5172927963229605325
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack_0_2
-      rect:
-        serializedVersion: 2
-        x: 35
-        y: 13
-        width: 216
-        height: 190
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 40c7974be3313aca0800000000000000
-      internalID: -6006936317945349116
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack_0_3
-      rect:
-        serializedVersion: 2
-        x: 281
-        y: 15
-        width: 208
-        height: 202
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ec5165b06723d1200800000000000000
-      internalID: 152333444978185678
       vertices: []
       indices: 
       edges: []
@@ -224,9 +149,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       attack_0_0: 9034717776508967235
-      attack_0_1: 5172927963229605325
-      attack_0_2: -6006936317945349116
-      attack_0_3: 152333444978185678
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

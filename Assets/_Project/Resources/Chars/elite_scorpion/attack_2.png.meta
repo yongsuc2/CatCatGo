@@ -119,10 +119,10 @@ TextureImporter:
       name: attack_2_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 21
-        width: 362
-        height: 443
+        x: 0
+        y: 0
+        width: 454
+        height: 496
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,10 +141,10 @@ TextureImporter:
       name: attack_2_1
       rect:
         serializedVersion: 2
-        x: 223
-        y: 0
-        width: 289
-        height: 488
+        x: 210
+        y: 7
+        width: 45
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

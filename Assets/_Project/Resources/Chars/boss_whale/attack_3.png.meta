@@ -5,12 +5,6 @@ TextureImporter:
   - first:
       213: -5380739489725017918
     second: attack_3_0
-  - first:
-      213: -4247717978914183710
-    second: attack_3_1
-  - first:
-      213: -4717293389601449187
-    second: attack_3_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -122,10 +116,10 @@ TextureImporter:
       name: attack_3_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 224
-        width: 478
-        height: 224
+        x: 55
+        y: 18
+        width: 399
+        height: 465
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,50 +130,6 @@ TextureImporter:
       bones: []
       spriteID: 2c0160641f5c355b0800000000000000
       internalID: -5380739489725017918
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack_3_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 60
-        width: 259
-        height: 138
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2e5a7c8e0031d05c0800000000000000
-      internalID: -4247717978914183710
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack_3_2
-      rect:
-        serializedVersion: 2
-        x: 259
-        y: 56
-        width: 235
-        height: 139
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d1bd18bc7aec88eb0800000000000000
-      internalID: -4717293389601449187
       vertices: []
       indices: 
       edges: []
@@ -199,8 +149,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       attack_3_0: -5380739489725017918
-      attack_3_1: -4247717978914183710
-      attack_3_2: -4717293389601449187
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -8,6 +8,12 @@ TextureImporter:
   - first:
       213: 42540282074972397
     second: attack_1_1
+  - first:
+      213: 1427936120346131835
+    second: attack_1_2
+  - first:
+      213: -1450166047590963086
+    second: attack_1_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -120,9 +126,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 146
-        width: 206
-        height: 235
+        y: 298
+        width: 203
+        height: 177
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,10 +147,10 @@ TextureImporter:
       name: attack_1_1
       rect:
         serializedVersion: 2
-        x: 285
-        y: 149
-        width: 203
-        height: 228
+        x: 363
+        y: 295
+        width: 130
+        height: 158
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,6 +161,50 @@ TextureImporter:
       bones: []
       spriteID: de049b14922279000800000000000000
       internalID: 42540282074972397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: attack_1_2
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 37
+        width: 203
+        height: 172
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7d3e2ff55c01d310800000000000000
+      internalID: 1427936120346131835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: attack_1_3
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 52
+        width: 216
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 278220cb9a9ffdbe0800000000000000
+      internalID: -1450166047590963086
       vertices: []
       indices: 
       edges: []
@@ -175,6 +225,8 @@ TextureImporter:
     nameFileIdTable:
       attack_1_0: -3297650188656544483
       attack_1_1: 42540282074972397
+      attack_1_2: 1427936120346131835
+      attack_1_3: -1450166047590963086
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
