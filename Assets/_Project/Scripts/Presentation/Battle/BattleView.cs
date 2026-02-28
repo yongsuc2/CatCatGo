@@ -103,8 +103,8 @@ namespace CatCatGo.Presentation.Battle
             _battleField = fieldGo.GetComponent<RectTransform>();
 
             if (_battleField == null) _battleField = fieldGo.AddComponent<RectTransform>();
-            _battleField.anchorMin = new Vector2(0f, 0.1f);
-            _battleField.anchorMax = new Vector2(1f, 0.85f);
+            _battleField.anchorMin = new Vector2(0f, 0.05f);
+            _battleField.anchorMax = new Vector2(1f, 0.92f);
             _battleField.offsetMin = Vector2.zero;
             _battleField.offsetMax = Vector2.zero;
             var fieldBg = fieldGo.AddComponent<Image>();
@@ -185,7 +185,7 @@ namespace CatCatGo.Presentation.Battle
                     _playerView.SetFrames(walkFrames, attackFrames);
             }
 
-            _playerView.SetOriginalPosition(new Vector2(-120f, 0f));
+            _playerView.SetOriginalPosition(new Vector2(-180f, 0f));
             _playerView.UpdateHp(battle.Player.CurrentHp, battle.Player.MaxHp);
             _playerView.UpdateRage(battle.Player.Rage, battle.Player.MaxRage);
             _playerView.UpdateShield(battle.Player.Shield, battle.Player.MaxHp);
@@ -193,7 +193,7 @@ namespace CatCatGo.Presentation.Battle
 
             int enemyCount = battle.Enemies.Count;
             float enemySpacing = 90f;
-            float enemyStartX = 120f;
+            float enemyStartX = 160f;
 
             for (int i = 0; i < MAX_ENEMIES; i++)
             {
