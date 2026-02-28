@@ -192,8 +192,8 @@ namespace CatCatGo.Presentation.Battle
             _playerView.UpdateStatusEffects(battle.Player.StatusEffects);
 
             int enemyCount = battle.Enemies.Count;
-            float enemySpacing = 80f;
-            float enemyStartY = (enemyCount - 1) * enemySpacing / 2f;
+            float enemySpacing = 90f;
+            float enemyStartX = 120f;
 
             for (int i = 0; i < MAX_ENEMIES; i++)
             {
@@ -212,7 +212,7 @@ namespace CatCatGo.Presentation.Battle
                             _enemyViews[i].SetFrames(ew, ea);
                     }
 
-                    _enemyViews[i].SetOriginalPosition(new Vector2(120f, enemyStartY - i * enemySpacing));
+                    _enemyViews[i].SetOriginalPosition(new Vector2(enemyStartX + i * enemySpacing, 0f));
                     _enemyViews[i].UpdateHp(enemy.CurrentHp, enemy.MaxHp);
                     _enemyViews[i].UpdateRage(enemy.Rage, enemy.MaxRage);
                     _enemyViews[i].UpdateShield(enemy.Shield, enemy.MaxHp);
