@@ -61,6 +61,7 @@ namespace CatCatGo.Services
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            Application.runInBackground = true;
             Initialize();
         }
 
