@@ -1,26 +1,26 @@
 {
   "templates": [
-    { "id": "slime", "name": "Slime", "hp": 110, "atk": 7, "def": 3, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
-    { "id": "goblin", "name": "Goblin", "hp": 80, "atk": 10, "def": 4, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
-    { "id": "skeleton", "name": "Skeleton", "hp": 60, "atk": 14, "def": 2, "crit": 0, "skillIds": ["poison_inject"], "isBoss": false, "ragePerAttack": 25 },
-    { "id": "orc", "name": "Orc", "hp": 90, "atk": 12, "def": 3, "crit": 0, "skillIds": ["multi_hit"], "isBoss": false, "ragePerAttack": 25 },
-    { "id": "dark_knight", "name": "Dark Knight", "hp": 70, "atk": 8, "def": 8, "crit": 0, "skillIds": ["counter", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "ant", "name": "일개미", "hp": 110, "atk": 7, "def": 3, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "sparrow", "name": "참새", "hp": 80, "atk": 10, "def": 4, "crit": 0, "skillIds": [], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "spider", "name": "거미", "hp": 60, "atk": 14, "def": 2, "crit": 0, "skillIds": ["poison_inject"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "squirrel", "name": "다람쥐", "hp": 90, "atk": 12, "def": 3, "crit": 0, "skillIds": ["multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "hedgehog", "name": "고슴도치", "hp": 70, "atk": 8, "def": 8, "crit": 0, "skillIds": ["counter", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
 
-    { "id": "elite_wolf", "name": "Alpha Wolf", "hp": 260, "atk": 24, "def": 9, "crit": 0, "skillIds": ["multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
-    { "id": "elite_mage", "name": "Dark Mage", "hp": 220, "atk": 28, "def": 6, "crit": 0, "skillIds": ["lightning_summon", "flame_summon"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_mantis", "name": "왕사마귀", "hp": 260, "atk": 24, "def": 9, "crit": 0, "skillIds": ["multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_eagle", "name": "독수리", "hp": 220, "atk": 28, "def": 6, "crit": 0, "skillIds": ["lightning_summon", "flame_summon"], "isBoss": false, "ragePerAttack": 25 },
 
-    { "id": "boss_dragon", "name": "Ancient Dragon", "hp": 750, "atk": 34, "def": 15, "crit": 0, "skillIds": ["lightning_summon", "flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
-    { "id": "boss_demon", "name": "Demon Lord", "hp": 650, "atk": 38, "def": 12, "crit": 0, "skillIds": ["poison_inject", "lifesteal", "flame_summon"], "isBoss": true, "ragePerAttack": 25 },
-    { "id": "boss_golem", "name": "Stone Golem", "hp": 1000, "atk": 24, "def": 25, "crit": 0, "skillIds": ["counter", "iron_shield", "poison_inject"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_bear", "name": "큰곰", "hp": 750, "atk": 34, "def": 15, "crit": 0, "skillIds": ["lightning_summon", "flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_snake", "name": "왕뱀", "hp": 650, "atk": 38, "def": 12, "crit": 0, "skillIds": ["poison_inject", "lifesteal", "flame_summon"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_elephant", "name": "코끼리", "hp": 1000, "atk": 24, "def": 25, "crit": 0, "skillIds": ["counter", "iron_shield", "poison_inject"], "isBoss": true, "ragePerAttack": 25 },
 
-    { "id": "dungeon_dragon", "name": "Dungeon Dragon", "hp": 500, "atk": 28, "def": 12, "crit": 0, "skillIds": ["flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
-    { "id": "world_tree", "name": "World Tree", "hp": 600, "atk": 22, "def": 18, "crit": 0, "skillIds": ["poison_inject", "counter"], "isBoss": true, "ragePerAttack": 25 },
-    { "id": "harpy", "name": "Harpy", "hp": 400, "atk": 32, "def": 8, "crit": 0, "skillIds": ["multi_hit", "lightning_summon"], "isBoss": true, "ragePerAttack": 25 }
+    { "id": "dungeon_queen_bee", "name": "여왕벌", "hp": 500, "atk": 28, "def": 12, "crit": 0, "skillIds": ["flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "dungeon_old_tree", "name": "고목나무 정령", "hp": 600, "atk": 22, "def": 18, "crit": 0, "skillIds": ["poison_inject", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "dungeon_tiger", "name": "백호", "hp": 400, "atk": 32, "def": 8, "crit": 0, "skillIds": ["multi_hit", "lightning_summon"], "isBoss": true, "ragePerAttack": 25 }
   ],
   "pools": {
-    "enemy": ["slime", "goblin", "skeleton", "orc", "dark_knight"],
-    "elite": ["elite_wolf", "elite_mage"],
-    "boss": ["boss_dragon", "boss_demon", "boss_golem"]
+    "enemy": ["ant", "sparrow", "spider", "squirrel", "hedgehog"],
+    "elite": ["elite_mantis", "elite_eagle"],
+    "boss": ["boss_bear", "boss_snake", "boss_elephant"]
   },
   "baseStats": {
     "enemy": { "hp": 80, "atk": 8, "def": 3, "crit": 0 },

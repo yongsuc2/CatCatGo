@@ -336,9 +336,9 @@ namespace CatCatGo.Presentation.Screens
             var dungeonTypes = new[] { DungeonType.DRAGON_NEST, DungeonType.CELESTIAL_TREE, DungeonType.SKY_ISLAND };
             var dungeonNames = new Dictionary<DungeonType, string>
             {
-                { DungeonType.DRAGON_NEST, "\ub4dc\ub798\uace4 \ub465\uc9c0" },
-                { DungeonType.CELESTIAL_TREE, "\uc138\uacc4\uc218" },
-                { DungeonType.SKY_ISLAND, "\ud558\ub298\uc12c" },
+                { DungeonType.DRAGON_NEST, "\uac70\ub300 \ubc8c\uc9d1" },
+                { DungeonType.CELESTIAL_TREE, "\uc218\ucc9c\ub144 \uace0\ubaa9" },
+                { DungeonType.SKY_ISLAND, "\ud638\ub791\uc774 \uc808\ubcbd" },
             };
 
             foreach (var type in dungeonTypes)

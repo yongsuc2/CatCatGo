@@ -87,9 +87,9 @@
     { "day": 50, "chance": 0.3 }
   ],
   "chapterBossAssignment": [
-    { "elite": "elite_wolf", "midBoss": "boss_demon", "boss": "boss_dragon" },
-    { "elite": "elite_mage", "midBoss": "boss_golem", "boss": "boss_demon" },
-    { "elite": "elite_wolf", "midBoss": "boss_dragon", "boss": "boss_golem" }
+    { "elite": "elite_mantis", "midBoss": "boss_snake", "boss": "boss_bear" },
+    { "elite": "elite_eagle", "midBoss": "boss_elephant", "boss": "boss_snake" },
+    { "elite": "elite_mantis", "midBoss": "boss_bear", "boss": "boss_elephant" }
   ],
   "chapterClearReward": {
     "goldBase": 200,
