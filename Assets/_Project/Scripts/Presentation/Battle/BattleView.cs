@@ -176,6 +176,15 @@ namespace CatCatGo.Presentation.Battle
 
             _playerView.gameObject.SetActive(true);
             _playerView.Setup(battle.Player.Name, battle.Player.MaxHp, battle.Player.MaxRage, false, new Color(0.3f, 0.7f, 0.4f));
+
+            if (SpriteManager.Instance != null)
+            {
+                var walkFrames = SpriteManager.Instance.GetPlayerWalkFrames();
+                var attackFrames = SpriteManager.Instance.GetPlayerAttackFrames();
+                if (walkFrames.Length > 0)
+                    _playerView.SetFrames(walkFrames, attackFrames);
+            }
+
             _playerView.SetOriginalPosition(new Vector2(-120f, 0f));
             _playerView.UpdateHp(battle.Player.CurrentHp, battle.Player.MaxHp);
             _playerView.UpdateRage(battle.Player.Rage, battle.Player.MaxRage);

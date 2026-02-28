@@ -26,6 +26,12 @@ namespace CatCatGo.Presentation.Battle
 
         private Vector2 _originalPosition;
         private Coroutine _phaseCoroutine;
+        private Coroutine _animCoroutine;
+
+        private Sprite[] _walkFrames;
+        private Sprite[] _attackFrames;
+        private bool _useFrames;
+        private const float FRAME_INTERVAL = 0.15f;
 
         private readonly List<StatusEffectIconView> _statusIcons = new List<StatusEffectIconView>();
         private int _maxHp;
@@ -59,6 +65,26 @@ namespace CatCatGo.Presentation.Battle
 
             _shieldOverlay.gameObject.SetActive(false);
             ClearStatusEffects();
+        }
+
+        public void SetFrames(Sprite[] walkFrames, Sprite[] attackFrames)
+        {
+            _walkFrames = walkFrames;
+            _attackFrames = attackFrames;
+            _useFrames = walkFrames != null && walkFrames.Length > 0;
+
+            if (!_useFrames || _spriteImage == null) return;
+
+            _spriteImage.preserveAspect = true;
+            _spriteImage.sprite = walkFrames[0];
+
+            var spriteRt = _spriteImage.GetComponent<RectTransform>();
+            spriteRt.sizeDelta = new Vector2(90f, 180f);
+            spriteRt.anchoredPosition = new Vector2(0f, 55f);
+
+            _rectTransform.sizeDelta = new Vector2(90f, 230f);
+
+            StartFrameAnimation(_walkFrames);
         }
 
         public void UpdateHp(int current, int max)
@@ -129,6 +155,14 @@ namespace CatCatGo.Presentation.Battle
             if (_phaseCoroutine != null)
                 StopCoroutine(_phaseCoroutine);
 
+            if (_useFrames)
+            {
+                if (phase == AttackPhase.Hit)
+                    StartFrameAnimation(_attackFrames);
+                else
+                    StartFrameAnimation(_walkFrames);
+            }
+
             switch (phase)
             {
                 case AttackPhase.Approach:
@@ -160,6 +194,9 @@ namespace CatCatGo.Presentation.Battle
                 StopCoroutine(_phaseCoroutine);
                 _phaseCoroutine = null;
             }
+            StopFrameAnimation();
+            if (_useFrames && _walkFrames != null && _walkFrames.Length > 0)
+                _spriteImage.sprite = _walkFrames[0];
             if (_rectTransform != null)
                 _rectTransform.anchoredPosition = _originalPosition;
         }
@@ -194,6 +231,33 @@ namespace CatCatGo.Presentation.Battle
             }
             _rectTransform.anchoredPosition = origin;
             _phaseCoroutine = null;
+        }
+
+        private void StartFrameAnimation(Sprite[] frames)
+        {
+            StopFrameAnimation();
+            if (frames != null && frames.Length > 0)
+                _animCoroutine = StartCoroutine(AnimateFrames(frames));
+        }
+
+        private void StopFrameAnimation()
+        {
+            if (_animCoroutine != null)
+            {
+                StopCoroutine(_animCoroutine);
+                _animCoroutine = null;
+            }
+        }
+
+        private IEnumerator AnimateFrames(Sprite[] frames)
+        {
+            int index = 0;
+            while (true)
+            {
+                _spriteImage.sprite = frames[index];
+                index = (index + 1) % frames.Length;
+                yield return new WaitForSeconds(FRAME_INTERVAL);
+            }
         }
 
         private void ClearStatusEffects()
@@ -368,6 +432,7 @@ namespace CatCatGo.Presentation.Battle
 
         private void OnDestroy()
         {
+            StopFrameAnimation();
             ClearStatusEffects();
         }
     }

@@ -20,6 +20,9 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<string, Sprite> _equipIconByKey;
         private Dictionary<string, Sprite> _skillIconByKey;
 
+        private Sprite[] _playerWalkFrames;
+        private Sprite[] _playerAttackFrames;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -125,6 +128,55 @@ namespace CatCatGo.Presentation.Core
                     if (entry.sprite != null)
                         _iconLookup[entry.id] = entry.sprite;
                 }
+            }
+        }
+
+        public Sprite[] GetPlayerWalkFrames()
+        {
+            if (_playerWalkFrames == null)
+                LoadPlayerSpriteSheet();
+            return _playerWalkFrames;
+        }
+
+        public Sprite[] GetPlayerAttackFrames()
+        {
+            if (_playerAttackFrames == null)
+                LoadPlayerSpriteSheet();
+            return _playerAttackFrames;
+        }
+
+        private void LoadPlayerSpriteSheet()
+        {
+            var tex = Resources.Load<Texture2D>("Chars/player");
+            if (tex == null)
+            {
+                _playerWalkFrames = new Sprite[0];
+                _playerAttackFrames = new Sprite[0];
+                return;
+            }
+
+            int cols = 4;
+            int frameW = tex.width / cols;
+            int frameH = tex.height / 2;
+
+            _playerWalkFrames = new Sprite[cols];
+            _playerAttackFrames = new Sprite[cols];
+
+            for (int i = 0; i < cols; i++)
+            {
+                _playerWalkFrames[i] = Sprite.Create(
+                    tex,
+                    new Rect(i * frameW, frameH, frameW, frameH),
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+                _playerWalkFrames[i].name = $"player_walk_{i}";
+
+                _playerAttackFrames[i] = Sprite.Create(
+                    tex,
+                    new Rect(i * frameW, 0, frameW, frameH),
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+                _playerAttackFrames[i].name = $"player_attack_{i}";
             }
         }
 
