@@ -9,25 +9,32 @@ namespace CatCatGo.Presentation.Battle
 {
     public class StatusEffectIconView : MonoBehaviour
     {
-        private Image _background;
+        private Image _icon;
         private TextMeshProUGUI _label;
 
         public void Setup(StatusEffectType type, int count, int remainingTurns)
         {
-            if (_background == null)
+            if (_icon == null)
                 BuildUI();
 
-            bool isBuff = type == StatusEffectType.ATK_UP
-                       || type == StatusEffectType.DEF_UP
-                       || type == StatusEffectType.CRIT_UP
-                       || type == StatusEffectType.REGEN;
+            var sprite = Resources.Load<Sprite>($"StatusEffects/{GetResourceName(type)}");
+            if (sprite != null)
+            {
+                _icon.sprite = sprite;
+                _icon.color = Color.white;
+            }
+            else
+            {
+                bool isBuff = type == StatusEffectType.ATK_UP
+                           || type == StatusEffectType.DEF_UP
+                           || type == StatusEffectType.CRIT_UP
+                           || type == StatusEffectType.REGEN;
+                _icon.color = isBuff ? ColorPalette.Heal : ColorPalette.Hp;
+            }
 
-            _background.color = isBuff ? ColorPalette.Heal : ColorPalette.Hp;
-
-            string abbrev = GetAbbreviation(type);
             string turnsText = remainingTurns < 999 ? remainingTurns.ToString() : "";
             string countText = count > 1 ? $"x{count}" : "";
-            _label.text = $"{abbrev}{countText}\n{turnsText}";
+            _label.text = countText + (countText.Length > 0 && turnsText.Length > 0 ? "\n" : "") + turnsText;
         }
 
         private void BuildUI()
@@ -37,9 +44,8 @@ namespace CatCatGo.Presentation.Battle
             if (rt == null) rt = gameObject.AddComponent<RectTransform>();
             rt.sizeDelta = new Vector2(90f, 90f);
 
-            _background = gameObject.AddComponent<Image>();
-            _background.sprite = PlaceholderGenerator.CreateCircle(10, Color.white);
-            _background.type = Image.Type.Simple;
+            _icon = gameObject.AddComponent<Image>();
+            _icon.preserveAspect = true;
 
             var textGo = new GameObject("Label");
             textGo.transform.SetParent(transform, false);
@@ -59,20 +65,20 @@ namespace CatCatGo.Presentation.Battle
             _label.overflowMode = TextOverflowModes.Overflow;
         }
 
-        private static string GetAbbreviation(StatusEffectType type)
+        private static string GetResourceName(StatusEffectType type)
         {
             switch (type)
             {
-                case StatusEffectType.POISON: return "P";
-                case StatusEffectType.BURN: return "B";
-                case StatusEffectType.REGEN: return "R";
-                case StatusEffectType.ATK_UP: return "A+";
-                case StatusEffectType.ATK_DOWN: return "A-";
-                case StatusEffectType.DEF_UP: return "D+";
-                case StatusEffectType.DEF_DOWN: return "D-";
-                case StatusEffectType.CRIT_UP: return "C+";
-                case StatusEffectType.STUN: return "S";
-                default: return "?";
+                case StatusEffectType.POISON: return "status_poison";
+                case StatusEffectType.BURN: return "status_burn";
+                case StatusEffectType.REGEN: return "status_regen";
+                case StatusEffectType.ATK_UP: return "status_atk_up";
+                case StatusEffectType.ATK_DOWN: return "status_atk_down";
+                case StatusEffectType.DEF_UP: return "status_def_up";
+                case StatusEffectType.DEF_DOWN: return "status_def_down";
+                case StatusEffectType.CRIT_UP: return "status_crit_up";
+                case StatusEffectType.STUN: return "status_stun";
+                default: return "";
             }
         }
     }

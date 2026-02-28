@@ -410,7 +410,7 @@ namespace CatCatGo.Presentation.Battle
         private void UpdateHpText(int current, int max)
         {
             if (_hpText != null)
-                _hpText.text = $"{NumberFormatter.FormatInt(Mathf.Max(0, current))}/{NumberFormatter.FormatInt(max)}";
+                _hpText.text = NumberFormatter.FormatInt(Mathf.Max(0, current));
         }
 
         private void BuildUI(bool isBoss, Color placeholderColor)
@@ -454,7 +454,7 @@ namespace CatCatGo.Presentation.Battle
 
             float barY = -charSize / 2f - 4f;
 
-            _hpBar = CreateBar("HpBar", barY, new Vector2(charSize + 20f, 26f), ColorPalette.Hp);
+            _hpBar = CreateBar("HpBar", barY, new Vector2(charSize + 20f, 36f), ColorPalette.Hp);
             _hpFill = _hpBar.fillRect.GetComponent<Image>();
 
             var hpTextGo = new GameObject("HpText");
@@ -467,11 +467,11 @@ namespace CatCatGo.Presentation.Battle
             hpTextRt.offsetMin = Vector2.zero;
             hpTextRt.offsetMax = Vector2.zero;
             _hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
-            _hpText.fontSize = 18f;
+            _hpText.fontSize = 27f;
             _hpText.color = Color.white;
             _hpText.alignment = TextAlignmentOptions.Center;
             _hpText.enableWordWrapping = false;
-            _hpText.overflowMode = TextOverflowModes.Ellipsis;
+            _hpText.overflowMode = TextOverflowModes.Overflow;
             _hpText.raycastTarget = false;
 
             _shieldOverlay = CreateOverlay("Shield", _hpBar.transform, new Color(0.3f, 0.6f, 1f, 0.5f));
@@ -486,7 +486,7 @@ namespace CatCatGo.Presentation.Battle
             _statusContainer = statusGo.GetComponent<RectTransform>();
 
             if (_statusContainer == null) _statusContainer = statusGo.AddComponent<RectTransform>();
-            _statusContainer.anchoredPosition = new Vector2(0f, barY - 20f);
+            _statusContainer.anchoredPosition = new Vector2(0f, barY - 45f);
             _statusContainer.sizeDelta = new Vector2(100f, 20f);
             var layout = statusGo.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 2f;

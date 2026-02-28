@@ -27,33 +27,22 @@ namespace CatCatGo.Presentation.Components
             var bgImage = gameObject.AddComponent<Image>();
             bgImage.color = ColorPalette.Card;
 
-            var layout = gameObject.AddComponent<VerticalLayoutGroup>();
+            var layout = gameObject.AddComponent<HorizontalLayoutGroup>();
             layout.padding = new RectOffset(8, 8, 4, 4);
-            layout.spacing = 2f;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = false;
-
-            var topRow = new GameObject("TopRow");
-            topRow.transform.SetParent(transform, false);
-            var topRt = topRow.GetComponent<RectTransform>();
-
-            if (topRt == null) topRt = topRow.AddComponent<RectTransform>();
-            topRt.sizeDelta = new Vector2(0f, 14f);
-            var topLayout = topRow.AddComponent<HorizontalLayoutGroup>();
-            topLayout.spacing = 8f;
-            topLayout.childForceExpandWidth = false;
-            topLayout.childForceExpandHeight = false;
-            topLayout.childAlignment = TextAnchor.MiddleLeft;
+            layout.spacing = 8f;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = true;
+            layout.childAlignment = TextAnchor.MiddleLeft;
 
             var hpBarGo = new GameObject("HpBar");
-            hpBarGo.transform.SetParent(topRow.transform, false);
+            hpBarGo.transform.SetParent(transform, false);
             var hpBarRt = hpBarGo.GetComponent<RectTransform>();
 
             if (hpBarRt == null) hpBarRt = hpBarGo.AddComponent<RectTransform>();
-            hpBarRt.sizeDelta = new Vector2(0f, 12f);
             var hpBarFlex = hpBarGo.AddComponent<LayoutElement>();
             hpBarFlex.flexibleWidth = 1f;
-            hpBarFlex.preferredHeight = 12f;
+            hpBarFlex.preferredHeight = 28f;
+            hpBarFlex.flexibleHeight = 0f;
 
             var hpBg = new GameObject("HpBg");
             hpBg.transform.SetParent(hpBarGo.transform, false);
@@ -105,26 +94,14 @@ namespace CatCatGo.Presentation.Components
             hpTextRt.offsetMin = Vector2.zero;
             hpTextRt.offsetMax = Vector2.zero;
             _hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
-            _hpText.fontSize = 22f;
+            _hpText.fontSize = 33f;
             _hpText.color = Color.white;
             _hpText.alignment = TextAlignmentOptions.Center;
             _hpText.enableWordWrapping = false;
             _hpText.raycastTarget = false;
 
-            var statsRow = new GameObject("StatsRow");
-            statsRow.transform.SetParent(transform, false);
-            var statsRt = statsRow.GetComponent<RectTransform>();
-
-            if (statsRt == null) statsRt = statsRow.AddComponent<RectTransform>();
-            statsRt.sizeDelta = new Vector2(0f, 28f);
-            var statsLayout = statsRow.AddComponent<HorizontalLayoutGroup>();
-            statsLayout.spacing = 12f;
-            statsLayout.childForceExpandWidth = false;
-            statsLayout.childForceExpandHeight = false;
-            statsLayout.childAlignment = TextAnchor.MiddleCenter;
-
-            _atkText = CreateStatLabel("ATK", statsRow.transform, new Color(1f, 0.5f, 0.5f));
-            _defText = CreateStatLabel("DEF", statsRow.transform, new Color(0.5f, 0.7f, 1f));
+            _atkText = CreateStatLabel("ATK", transform, new Color(1f, 0.5f, 0.5f));
+            _defText = CreateStatLabel("DEF", transform, new Color(0.5f, 0.7f, 1f));
         }
 
         private TextMeshProUGUI CreateStatLabel(string prefix, Transform parent, Color color)
