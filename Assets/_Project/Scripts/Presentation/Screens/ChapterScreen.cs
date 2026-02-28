@@ -708,22 +708,36 @@ namespace CatCatGo.Presentation.Screens
             foreach (var s in chapter.SessionSkills)
                 ownedMap[s.Id] = s.Tier;
 
-            var tier3Pool = new List<SessionSkillWrapper>();
-            foreach (var s in ActiveSkillRegistry.GetAll())
+            var allFamilies = new List<(string id, bool isActive)>();
+            foreach (var s in ActiveSkillRegistry.GetUpperTier1Skills())
             {
-                if (s.Tier != 3 || ActiveSkillRegistry.IsSpecialSkill(s.Id)) continue;
-                if (ownedMap.TryGetValue(s.Id, out int owned) && owned >= s.Tier) continue;
-                tier3Pool.Add(new SessionSkillWrapper(s));
+                if (!ActiveSkillRegistry.IsSpecialSkill(s.Id) && !ActiveSkillRegistry.IsBuiltinSkill(s.Id))
+                    allFamilies.Add((s.Id, true));
             }
-            foreach (var s in PassiveSkillRegistry.GetAll())
+            foreach (var s in PassiveSkillRegistry.GetTier1Skills())
             {
-                if (s.Tier != 3 || PassiveSkillRegistry.IsSpecialSkill(s.Id)) continue;
-                if (ownedMap.TryGetValue(s.Id, out int owned) && owned >= s.Tier) continue;
-                tier3Pool.Add(new SessionSkillWrapper(s));
+                if (!PassiveSkillRegistry.IsSpecialSkill(s.Id))
+                    allFamilies.Add((s.Id, false));
             }
 
-            var shuffled = tier3Pool.OrderBy(_ => UnityEngine.Random.value).ToList();
-            _eliteRewardChoices = shuffled.Take(3).ToList();
+            var shuffled = allFamilies.OrderBy(_ => UnityEngine.Random.value).ToList();
+            _eliteRewardChoices = new List<SessionSkillWrapper>();
+            foreach (var (familyId, isActive) in shuffled)
+            {
+                if (_eliteRewardChoices.Count >= 3) break;
+                int currentTier = ownedMap.ContainsKey(familyId) ? ownedMap[familyId] : 0;
+                int nextTier = currentTier + 1;
+                if (isActive)
+                {
+                    var skill = ActiveSkillRegistry.GetAll().FirstOrDefault(s => s.Id == familyId && s.Tier == nextTier);
+                    if (skill != null) _eliteRewardChoices.Add(new SessionSkillWrapper(skill));
+                }
+                else
+                {
+                    var skill = PassiveSkillRegistry.GetAll().FirstOrDefault(s => s.Id == familyId && s.Tier == nextTier);
+                    if (skill != null) _eliteRewardChoices.Add(new SessionSkillWrapper(skill));
+                }
+            }
 
             SetState(ScreenState.EliteReward);
             BuildEliteRewardOptions();
