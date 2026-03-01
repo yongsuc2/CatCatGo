@@ -95,7 +95,7 @@ namespace CatCatGo.Domain.Data
                     BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
                     BuildEffects = t => new[]
                     {
-                        new ActiveSkillEffect { Type = SkillEffectType.ADD_RAGE, Amount = (int)V(Td("rage_accumulate", t), "amount") },
+                        new ActiveSkillEffect { Type = SkillEffectType.ADD_RAGE, Amount = (int)V(Td("rage_accumulate", t), "amount"), UseSourceStat = true },
                     },
                     BuildDescription = t => $"\ubd84\ub178 \uac8c\uc774\uc9c0 {V(Td("rage_accumulate", t), "amount")} \ucd94\uac00",
                 },

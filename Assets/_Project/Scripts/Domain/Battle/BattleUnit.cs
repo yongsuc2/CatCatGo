@@ -27,8 +27,8 @@ namespace CatCatGo.Domain.Battle
         public float CounterTriggerChance;
         public int Rage { get; set; }
         public int MaxRage { get; set; }
+        public int RagePerAttack { get; set; }
         public float MagicCoefficient { get; set; }
-        public float RagePowerMultiplier;
         public int Shield;
         public HashSet<string> UsedOnceConditions { get; set; }
         public Dictionary<SkillTag, float> SkillTagBonuses;
@@ -60,8 +60,8 @@ namespace CatCatGo.Domain.Battle
             CounterTriggerChance = 0;
             Rage = 0;
             MaxRage = BattleDataTable.Data.Rage.MaxRage;
+            RagePerAttack = ExtractRagePerAttack();
             MagicCoefficient = BattleDataTable.Data.Damage.BaseMagicCoefficient;
-            RagePowerMultiplier = 1.0f;
             Shield = 0;
             UsedOnceConditions = new HashSet<string>();
             SkillTagBonuses = new Dictionary<SkillTag, float>();
@@ -69,6 +69,22 @@ namespace CatCatGo.Domain.Battle
             HpDamageCoefficient = 0;
 
             ApplyPassiveSkills();
+        }
+
+        private int ExtractRagePerAttack()
+        {
+            foreach (var skill in ActiveSkills)
+            {
+                if (skill.Id == "rage_accumulate")
+                {
+                    foreach (var eff in skill.Effects)
+                    {
+                        if (eff.Type == SkillEffectType.ADD_RAGE)
+                            return eff.Amount;
+                    }
+                }
+            }
+            return 0;
         }
 
         private void ApplyPassiveSkills()
@@ -105,10 +121,6 @@ namespace CatCatGo.Domain.Battle
                         var oldMax = MaxHp;
                         MaxHp = isPercentage ? (int)(MaxHp * (1 + value)) : MaxHp + (int)value;
                         CurrentHp += (MaxHp - oldMax);
-                    }
-                    else if (stat == StatType.RAGE_POWER)
-                    {
-                        RagePowerMultiplier += value;
                     }
                     else if (stat == StatType.MAGIC_COEFFICIENT)
                     {

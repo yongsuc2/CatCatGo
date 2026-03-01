@@ -16,15 +16,6 @@ namespace CatCatGo.Domain.Data
     public class RageConfig
     {
         [JsonProperty("maxRage")] public int MaxRage;
-        [JsonProperty("playerRagePerAttack")] public int PlayerRagePerAttack;
-        [JsonProperty("attackMultiplier")] public float AttackMultiplier;
-    }
-
-    public class SkillConfig
-    {
-        [JsonProperty("onAttackAtkRatio")] public float OnAttackAtkRatio;
-        [JsonProperty("onRageAtkRatio")] public float OnRageAtkRatio;
-        [JsonProperty("turnStartAtkRatio")] public float TurnStartAtkRatio;
     }
 
     public class EnemyScalingConfig
@@ -47,7 +38,6 @@ namespace CatCatGo.Domain.Data
     {
         [JsonProperty("damage")] public DamageConfig Damage;
         [JsonProperty("rage")] public RageConfig Rage;
-        [JsonProperty("skill")] public SkillConfig Skill;
         [JsonProperty("enemy")] public EnemyScalingConfig Enemy;
         [JsonProperty("combatGoldReward")] public CombatGoldRewardConfig CombatGoldReward;
         [JsonProperty("maxTurns")] public int MaxTurns;

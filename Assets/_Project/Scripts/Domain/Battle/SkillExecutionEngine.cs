@@ -18,6 +18,7 @@ namespace CatCatGo.Domain.Battle
         float GetEffectiveCrit();
         int Rage { get; set; }
         int MaxRage { get; set; }
+        int RagePerAttack { get; set; }
         float MagicCoefficient { get; set; }
         int TakeDamage(int amount);
         int Heal(int amount);
@@ -239,7 +240,8 @@ namespace CatCatGo.Domain.Battle
 
                     case SkillEffectType.ADD_RAGE:
                     {
-                        source.Rage = source.Rage + effect.Amount;
+                        int rageAmount = effect.UseSourceStat ? source.RagePerAttack : effect.Amount;
+                        source.Rage = source.Rage + rageAmount;
                         results.Add(new SkillDamageResult
                         {
                             SkillName = skill.Name,
@@ -248,7 +250,7 @@ namespace CatCatGo.Domain.Battle
                             Damage = 0,
                             IsCrit = false,
                             HealAmount = 0,
-                            RageChange = effect.Amount,
+                            RageChange = rageAmount,
                             DebuffApplied = false,
                         });
                         break;

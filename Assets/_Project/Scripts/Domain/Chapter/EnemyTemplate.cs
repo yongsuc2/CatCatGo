@@ -65,6 +65,16 @@ namespace CatCatGo.Domain.Chapter
             return FromData(data);
         }
 
+        private ActiveSkill[] BuildEnemySkills()
+        {
+            var builtins = ActiveSkillRegistry.GetBuiltinSkills();
+            var rageAccum = ActiveSkillRegistry.GetById("rage_accumulate", 1);
+            var skills = new List<ActiveSkill>(builtins);
+            if (rageAccum != null) skills.Add(rageAccum);
+            skills.AddRange(ActiveSkills);
+            return skills.ToArray();
+        }
+
         public BattleUnit CreateInstance(int chapterLevel, float statMultiplier = 1.0f, float dayProgress = 0f)
         {
             var scaledStats = EnemyTable.GetScaledStats(BaseStats, chapterLevel);
@@ -80,10 +90,11 @@ namespace CatCatGo.Domain.Chapter
             var unit = new BattleUnit(
                 Name,
                 scaledStats,
-                ActiveSkills.ToArray(),
+                BuildEnemySkills(),
                 PassiveSkills.ToArray(),
                 false);
             unit.TemplateId = Id;
+            unit.RagePerAttack = RagePerAttack;
             return unit;
         }
 
@@ -93,10 +104,11 @@ namespace CatCatGo.Domain.Chapter
             var unit = new BattleUnit(
                 Name,
                 scaledStats,
-                ActiveSkills.ToArray(),
+                BuildEnemySkills(),
                 PassiveSkills.ToArray(),
                 false);
             unit.TemplateId = Id;
+            unit.RagePerAttack = RagePerAttack;
             return unit;
         }
     }

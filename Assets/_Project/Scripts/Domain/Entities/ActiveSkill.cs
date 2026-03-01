@@ -42,6 +42,7 @@ namespace CatCatGo.Domain.Entities
         public CompoundTrigger TriggerConditions;
         public List<ActiveSkillEffect> InjectedEffects;
         public int Amount;
+        public bool UseSourceStat;
         public StatType Stat;
         public float Reduction;
         public float Chance;
