@@ -39,6 +39,10 @@ namespace CatCatGo.Domain.Battle
             _engine = new SkillExecutionEngine(_rng);
 
             _engine.ResolveInjections(Player.ActiveSkills);
+            foreach (var enemy in Enemies)
+            {
+                _engine.ResolveInjections(enemy.ActiveSkills);
+            }
         }
 
         public Battle(BattleUnit player, BattleUnit enemy, int seed = 0)
