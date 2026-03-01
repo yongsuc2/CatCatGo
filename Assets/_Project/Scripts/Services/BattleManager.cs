@@ -9,14 +9,6 @@ using CatCatGo.Domain.Data;
 
 namespace CatCatGo.Services
 {
-    public struct BattleResult
-    {
-        public BattleState State;
-        public int Turns;
-        public int PlayerHpRemaining;
-        public Reward Reward;
-    }
-
     public class BattleManager
     {
         public PassiveSkill GetPetAbilitySkill(Player player)
@@ -76,30 +68,6 @@ namespace CatCatGo.Services
         public Battle CreateBattle(BattleUnit playerUnit, BattleUnit enemyUnit, int seed = 0)
         {
             return new Battle(playerUnit, enemyUnit, seed);
-        }
-
-        public BattleResult SimulateBattle(Battle battle, int maxTurns = 100)
-        {
-            battle.RunToCompletion(maxTurns);
-
-            var reward = battle.State == BattleState.VICTORY
-                ? GenerateCombatReward(battle.TurnCount)
-                : Reward.Empty();
-
-            return new BattleResult
-            {
-                State = battle.State,
-                Turns = battle.TurnCount,
-                PlayerHpRemaining = battle.Player.CurrentHp,
-                Reward = reward,
-            };
-        }
-
-        private Reward GenerateCombatReward(int turns)
-        {
-            int goldAmount = 50 + turns * 5;
-            return Reward.FromResources(
-                new ResourceReward(ResourceType.GOLD, goldAmount));
         }
 
         public int CalculateDamagePreview(int atk, int def)
