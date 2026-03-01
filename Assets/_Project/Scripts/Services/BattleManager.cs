@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Battle;
-using CatCatGo.Domain.Data;
 
 namespace CatCatGo.Services
 {
@@ -68,26 +66,6 @@ namespace CatCatGo.Services
         public Battle CreateBattle(BattleUnit playerUnit, BattleUnit enemyUnit, int seed = 0)
         {
             return new Battle(playerUnit, enemyUnit, seed);
-        }
-
-        public int CalculateDamagePreview(int atk, int def)
-        {
-            float k = BattleDataTable.Data.Damage.DefenseConstant;
-            return Math.Max(1, (int)(atk * (k / (k + def))));
-        }
-
-        public int EstimateSurvivalTurns(Stats playerStats, Stats enemyStats)
-        {
-            float k = BattleDataTable.Data.Damage.DefenseConstant;
-            int enemyDamagePerTurn = Math.Max(1, (int)(enemyStats.Atk * (k / (k + playerStats.Def))));
-            return (int)Math.Ceiling((double)playerStats.Hp / enemyDamagePerTurn);
-        }
-
-        public int EstimateKillTurns(Stats playerStats, Stats enemyStats)
-        {
-            float k = BattleDataTable.Data.Damage.DefenseConstant;
-            int playerDamagePerTurn = Math.Max(1, (int)(playerStats.Atk * (k / (k + enemyStats.Def))));
-            return (int)Math.Ceiling((double)enemyStats.Hp / playerDamagePerTurn);
         }
     }
 }
