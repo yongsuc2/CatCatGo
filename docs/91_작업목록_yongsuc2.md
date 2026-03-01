@@ -81,6 +81,7 @@
 | Y-69 | 적/스테이지 테마 변경: 판타지→실존 생명체 | 중 | 완료 | 일반몹(개미/참새/거미/다람쥐/고슴도치), 엘리트(왕사마귀/독수리), 보스(큰곰/왕뱀/코끼리), 던전보스(여왕벌/고목정령/백호), 던전명 변경, 260 테스트 통과 |
 | Y-70 | 챕터 테마 시스템 (5테마×10챕터) | 상 | 완료 | 미생물→곤충→소형동물→중형동물→대형동물 5테마, 50종 적 템플릿, chapterThemes 풀/보스로테이션, EnemyTable 테마 인식 풀 선택, Chapter.ts/C# 동시 적용, 260 테스트 통과 |
 | Y-71 | 분노 시스템 리팩토링 | 중 | 완료 | ragePerAttack 캐릭터 스탯화, ragePowerMultiplier→SKILL_MODIFIER(RAGE), 적 빌트인 스킬 자동 부여, processUnitTurn 통합, 하드코딩 분노 로직 제거, battle.data.json 정리, 261 테스트 통과 |
+| Y-72 | 적 분노 후 액티브 스킬 발동 수정 | 중 | 완료 | BuildEnemySkills()에서 적 LOWEST 액티브 스킬마다 UPPER 래퍼 자동 생성, EveryNTurns(1) TRIGGER_SKILL 체인으로 일반/연타/분노 공격 후 발동 |
 
 ---
 
