@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;
-using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Battle;
 using CatCatGo.Domain.Data;
 
@@ -73,25 +72,6 @@ namespace CatCatGo.Domain.Chapter
             var skills = new List<ActiveSkill>(builtins);
             if (rageAccum != null) skills.Add(rageAccum);
             skills.AddRange(ActiveSkills);
-
-            foreach (var skill in ActiveSkills)
-            {
-                if (skill.Hierarchy == SkillHierarchy.BUILTIN) continue;
-                if (skill.Id == "rage_accumulate") continue;
-
-                skills.Add(new ActiveSkill(
-                    $"enemy_{skill.Id}_trigger",
-                    skill.Name,
-                    skill.Icon,
-                    SkillHierarchy.UPPER,
-                    1,
-                    skill.Tags,
-                    new HeritageRoute[0],
-                    TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                    new[] { new ActiveSkillEffect { Type = SkillEffectType.TRIGGER_SKILL, TargetSkillId = skill.Id, Count = 1 } }
-                ));
-            }
-
             return skills.ToArray();
         }
 
