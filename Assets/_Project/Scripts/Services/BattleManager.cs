@@ -78,12 +78,12 @@ namespace CatCatGo.Services
             return new Battle(playerUnit, enemyUnit, seed);
         }
 
-        public BattleResult SimulateBattle(Battle battle, int maxTurns = 100)
+        public BattleResult SimulateBattle(Battle battle, int chapterId = 1, int currentDay = 0, int maxTurns = 100)
         {
             battle.RunToCompletion(maxTurns);
 
             var reward = battle.State == BattleState.VICTORY
-                ? GenerateCombatReward(battle.TurnCount)
+                ? GenerateCombatReward(chapterId, currentDay)
                 : Reward.Empty();
 
             return new BattleResult
@@ -95,9 +95,10 @@ namespace CatCatGo.Services
             };
         }
 
-        private Reward GenerateCombatReward(int turns)
+        private Reward GenerateCombatReward(int chapterId, int currentDay)
         {
-            int goldAmount = 50 + turns * 5;
+            var r = BattleDataTable.Data.CombatGoldReward;
+            int goldAmount = (int)(r.Base + r.PerChapter * chapterId + r.PerDay * currentDay);
             return Reward.FromResources(
                 new ResourceReward(ResourceType.GOLD, goldAmount));
         }
