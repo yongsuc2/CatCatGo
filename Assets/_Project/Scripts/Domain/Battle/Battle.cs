@@ -73,14 +73,14 @@ namespace CatCatGo.Domain.Battle
             var target = GetFirstAliveEnemy();
             if (target != null && Player.IsAlive())
             {
-                ProcessPlayerTurn(Player, target);
+                ProcessUnitTurn(Player, target, Enemies.Cast<ISkillExecutionUnit>().ToList());
                 if (CheckDeath()) return BuildTurnResult();
             }
 
             foreach (var enemy in Enemies)
             {
                 if (!enemy.IsAlive() || !Player.IsAlive()) continue;
-                ProcessEnemyTurn(enemy, Player);
+                ProcessUnitTurn(enemy, Player, new List<ISkillExecutionUnit> { Player });
                 if (CheckDeath()) return BuildTurnResult();
             }
 
@@ -95,16 +95,33 @@ namespace CatCatGo.Domain.Battle
             return BuildTurnResult();
         }
 
-        private void ProcessPlayerTurn(BattleUnit player, BattleUnit target)
+        private void ProcessUnitTurn(BattleUnit unit, BattleUnit target, List<ISkillExecutionUnit> allTargets)
         {
-            var builtins = player.GetBuiltinSkills();
+            if (!target.IsAlive()) return;
+
+            var stunEffect = unit.StatusEffects.FirstOrDefault(e => e.IsStun());
+            if (stunEffect != null)
+            {
+                Log.Add(new BattleLogEntry
+                {
+                    Turn = TurnCount,
+                    Type = BattleLogType.STUN,
+                    Source = unit.Name,
+                    Target = unit.Name,
+                    Value = 0,
+                    Message = $"{unit.Name} is stunned",
+                });
+                return;
+            }
+
+            var builtins = unit.GetBuiltinSkills();
             var ilban = builtins.FirstOrDefault(s => s.Id == "ilban_attack");
             var bunno = builtins.FirstOrDefault(s => s.Id == "bunno_attack");
 
             ActiveSkill mainSkill = null;
             bool isBunno = false;
 
-            if (bunno != null && _engine.EvaluateTrigger(bunno.Trigger, TurnCount, player))
+            if (bunno != null && _engine.EvaluateTrigger(bunno.Trigger, TurnCount, unit))
             {
                 mainSkill = bunno;
                 isBunno = true;
@@ -118,74 +135,59 @@ namespace CatCatGo.Domain.Battle
 
             if (mainSkill == null)
             {
-                ProcessBasicAttack(player, target);
+                ProcessBasicAttack(unit, target);
                 return;
             }
 
-            var allSkills = player.GetAllSkillsForEngine();
-            var allTargets = Enemies.Cast<ISkillExecutionUnit>().ToList();
-            var mainResults = _engine.ExecuteSkillEffects(mainSkill, player, target, allSkills, 0, allTargets);
+            var allSkills = unit.GetAllSkillsForEngine();
+            var mainResults = _engine.ExecuteSkillEffects(mainSkill, unit, target, allSkills, 0, allTargets);
 
-            if (isBunno)
+            LogSkillResults(mainResults, unit, target, isBunno);
+            ApplyLifesteal(unit, mainResults);
+
+            ExecuteUpperSkills(unit, target, allSkills, mainSkill.Id, allTargets);
+
+            if (!isBunno && target.IsAlive() && unit.MultiHitChance > 0 && _rng.Chance(unit.MultiHitChance))
             {
-                foreach (var r in mainResults)
-                {
-                    if (r.Damage > 0)
-                        r.Damage = (int)(r.Damage * player.RagePowerMultiplier);
-                }
+                var multiResults = _engine.ExecuteSkillEffects(mainSkill, unit, target, allSkills, 0, allTargets);
+                LogSkillResults(multiResults, unit, target, false);
+                ApplyLifesteal(unit, multiResults);
+
+                ExecuteUpperSkills(unit, target, allSkills, mainSkill.Id, allTargets);
             }
 
-            LogSkillResults(mainResults, player, target, isBunno);
-            ApplyLifesteal(player, mainResults);
-
-            ExecuteUpperSkills(player, target, allSkills, mainSkill.Id);
-
-            if (!isBunno && target.IsAlive() && player.MultiHitChance > 0 && _rng.Chance(player.MultiHitChance))
+            if (!isBunno && bunno != null && target.IsAlive() && unit.Rage >= unit.MaxRage)
             {
-                var multiResults = _engine.ExecuteSkillEffects(mainSkill, player, target, allSkills, 0, allTargets);
-                LogSkillResults(multiResults, player, target, false);
-                ApplyLifesteal(player, multiResults);
+                var bunnoResults = _engine.ExecuteSkillEffects(bunno, unit, target, allSkills, 0, allTargets);
+                LogSkillResults(bunnoResults, unit, target, true);
+                ApplyLifesteal(unit, bunnoResults);
 
-                ExecuteUpperSkills(player, target, allSkills, mainSkill.Id);
-            }
-
-            if (!isBunno && bunno != null && target.IsAlive() && player.Rage >= player.MaxRage)
-            {
-                var bunnoResults = _engine.ExecuteSkillEffects(bunno, player, target, allSkills, 0, allTargets);
-                foreach (var r in bunnoResults)
-                {
-                    if (r.Damage > 0)
-                        r.Damage = (int)(r.Damage * player.RagePowerMultiplier);
-                }
-                LogSkillResults(bunnoResults, player, target, true);
-                ApplyLifesteal(player, bunnoResults);
-
-                ExecuteUpperSkills(player, target, allSkills, bunno.Id);
+                ExecuteUpperSkills(unit, target, allSkills, bunno.Id, allTargets);
             }
 
             if (target.IsAlive() && target.CounterTriggerChance > 0 && _rng.Chance(target.CounterTriggerChance))
             {
-                ProcessCounter(target, player);
+                ProcessCounter(target, unit);
             }
         }
 
         private void ExecuteUpperSkills(
-            BattleUnit player, BattleUnit target,
-            List<ActiveSkill> allSkills, string triggerSkillId)
+            BattleUnit unit, BattleUnit target,
+            List<ActiveSkill> allSkills, string triggerSkillId,
+            List<ISkillExecutionUnit> allTargets)
         {
-            bool anyAlive = Enemies.Any(e => e.IsAlive());
+            bool anyAlive = allTargets.Any(e => e.IsAlive());
             if (!anyAlive) return;
-            var allTargets = Enemies.Cast<ISkillExecutionUnit>().ToList();
-            foreach (var skill in player.ActiveSkills)
+            foreach (var skill in unit.ActiveSkills)
             {
-                if (!Enemies.Any(e => e.IsAlive())) break;
+                if (!allTargets.Any(e => e.IsAlive())) break;
                 if (skill.Hierarchy == SkillHierarchy.BUILTIN) continue;
-                if (skill.Hierarchy != SkillHierarchy.UPPER) continue;
-                if (_engine.EvaluateTrigger(skill.Trigger, TurnCount, player, triggerSkillId))
+                if (skill.Hierarchy == SkillHierarchy.LOWEST) continue;
+                if (_engine.EvaluateTrigger(skill.Trigger, TurnCount, unit, triggerSkillId))
                 {
-                    var results = _engine.ExecuteSkillEffects(skill, player, target, allSkills, 0, allTargets);
-                    LogSkillResults(results, player, target, false);
-                    ApplyLifesteal(player, results);
+                    var results = _engine.ExecuteSkillEffects(skill, unit, target, allSkills, 0, allTargets);
+                    LogSkillResults(results, unit, target, false);
+                    ApplyLifesteal(unit, results);
                 }
             }
         }
@@ -239,119 +241,6 @@ namespace CatCatGo.Domain.Battle
                     Value = extraDealt,
                     Message = $"{attacker.Name} multi-hit {target.Name} for {extraDealt}",
                 });
-            }
-        }
-
-        private void ProcessEnemyTurn(BattleUnit enemy, BattleUnit target)
-        {
-            if (!target.IsAlive()) return;
-
-            var stunEffect = enemy.StatusEffects.FirstOrDefault(e => e.IsStun());
-            if (stunEffect != null)
-            {
-                Log.Add(new BattleLogEntry
-                {
-                    Turn = TurnCount,
-                    Type = BattleLogType.STUN,
-                    Source = enemy.Name,
-                    Target = enemy.Name,
-                    Value = 0,
-                    Message = $"{enemy.Name} is stunned",
-                });
-                return;
-            }
-
-            int baseDamage = CalculateBaseDamage(enemy, target);
-            bool isCrit = _rng.Chance(enemy.GetEffectiveCrit());
-            int finalDamage = isCrit ? (int)(baseDamage * BattleDataTable.Data.Damage.CritMultiplier) : baseDamage;
-
-            int dealt = target.TakeDamage(finalDamage);
-
-            Log.Add(new BattleLogEntry
-            {
-                Turn = TurnCount,
-                Type = isCrit ? BattleLogType.CRIT : BattleLogType.ATTACK,
-                Source = enemy.Name,
-                Target = target.Name,
-                Value = dealt,
-                Message = $"{enemy.Name} {(isCrit ? "CRIT" : "attacks")} {target.Name} for {dealt}",
-            });
-
-            if (enemy.LifestealRate > 0 && dealt > 0)
-            {
-                int healAmount = (int)(dealt * enemy.LifestealRate);
-                int healed = enemy.Heal(healAmount);
-                if (healed > 0)
-                {
-                    Log.Add(new BattleLogEntry
-                    {
-                        Turn = TurnCount,
-                        Type = BattleLogType.LIFESTEAL,
-                        Source = enemy.Name,
-                        Target = enemy.Name,
-                        Value = healed,
-                        Message = $"{enemy.Name} heals {healed} from lifesteal",
-                    });
-                }
-            }
-
-            if (!target.IsAlive()) return;
-
-            if (enemy.MultiHitChance > 0 && _rng.Chance(enemy.MultiHitChance))
-            {
-                int extraDamage = CalculateBaseDamage(enemy, target);
-                int extraDealt = target.TakeDamage(extraDamage);
-                Log.Add(new BattleLogEntry
-                {
-                    Turn = TurnCount,
-                    Type = BattleLogType.ATTACK,
-                    Source = enemy.Name,
-                    Target = target.Name,
-                    Value = extraDealt,
-                    Message = $"{enemy.Name} multi-hit {target.Name} for {extraDealt}",
-                });
-                if (!target.IsAlive()) return;
-            }
-
-            foreach (var skill in enemy.ActiveSkills)
-            {
-                if (!target.IsAlive()) break;
-                if (_engine.EvaluateTrigger(skill.Trigger, TurnCount, enemy))
-                {
-                    var results = _engine.ExecuteSkillEffects(skill, enemy, target, enemy.ActiveSkills);
-                    LogSkillResults(results, enemy, target, false);
-                }
-            }
-
-            if (!target.IsAlive()) return;
-            if (enemy.IsPlayer) return;
-
-            if (enemy.Rage < enemy.MaxRage)
-            {
-                enemy.Rage = Math.Min(enemy.Rage + BattleDataTable.Data.Rage.PlayerRagePerAttack, enemy.MaxRage);
-                if (enemy.Rage >= enemy.MaxRage)
-                {
-                    enemy.Rage = 0;
-                    int rageDamage = (int)(enemy.GetEffectiveAtk() * BattleDataTable.Data.Rage.AttackMultiplier);
-                    int rageDealt = target.TakeDamage(rageDamage);
-                    Log.Add(new BattleLogEntry
-                    {
-                        Turn = TurnCount,
-                        Type = BattleLogType.RAGE_ATTACK,
-                        Source = enemy.Name,
-                        Target = target.Name,
-                        Value = rageDealt,
-                        SkillName = "분노 공격",
-                        SkillId = "bunno_attack",
-                        SkillIcon = "💢",
-                        Message = $"{enemy.Name} RAGE ATTACK {target.Name} for {rageDealt}",
-                    });
-                }
-            }
-
-            if (target.IsAlive() && target.CounterTriggerChance > 0 && _rng.Chance(target.CounterTriggerChance))
-            {
-                ProcessCounter(target, enemy);
             }
         }
 

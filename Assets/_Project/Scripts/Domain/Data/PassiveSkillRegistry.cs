@@ -101,7 +101,7 @@ namespace CatCatGo.Domain.Data
                     Id = "rage_mastery", Name = "\ubd84\ub178 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udca2",
                     Tags = new[] { SkillTag.RAGE }, HeritageSynergy = new[] { HeritageRoute.SKULL, HeritageRoute.KNIGHT },
                     Traits = new[] { "\ubd84\ub178 \uacf5\uaca9 \uac15\ud654 \uc804\uc6a9", "\ubd84\ub178 \ube4c\ub4dc \ud575\uc2ec" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Value = V(Td("rage_mastery", t), "value"), IsPercentage = true },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetTag = SkillTag.RAGE, DamageMultiplier = V(Td("rage_mastery", t), "value") },
                     BuildDescription = t => $"\ubd84\ub178 \uacf5\uaca9 \ub370\ubbf8\uc9c0 +{Pct(V(Td("rage_mastery", t), "value"))}",
                 },
                 new PassiveSkillFamilyDef
