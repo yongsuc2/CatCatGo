@@ -41,6 +41,7 @@ namespace CatCatGo.Domain.Battle
         public int RageChange;
         public bool DebuffApplied;
         public string TargetName;
+        public AttackType AttackType;
     }
 
     public class SkillExecutionEngine
@@ -179,6 +180,7 @@ namespace CatCatGo.Domain.Battle
                                 RageChange = 0,
                                 DebuffApplied = false,
                                 TargetName = (effect.IsAoe && allTargets != null) ? t.Name : null,
+                                AttackType = effect.AttackType,
                             });
 
                             if (effect.Duration > 0)
