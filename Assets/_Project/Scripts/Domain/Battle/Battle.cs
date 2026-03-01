@@ -133,11 +133,7 @@ namespace CatCatGo.Domain.Battle
 
             if (!target.IsAlive()) return;
 
-            if (mainSkill == null)
-            {
-                ProcessBasicAttack(unit, target);
-                return;
-            }
+            if (mainSkill == null) return;
 
             var allSkills = unit.GetAllSkillsForEngine();
             var mainResults = _engine.ExecuteSkillEffects(mainSkill, unit, target, allSkills, 0, allTargets);
@@ -189,58 +185,6 @@ namespace CatCatGo.Domain.Battle
                     LogSkillResults(results, unit, target, false);
                     ApplyLifesteal(unit, results);
                 }
-            }
-        }
-
-        private void ProcessBasicAttack(BattleUnit attacker, BattleUnit target)
-        {
-            int baseDamage = CalculateBaseDamage(attacker, target);
-            bool isCrit = _rng.Chance(attacker.GetEffectiveCrit());
-            int finalDamage = isCrit ? (int)(baseDamage * BattleDataTable.Data.Damage.CritMultiplier) : baseDamage;
-
-            int dealt = target.TakeDamage(finalDamage);
-
-            Log.Add(new BattleLogEntry
-            {
-                Turn = TurnCount,
-                Type = isCrit ? BattleLogType.CRIT : BattleLogType.ATTACK,
-                Source = attacker.Name,
-                Target = target.Name,
-                Value = dealt,
-                Message = $"{attacker.Name} {(isCrit ? "CRIT" : "attacks")} {target.Name} for {dealt}",
-            });
-
-            if (attacker.LifestealRate > 0 && dealt > 0)
-            {
-                int healAmount = (int)(dealt * attacker.LifestealRate);
-                int healed = attacker.Heal(healAmount);
-                if (healed > 0)
-                {
-                    Log.Add(new BattleLogEntry
-                    {
-                        Turn = TurnCount,
-                        Type = BattleLogType.LIFESTEAL,
-                        Source = attacker.Name,
-                        Target = attacker.Name,
-                        Value = healed,
-                        Message = $"{attacker.Name} heals {healed} from lifesteal",
-                    });
-                }
-            }
-
-            if (attacker.MultiHitChance > 0 && target.IsAlive() && _rng.Chance(attacker.MultiHitChance))
-            {
-                int extraDamage = CalculateBaseDamage(attacker, target);
-                int extraDealt = target.TakeDamage(extraDamage);
-                Log.Add(new BattleLogEntry
-                {
-                    Turn = TurnCount,
-                    Type = BattleLogType.ATTACK,
-                    Source = attacker.Name,
-                    Target = target.Name,
-                    Value = extraDealt,
-                    Message = $"{attacker.Name} multi-hit {target.Name} for {extraDealt}",
-                });
             }
         }
 
