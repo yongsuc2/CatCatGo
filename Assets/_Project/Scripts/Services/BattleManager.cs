@@ -72,18 +72,21 @@ namespace CatCatGo.Services
 
         public int CalculateDamagePreview(int atk, int def)
         {
-            return Math.Max(1, atk - (int)Math.Floor(def * 0.5));
+            float k = BattleDataTable.Data.Damage.DefenseConstant;
+            return Math.Max(1, (int)(atk * (k / (k + def))));
         }
 
         public int EstimateSurvivalTurns(Stats playerStats, Stats enemyStats)
         {
-            int enemyDamagePerTurn = Math.Max(1, enemyStats.Atk - (int)Math.Floor(playerStats.Def * 0.5));
+            float k = BattleDataTable.Data.Damage.DefenseConstant;
+            int enemyDamagePerTurn = Math.Max(1, (int)(enemyStats.Atk * (k / (k + playerStats.Def))));
             return (int)Math.Ceiling((double)playerStats.Hp / enemyDamagePerTurn);
         }
 
         public int EstimateKillTurns(Stats playerStats, Stats enemyStats)
         {
-            int playerDamagePerTurn = Math.Max(1, playerStats.Atk - (int)Math.Floor(enemyStats.Def * 0.5));
+            float k = BattleDataTable.Data.Damage.DefenseConstant;
+            int playerDamagePerTurn = Math.Max(1, (int)(playerStats.Atk * (k / (k + enemyStats.Def))));
             return (int)Math.Ceiling((double)enemyStats.Hp / playerDamagePerTurn);
         }
     }
