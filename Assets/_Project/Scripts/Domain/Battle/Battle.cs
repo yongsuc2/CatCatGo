@@ -38,10 +38,9 @@ namespace CatCatGo.Domain.Battle
             _rng = new SeededRandom(seed == 0 ? Environment.TickCount : seed);
             _engine = new SkillExecutionEngine(_rng);
 
-            _engine.ResolveInjections(Player.ActiveSkills);
-            foreach (var enemy in Enemies)
+            foreach (var unit in GetAllUnits())
             {
-                _engine.ResolveInjections(enemy.ActiveSkills);
+                _engine.ResolveInjections(unit.ActiveSkills);
             }
         }
 
@@ -51,6 +50,13 @@ namespace CatCatGo.Domain.Battle
         }
 
         public BattleUnit Enemy => Enemies[0];
+
+        private IEnumerable<BattleUnit> GetAllUnits()
+        {
+            yield return Player;
+            foreach (var enemy in Enemies)
+                yield return enemy;
+        }
 
         private BattleUnit GetFirstAliveEnemy()
         {
@@ -88,11 +94,10 @@ namespace CatCatGo.Domain.Battle
                 if (CheckDeath()) return BuildTurnResult();
             }
 
-            ProcessStatusEffects(Player);
-            foreach (var enemy in Enemies)
+            foreach (var unit in GetAllUnits())
             {
-                if (enemy.IsAlive())
-                    ProcessStatusEffects(enemy);
+                if (unit.IsAlive())
+                    ProcessStatusEffects(unit);
             }
             CheckDeath();
 
