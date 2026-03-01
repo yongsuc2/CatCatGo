@@ -331,7 +331,7 @@ namespace CatCatGo.Domain.Battle
         private void ApplyLifesteal(BattleUnit unit, List<SkillDamageResult> results)
         {
             if (unit.LifestealRate <= 0) return;
-            int totalDamage = results.Sum(r => r.Damage);
+            int totalDamage = results.Where(r => r.AttackType == AttackType.PHYSICAL).Sum(r => r.Damage);
             if (totalDamage <= 0) return;
 
             int healAmount = (int)(totalDamage * unit.LifestealRate);
