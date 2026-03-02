@@ -5,13 +5,15 @@ namespace CatCatGo.Domain.Battle
     public class StatusEffect
     {
         public readonly StatusEffectType Type;
+        public readonly AttackType AttackType;
         public int RemainingTurns;
         public readonly float Value;
         public readonly string SourceSkillId;
 
-        public StatusEffect(StatusEffectType type, int remainingTurns, float value, string sourceSkillId = null)
+        public StatusEffect(StatusEffectType type, int remainingTurns, float value, string sourceSkillId = null, AttackType attackType = AttackType.PHYSICAL)
         {
             Type = type;
+            AttackType = attackType;
             RemainingTurns = remainingTurns;
             Value = value;
             SourceSkillId = sourceSkillId;

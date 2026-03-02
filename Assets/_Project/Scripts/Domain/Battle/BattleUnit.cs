@@ -231,10 +231,10 @@ namespace CatCatGo.Domain.Battle
             return Math.Min(1.0f, crit);
         }
 
-        public float GetSkillDamageMultiplier(string skillId)
+        public float GetMasteryBonus(string skillId)
         {
             SkillIdBonuses.TryGetValue(skillId, out var bonus);
-            return 1 + bonus;
+            return bonus;
         }
 
         public int TakeDamage(int amount)
@@ -309,11 +309,15 @@ namespace CatCatGo.Domain.Battle
         public TickResult TickStatusEffects()
         {
             int totalDamage = 0;
+            int physicalDamage = 0;
             int totalHeal = 0;
 
             foreach (var effect in StatusEffects)
             {
-                totalDamage += (int)effect.GetDamagePerTurn();
+                int dot = (int)effect.GetDamagePerTurn();
+                totalDamage += dot;
+                if (dot > 0 && effect.AttackType == Enums.AttackType.PHYSICAL)
+                    physicalDamage += dot;
                 if (effect.IsHot())
                     totalHeal += (int)(MaxHp * effect.Value);
                 effect.Tick();
@@ -324,7 +328,7 @@ namespace CatCatGo.Domain.Battle
 
             StatusEffects = StatusEffects.Where(e => !e.IsExpired()).ToList();
 
-            return new TickResult { Damage = totalDamage, Heal = totalHeal };
+            return new TickResult { Damage = totalDamage, PhysicalDamage = physicalDamage, Heal = totalHeal };
         }
 
         public float GetHpPercent()
@@ -357,6 +361,7 @@ namespace CatCatGo.Domain.Battle
     public struct TickResult
     {
         public int Damage;
+        public int PhysicalDamage;
         public int Heal;
     }
 }

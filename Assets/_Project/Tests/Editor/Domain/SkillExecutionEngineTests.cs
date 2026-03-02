@@ -26,7 +26,7 @@ namespace CatCatGo.Tests.Domain
             private Func<int> _getEffectiveAtk;
             private Func<int> _getEffectiveDef;
             private Func<float> _getEffectiveCrit;
-            private Func<SkillTag[], float> _getSkillDamageMultiplier;
+            private Func<string, float> _getMasteryBonus;
             private Func<int> _getHpBonusDamage;
 
             public MockUnit(
@@ -50,7 +50,7 @@ namespace CatCatGo.Tests.Domain
                 _getEffectiveAtk = getEffectiveAtk ?? (() => 50);
                 _getEffectiveDef = getEffectiveDef ?? (() => 20);
                 _getEffectiveCrit = getEffectiveCrit ?? (() => 0f);
-                _getSkillDamageMultiplier = _ => 1.0f;
+                _getMasteryBonus = _ => 0f;
                 _getHpBonusDamage = () => 0;
             }
 
@@ -75,7 +75,7 @@ namespace CatCatGo.Tests.Domain
             public void AddStatusEffect(StatusEffect effect) { }
             public bool IsAlive() => CurrentHp > 0;
             public float GetHpPercent() => MaxHp > 0 ? (float)CurrentHp / MaxHp : 0;
-            public float GetSkillDamageMultiplier(SkillTag[] tags) => _getSkillDamageMultiplier(tags);
+            public float GetMasteryBonus(string skillId) => _getMasteryBonus(skillId);
             public int GetHpBonusDamage() => _getHpBonusDamage();
         }
 
