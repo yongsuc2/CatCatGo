@@ -578,3 +578,10 @@
   - 분노 바를 HP 바와 동일 크기로 통일
   - 세로 배치: HP 바 → 간격 → 분노 바 → 간격 → 상태 아이콘 (겹침 제거)
   - 모험화면_기획서.md 전투 영역 바/아이콘 레이아웃 설명 업데이트
+- **종합 버그 감사 수정** (Y-83)
+  - MainScreen PlayerStatsCard/InfoCard에 flexibleHeight=0 추가 (카드 팽창 방지)
+  - MainScreen HP 표시 K/M 포맷팅 적용 (NumberFormatter.FormatInt)
+  - StatsDetailPopup Mask+투명Image → RectMask2D로 수정 (스크롤 내용 안보이는 버그)
+  - encounter.data.json Resources 복사본 고아 필드 삭제 (combat, chapterBossAssignment)
+  - enemy.data.json Resources 복사본 포맷 동기화 (pretty-print→minified)
+  - 죽은 코드 삭제: BattleLogType.BUFF_APPLIED enum, BattleUnit.GetUpperSkills(), EnemyTemplate.BuildEnemySkills() 래퍼, Chapter.GetDaysForType() 래퍼

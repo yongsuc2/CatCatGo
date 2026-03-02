@@ -54,7 +54,7 @@ namespace CatCatGo.Domain.Chapter
             if (seed == 0) seed = Environment.TickCount;
             Id = id;
             Type = type;
-            TotalDays = GetDaysForType(type);
+            TotalDays = 60;
             CurrentDay = 0;
             State = ChapterState.IN_PROGRESS;
             SessionSkills = new List<SessionSkillWrapper>();
@@ -78,11 +78,6 @@ namespace CatCatGo.Domain.Chapter
             BaseSessionMaxHp = maxHp;
             SessionCurrentHp = maxHp;
             SessionMaxHp = maxHp;
-        }
-
-        private int GetDaysForType(ChapterType type)
-        {
-            return 60;
         }
 
         public Encounter AdvanceDay()

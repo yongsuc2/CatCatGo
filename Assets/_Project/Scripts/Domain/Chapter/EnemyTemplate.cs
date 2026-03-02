@@ -65,11 +65,6 @@ namespace CatCatGo.Domain.Chapter
             return FromData(data);
         }
 
-        private ActiveSkill[] BuildEnemySkills()
-        {
-            return ActiveSkills;
-        }
-
         public BattleUnit CreateInstance(int chapterLevel, float statMultiplier = 1.0f, float dayProgress = 0f)
         {
             var scaledStats = EnemyTable.GetScaledStats(BaseStats, chapterLevel);
@@ -85,7 +80,7 @@ namespace CatCatGo.Domain.Chapter
             var unit = new BattleUnit(
                 Name,
                 scaledStats,
-                BuildEnemySkills(),
+                ActiveSkills,
                 PassiveSkills.ToArray(),
                 false);
             unit.TemplateId = Id;
@@ -99,7 +94,7 @@ namespace CatCatGo.Domain.Chapter
             var unit = new BattleUnit(
                 Name,
                 scaledStats,
-                BuildEnemySkills(),
+                ActiveSkills,
                 PassiveSkills.ToArray(),
                 false);
             unit.TemplateId = Id;

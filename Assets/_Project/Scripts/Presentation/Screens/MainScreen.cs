@@ -112,6 +112,7 @@ namespace CatCatGo.Presentation.Screens
 
             var cardLe = cardGo.AddComponent<LayoutElement>();
             cardLe.preferredHeight = 200;
+            cardLe.flexibleHeight = 0;
 
             var headerRow = new GameObject("StatsHeader");
             headerRow.transform.SetParent(cardGo.transform, false);
@@ -201,6 +202,7 @@ namespace CatCatGo.Presentation.Screens
 
             var cardLe = cardGo.AddComponent<LayoutElement>();
             cardLe.preferredHeight = 160;
+            cardLe.flexibleHeight = 0;
 
             _talentGradeText = CreateInfoRow(cardGo.transform, "재능 등급");
             _clearedChapterText = CreateInfoRow(cardGo.transform, "클리어 챕터");
@@ -315,7 +317,7 @@ namespace CatCatGo.Presentation.Screens
             Color gradeColor = ColorPalette.GetTalentGradeColor(talentGrade);
             string gradeHex = ColorUtility.ToHtmlStringRGB(gradeColor);
 
-            _hpText.text = $"{stats.Hp} / {stats.MaxHp}";
+            _hpText.text = $"{NumberFormatter.FormatInt(stats.Hp)} / {NumberFormatter.FormatInt(stats.MaxHp)}";
             _atkText.text = NumberFormatter.FormatInt(stats.Atk);
             _defText.text = NumberFormatter.FormatInt(stats.Def);
             _critText.text = $"{stats.Crit:F1}%";
@@ -414,8 +416,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (viewportRt == null) viewportRt = viewportGo.AddComponent<RectTransform>();
             UIManager.StretchFull(viewportRt);
-            viewportGo.AddComponent<Image>().color = Color.clear;
-            viewportGo.AddComponent<Mask>().showMaskGraphic = false;
+            viewportGo.AddComponent<RectMask2D>();
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);

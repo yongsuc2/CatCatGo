@@ -329,11 +329,6 @@ namespace CatCatGo.Domain.Battle
             return ActiveSkills.Where(s => s.Hierarchy == SkillHierarchy.BUILTIN).ToList();
         }
 
-        public List<ActiveSkill> GetUpperSkills()
-        {
-            return ActiveSkills.Where(s => s.Hierarchy == SkillHierarchy.UPPER).ToList();
-        }
-
         public List<ActiveSkill> GetAllSkillsForEngine()
         {
             return ActiveSkills;

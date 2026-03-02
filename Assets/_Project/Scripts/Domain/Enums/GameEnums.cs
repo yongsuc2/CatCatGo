@@ -224,7 +224,6 @@ namespace CatCatGo.Domain.Enums
         LIFESTEAL,
         DOT_DAMAGE,
         HOT_HEAL,
-        BUFF_APPLIED,
         DEBUFF_APPLIED,
         REVIVE,
         CRIT,

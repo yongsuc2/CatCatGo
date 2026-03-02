@@ -1,1145 +1,129 @@
 {
   "templates": [
-    {
-      "id": "amoeba",
-      "name": "아메바",
-      "hp": 90,
-      "atk": 8,
-      "def": 2,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "bacteria",
-      "name": "세균",
-      "hp": 70,
-      "atk": 11,
-      "def": 3,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "paramecium",
-      "name": "짚신벌레",
-      "hp": 100,
-      "atk": 7,
-      "def": 4,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "virus",
-      "name": "바이러스",
-      "hp": 50,
-      "atk": 15,
-      "def": 1,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "mold",
-      "name": "곰팡이",
-      "hp": 80,
-      "atk": 9,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "regen"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_tardigrade",
-      "name": "물곰",
-      "hp": 280,
-      "atk": 22,
-      "def": 12,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield",
-        "counter",
-        "regen"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_bacteriophage",
-      "name": "박테리오파지",
-      "hp": 200,
-      "atk": 30,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "venom_sword",
-        "poison_inject",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_giant_amoeba",
-      "name": "거대 아메바",
-      "hp": 800,
-      "atk": 28,
-      "def": 18,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "regen",
-        "iron_shield",
-        "counter"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_super_bacteria",
-      "name": "슈퍼 세균",
-      "hp": 600,
-      "atk": 36,
-      "def": 10,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "multi_hit",
-        "lifesteal"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_fungus_king",
-      "name": "곰팡이 왕",
-      "hp": 700,
-      "atk": 32,
-      "def": 14,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "regen",
-        "iron_shield"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "ant",
-      "name": "일개미",
-      "hp": 130,
-      "atk": 9,
-      "def": 4,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "mosquito",
-      "name": "모기",
-      "hp": 65,
-      "atk": 17,
-      "def": 2,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "beetle",
-      "name": "딱정벌레",
-      "hp": 120,
-      "atk": 10,
-      "def": 8,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "caterpillar",
-      "name": "애벌레",
-      "hp": 95,
-      "atk": 8,
-      "def": 4,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "firefly",
-      "name": "반딧불이",
-      "hp": 75,
-      "atk": 15,
-      "def": 3,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "bunno_flame",
-        "flame_summon"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_mantis",
-      "name": "왕사마귀",
-      "hp": 310,
-      "atk": 29,
-      "def": 11,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_scorpion",
-      "name": "전갈",
-      "hp": 290,
-      "atk": 32,
-      "def": 10,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "counter",
-        "multi_hit"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_queen_ant",
-      "name": "여왕개미",
-      "hp": 900,
-      "atk": 36,
-      "def": 18,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield",
-        "multi_hit",
-        "counter"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_giant_spider",
-      "name": "왕거미",
-      "hp": 780,
-      "atk": 42,
-      "def": 14,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "multi_hit",
-        "lifesteal"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_stag_beetle",
-      "name": "장수풍뎅이",
-      "hp": 1000,
-      "atk": 32,
-      "def": 24,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield",
-        "counter",
-        "regen"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "sparrow",
-      "name": "참새",
-      "hp": 110,
-      "atk": 14,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "mouse",
-      "name": "쥐",
-      "hp": 95,
-      "atk": 17,
-      "def": 3,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "frog",
-      "name": "개구리",
-      "hp": 120,
-      "atk": 13,
-      "def": 6,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "squirrel",
-      "name": "다람쥐",
-      "hp": 115,
-      "atk": 16,
-      "def": 4,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "hedgehog",
-      "name": "고슴도치",
-      "hp": 100,
-      "atk": 12,
-      "def": 10,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter",
-        "iron_shield"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_eagle",
-      "name": "독수리",
-      "hp": 340,
-      "atk": 36,
-      "def": 10,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "bunno_thunder",
-        "lightning_summon",
-        "bunno_flame",
-        "flame_summon"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_fox",
-      "name": "여우",
-      "hp": 360,
-      "atk": 34,
-      "def": 12,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "lifesteal",
-        "counter"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_snake",
-      "name": "왕뱀",
-      "hp": 1050,
-      "atk": 48,
-      "def": 20,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "lifesteal",
-        "bunno_flame",
-        "flame_summon"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_wild_cat",
-      "name": "살쾡이",
-      "hp": 1000,
-      "atk": 52,
-      "def": 18,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "lifesteal"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_hawk",
-      "name": "매",
-      "hp": 950,
-      "atk": 56,
-      "def": 16,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "bunno_thunder",
-        "lightning_summon",
-        "counter"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "wolf",
-      "name": "늑대",
-      "hp": 140,
-      "atk": 20,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boar",
-      "name": "멧돼지",
-      "hp": 170,
-      "atk": 15,
-      "def": 8,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "deer",
-      "name": "사슴",
-      "hp": 125,
-      "atk": 17,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "raccoon",
-      "name": "너구리",
-      "hp": 120,
-      "atk": 18,
-      "def": 6,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "badger",
-      "name": "오소리",
-      "hp": 135,
-      "atk": 14,
-      "def": 10,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_leopard",
-      "name": "표범",
-      "hp": 400,
-      "atk": 42,
-      "def": 12,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_hyena",
-      "name": "하이에나",
-      "hp": 420,
-      "atk": 38,
-      "def": 16,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "lifesteal",
-        "counter",
-        "iron_shield"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_bear",
-      "name": "큰곰",
-      "hp": 1200,
-      "atk": 52,
-      "def": 22,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "bunno_thunder",
-        "lightning_summon",
-        "bunno_flame",
-        "flame_summon",
-        "iron_shield"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_crocodile",
-      "name": "악어",
-      "hp": 1300,
-      "atk": 50,
-      "def": 28,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter",
-        "iron_shield",
-        "venom_sword",
-        "poison_inject"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_gorilla",
-      "name": "고릴라",
-      "hp": 1100,
-      "atk": 60,
-      "def": 20,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "iron_shield"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "buffalo",
-      "name": "물소",
-      "hp": 200,
-      "atk": 18,
-      "def": 12,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "hippo",
-      "name": "하마",
-      "hp": 220,
-      "atk": 16,
-      "def": 14,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "rhino",
-      "name": "코뿔소",
-      "hp": 170,
-      "atk": 24,
-      "def": 8,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "ostrich",
-      "name": "타조",
-      "hp": 120,
-      "atk": 26,
-      "def": 5,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "zebra",
-      "name": "얼룩말",
-      "hp": 150,
-      "atk": 20,
-      "def": 7,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_lion",
-      "name": "사자",
-      "hp": 500,
-      "atk": 52,
-      "def": 17,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "lifesteal"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "elite_tiger",
-      "name": "호랑이",
-      "hp": 480,
-      "atk": 56,
-      "def": 15,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "counter",
-        "bunno_thunder",
-        "lightning_summon"
-      ],
-      "isBoss": false,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_elephant",
-      "name": "코끼리",
-      "hp": 1500,
-      "atk": 42,
-      "def": 32,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter",
-        "iron_shield",
-        "venom_sword",
-        "poison_inject"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_whale",
-      "name": "고래",
-      "hp": 1600,
-      "atk": 40,
-      "def": 28,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "iron_shield",
-        "regen",
-        "counter"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "boss_mammoth",
-      "name": "매머드",
-      "hp": 1550,
-      "atk": 46,
-      "def": 30,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "counter",
-        "iron_shield",
-        "multi_hit"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "dungeon_queen_bee",
-      "name": "여왕벌",
-      "hp": 500,
-      "atk": 28,
-      "def": 12,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "bunno_flame",
-        "flame_summon",
-        "iron_shield"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "dungeon_old_tree",
-      "name": "고목나무 정령",
-      "hp": 600,
-      "atk": 22,
-      "def": 18,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "venom_sword",
-        "poison_inject",
-        "counter"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    },
-    {
-      "id": "dungeon_tiger",
-      "name": "백호",
-      "hp": 400,
-      "atk": 32,
-      "def": 8,
-      "crit": 0,
-      "skillIds": [
-        "ilban_attack",
-        "bunno_attack",
-        "rage_accumulate",
-        "multi_hit",
-        "bunno_thunder",
-        "lightning_summon"
-      ],
-      "isBoss": true,
-      "ragePerAttack": 25
-    }
+    { "id": "amoeba", "name": "아메바", "hp": 90, "atk": 8, "def": 2, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "bacteria", "name": "세균", "hp": 70, "atk": 11, "def": 3, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "paramecium", "name": "짚신벌레", "hp": 100, "atk": 7, "def": 4, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "virus", "name": "바이러스", "hp": 50, "atk": 15, "def": 1, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "mold", "name": "곰팡이", "hp": 80, "atk": 9, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "regen"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_tardigrade", "name": "물곰", "hp": 280, "atk": 22, "def": 12, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield", "counter", "regen"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_bacteriophage", "name": "박테리오파지", "hp": 200, "atk": 30, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "venom_sword", "poison_inject", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boss_giant_amoeba", "name": "거대 아메바", "hp": 800, "atk": 28, "def": 18, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "regen", "iron_shield", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_super_bacteria", "name": "슈퍼 세균", "hp": 600, "atk": 36, "def": 10, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "multi_hit", "lifesteal"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_fungus_king", "name": "곰팡이 왕", "hp": 700, "atk": 32, "def": 14, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "regen", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "ant", "name": "일개미", "hp": 130, "atk": 9, "def": 4, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "mosquito", "name": "모기", "hp": 65, "atk": 17, "def": 2, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "beetle", "name": "딱정벌레", "hp": 120, "atk": 10, "def": 8, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "caterpillar", "name": "애벌레", "hp": 95, "atk": 8, "def": 4, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "firefly", "name": "반딧불이", "hp": 75, "atk": 15, "def": 3, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "bunno_flame", "flame_summon"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_mantis", "name": "왕사마귀", "hp": 310, "atk": 29, "def": 11, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_scorpion", "name": "전갈", "hp": 290, "atk": 32, "def": 10, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "counter", "multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boss_queen_ant", "name": "여왕개미", "hp": 900, "atk": 36, "def": 18, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield", "multi_hit", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_giant_spider", "name": "왕거미", "hp": 780, "atk": 42, "def": 14, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "multi_hit", "lifesteal"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_stag_beetle", "name": "장수풍뎅이", "hp": 1000, "atk": 32, "def": 24, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield", "counter", "regen"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "sparrow", "name": "참새", "hp": 110, "atk": 14, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "mouse", "name": "쥐", "hp": 95, "atk": 17, "def": 3, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "frog", "name": "개구리", "hp": 120, "atk": 13, "def": 6, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "squirrel", "name": "다람쥐", "hp": 115, "atk": 16, "def": 4, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "hedgehog", "name": "고슴도치", "hp": 100, "atk": 12, "def": 10, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_eagle", "name": "독수리", "hp": 340, "atk": 36, "def": 10, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "bunno_thunder", "lightning_summon", "bunno_flame", "flame_summon"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_fox", "name": "여우", "hp": 360, "atk": 34, "def": 12, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "lifesteal", "counter"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boss_snake", "name": "왕뱀", "hp": 1050, "atk": 48, "def": 20, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "lifesteal", "bunno_flame", "flame_summon"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_wild_cat", "name": "살쾡이", "hp": 1000, "atk": 52, "def": 18, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "lifesteal"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_hawk", "name": "매", "hp": 950, "atk": 56, "def": 16, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "bunno_thunder", "lightning_summon", "counter"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "wolf", "name": "늑대", "hp": 140, "atk": 20, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boar", "name": "멧돼지", "hp": 170, "atk": 15, "def": 8, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "deer", "name": "사슴", "hp": 125, "atk": 17, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "raccoon", "name": "너구리", "hp": 120, "atk": 18, "def": 6, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "badger", "name": "오소리", "hp": 135, "atk": 14, "def": 10, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_leopard", "name": "표범", "hp": 400, "atk": 42, "def": 12, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_hyena", "name": "하이에나", "hp": 420, "atk": 38, "def": 16, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "lifesteal", "counter", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boss_bear", "name": "큰곰", "hp": 1200, "atk": 52, "def": 22, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "bunno_thunder", "lightning_summon", "bunno_flame", "flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_crocodile", "name": "악어", "hp": 1300, "atk": 50, "def": 28, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter", "iron_shield", "venom_sword", "poison_inject"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_gorilla", "name": "고릴라", "hp": 1100, "atk": 60, "def": 20, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "buffalo", "name": "물소", "hp": 200, "atk": 18, "def": 12, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "hippo", "name": "하마", "hp": 220, "atk": 16, "def": 14, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "rhino", "name": "코뿔소", "hp": 170, "atk": 24, "def": 8, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "ostrich", "name": "타조", "hp": 120, "atk": 26, "def": 5, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "zebra", "name": "얼룩말", "hp": 150, "atk": 20, "def": 7, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_lion", "name": "사자", "hp": 500, "atk": 52, "def": 17, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "lifesteal"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "elite_tiger", "name": "호랑이", "hp": 480, "atk": 56, "def": 15, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "counter", "bunno_thunder", "lightning_summon"], "isBoss": false, "ragePerAttack": 25 },
+    { "id": "boss_elephant", "name": "코끼리", "hp": 1500, "atk": 42, "def": 32, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter", "iron_shield", "venom_sword", "poison_inject"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_whale", "name": "고래", "hp": 1600, "atk": 40, "def": 28, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "iron_shield", "regen", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "boss_mammoth", "name": "매머드", "hp": 1550, "atk": 46, "def": 30, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "counter", "iron_shield", "multi_hit"], "isBoss": true, "ragePerAttack": 25 },
+
+    { "id": "dungeon_queen_bee", "name": "여왕벌", "hp": 500, "atk": 28, "def": 12, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "bunno_flame", "flame_summon", "iron_shield"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "dungeon_old_tree", "name": "고목나무 정령", "hp": 600, "atk": 22, "def": 18, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "venom_sword", "poison_inject", "counter"], "isBoss": true, "ragePerAttack": 25 },
+    { "id": "dungeon_tiger", "name": "백호", "hp": 400, "atk": 32, "def": 8, "crit": 0, "skillIds": ["ilban_attack", "bunno_attack", "rage_accumulate", "multi_hit", "bunno_thunder", "lightning_summon"], "isBoss": true, "ragePerAttack": 25 }
   ],
   "chapterThemes": [
     {
-      "minChapter": 1,
-      "maxChapter": 10,
-      "enemy": [
-        "amoeba",
-        "bacteria",
-        "paramecium",
-        "virus",
-        "mold"
-      ],
-      "elite": [
-        "elite_tardigrade",
-        "elite_bacteriophage"
-      ],
-      "boss": [
-        "boss_giant_amoeba",
-        "boss_super_bacteria",
-        "boss_fungus_king"
-      ],
+      "minChapter": 1, "maxChapter": 10,
+      "enemy": ["amoeba", "bacteria", "paramecium", "virus", "mold"],
+      "elite": ["elite_tardigrade", "elite_bacteriophage"],
+      "boss": ["boss_giant_amoeba", "boss_super_bacteria", "boss_fungus_king"],
       "bossRotation": [
-        {
-          "elite": "elite_tardigrade",
-          "midBoss": "boss_super_bacteria",
-          "boss": "boss_fungus_king"
-        },
-        {
-          "elite": "elite_bacteriophage",
-          "midBoss": "boss_giant_amoeba",
-          "boss": "boss_super_bacteria"
-        },
-        {
-          "elite": "elite_tardigrade",
-          "midBoss": "boss_fungus_king",
-          "boss": "boss_giant_amoeba"
-        }
+        { "elite": "elite_tardigrade", "midBoss": "boss_super_bacteria", "boss": "boss_fungus_king" },
+        { "elite": "elite_bacteriophage", "midBoss": "boss_giant_amoeba", "boss": "boss_super_bacteria" },
+        { "elite": "elite_tardigrade", "midBoss": "boss_fungus_king", "boss": "boss_giant_amoeba" }
       ]
     },
     {
-      "minChapter": 11,
-      "maxChapter": 20,
-      "enemy": [
-        "ant",
-        "mosquito",
-        "beetle",
-        "caterpillar",
-        "firefly"
-      ],
-      "elite": [
-        "elite_mantis",
-        "elite_scorpion"
-      ],
-      "boss": [
-        "boss_queen_ant",
-        "boss_giant_spider",
-        "boss_stag_beetle"
-      ],
+      "minChapter": 11, "maxChapter": 20,
+      "enemy": ["ant", "mosquito", "beetle", "caterpillar", "firefly"],
+      "elite": ["elite_mantis", "elite_scorpion"],
+      "boss": ["boss_queen_ant", "boss_giant_spider", "boss_stag_beetle"],
       "bossRotation": [
-        {
-          "elite": "elite_mantis",
-          "midBoss": "boss_giant_spider",
-          "boss": "boss_queen_ant"
-        },
-        {
-          "elite": "elite_scorpion",
-          "midBoss": "boss_stag_beetle",
-          "boss": "boss_giant_spider"
-        },
-        {
-          "elite": "elite_mantis",
-          "midBoss": "boss_queen_ant",
-          "boss": "boss_stag_beetle"
-        }
+        { "elite": "elite_mantis", "midBoss": "boss_giant_spider", "boss": "boss_queen_ant" },
+        { "elite": "elite_scorpion", "midBoss": "boss_stag_beetle", "boss": "boss_giant_spider" },
+        { "elite": "elite_mantis", "midBoss": "boss_queen_ant", "boss": "boss_stag_beetle" }
       ]
     },
     {
-      "minChapter": 21,
-      "maxChapter": 30,
-      "enemy": [
-        "sparrow",
-        "mouse",
-        "frog",
-        "squirrel",
-        "hedgehog"
-      ],
-      "elite": [
-        "elite_eagle",
-        "elite_fox"
-      ],
-      "boss": [
-        "boss_snake",
-        "boss_wild_cat",
-        "boss_hawk"
-      ],
+      "minChapter": 21, "maxChapter": 30,
+      "enemy": ["sparrow", "mouse", "frog", "squirrel", "hedgehog"],
+      "elite": ["elite_eagle", "elite_fox"],
+      "boss": ["boss_snake", "boss_wild_cat", "boss_hawk"],
       "bossRotation": [
-        {
-          "elite": "elite_eagle",
-          "midBoss": "boss_wild_cat",
-          "boss": "boss_snake"
-        },
-        {
-          "elite": "elite_fox",
-          "midBoss": "boss_hawk",
-          "boss": "boss_wild_cat"
-        },
-        {
-          "elite": "elite_eagle",
-          "midBoss": "boss_snake",
-          "boss": "boss_hawk"
-        }
+        { "elite": "elite_eagle", "midBoss": "boss_wild_cat", "boss": "boss_snake" },
+        { "elite": "elite_fox", "midBoss": "boss_hawk", "boss": "boss_wild_cat" },
+        { "elite": "elite_eagle", "midBoss": "boss_snake", "boss": "boss_hawk" }
       ]
     },
     {
-      "minChapter": 31,
-      "maxChapter": 40,
-      "enemy": [
-        "wolf",
-        "boar",
-        "deer",
-        "raccoon",
-        "badger"
-      ],
-      "elite": [
-        "elite_leopard",
-        "elite_hyena"
-      ],
-      "boss": [
-        "boss_bear",
-        "boss_crocodile",
-        "boss_gorilla"
-      ],
+      "minChapter": 31, "maxChapter": 40,
+      "enemy": ["wolf", "boar", "deer", "raccoon", "badger"],
+      "elite": ["elite_leopard", "elite_hyena"],
+      "boss": ["boss_bear", "boss_crocodile", "boss_gorilla"],
       "bossRotation": [
-        {
-          "elite": "elite_leopard",
-          "midBoss": "boss_crocodile",
-          "boss": "boss_bear"
-        },
-        {
-          "elite": "elite_hyena",
-          "midBoss": "boss_gorilla",
-          "boss": "boss_crocodile"
-        },
-        {
-          "elite": "elite_leopard",
-          "midBoss": "boss_bear",
-          "boss": "boss_gorilla"
-        }
+        { "elite": "elite_leopard", "midBoss": "boss_crocodile", "boss": "boss_bear" },
+        { "elite": "elite_hyena", "midBoss": "boss_gorilla", "boss": "boss_crocodile" },
+        { "elite": "elite_leopard", "midBoss": "boss_bear", "boss": "boss_gorilla" }
       ]
     },
     {
-      "minChapter": 41,
-      "maxChapter": 50,
-      "enemy": [
-        "buffalo",
-        "hippo",
-        "rhino",
-        "ostrich",
-        "zebra"
-      ],
-      "elite": [
-        "elite_lion",
-        "elite_tiger"
-      ],
-      "boss": [
-        "boss_elephant",
-        "boss_whale",
-        "boss_mammoth"
-      ],
+      "minChapter": 41, "maxChapter": 50,
+      "enemy": ["buffalo", "hippo", "rhino", "ostrich", "zebra"],
+      "elite": ["elite_lion", "elite_tiger"],
+      "boss": ["boss_elephant", "boss_whale", "boss_mammoth"],
       "bossRotation": [
-        {
-          "elite": "elite_lion",
-          "midBoss": "boss_whale",
-          "boss": "boss_elephant"
-        },
-        {
-          "elite": "elite_tiger",
-          "midBoss": "boss_mammoth",
-          "boss": "boss_whale"
-        },
-        {
-          "elite": "elite_lion",
-          "midBoss": "boss_elephant",
-          "boss": "boss_mammoth"
-        }
+        { "elite": "elite_lion", "midBoss": "boss_whale", "boss": "boss_elephant" },
+        { "elite": "elite_tiger", "midBoss": "boss_mammoth", "boss": "boss_whale" },
+        { "elite": "elite_lion", "midBoss": "boss_elephant", "boss": "boss_mammoth" }
       ]
     }
   ],
   "pools": {
-    "enemy": [
-      "amoeba",
-      "bacteria",
-      "paramecium",
-      "virus",
-      "mold"
-    ],
-    "elite": [
-      "elite_tardigrade",
-      "elite_bacteriophage"
-    ],
-    "boss": [
-      "boss_giant_amoeba",
-      "boss_super_bacteria",
-      "boss_fungus_king"
-    ]
+    "enemy": ["amoeba", "bacteria", "paramecium", "virus", "mold"],
+    "elite": ["elite_tardigrade", "elite_bacteriophage"],
+    "boss": ["boss_giant_amoeba", "boss_super_bacteria", "boss_fungus_king"]
   },
   "baseStats": {
-    "enemy": {
-      "hp": 80,
-      "atk": 8,
-      "def": 3,
-      "crit": 0
-    },
-    "elite": {
-      "hp": 260,
-      "atk": 24,
-      "def": 9,
-      "crit": 0
-    },
-    "boss": {
-      "hp": 600,
-      "atk": 32,
-      "def": 14,
-      "crit": 0
-    }
+    "enemy": { "hp": 80, "atk": 8, "def": 3, "crit": 0 },
+    "elite": { "hp": 260, "atk": 24, "def": 9, "crit": 0 },
+    "boss": { "hp": 600, "atk": 32, "def": 14, "crit": 0 }
   }
 }
