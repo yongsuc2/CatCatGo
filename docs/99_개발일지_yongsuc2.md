@@ -554,3 +554,8 @@
   - TreasureChest: GEM 분기 삭제 (GetCostPerPull, GetPityThreshold, Pull, PullSpecial)
   - GachaScreen: 탭 3개→2개(장비/펫), CHEST_LABELS/OnTabChanged/GetChestIconColor GEM 제거
   - 기획서 동기화: 06_가챠시스템.md, 뽑기화면_기획서.md
+- **AI Agent 기획/구현 전면 삭제** (Y-78)
+  - AI Agent로 게임 플레이하는 기획 폐기 → 관련 기획/코드 전면 삭제
+  - 코드 삭제: ResourceAllocator.cs(GoldAllocationPlan/ShouldSpendGems/AutoUpgradeTalent), ResourceAllocatorTests.cs, GameManager.cs ResourceAllocatorService 참조 3곳
+  - 기획서 AI Agent 섹션 삭제 (8개): 00_게임개요(인카운터 테이블 AI Agent 열+의사결정 섹션), 01_전투시스템, 02_캐릭터성장시스템, 03_장비시스템, 05_스테이지던전시스템, 07_재화시스템, 08_PvP시스템, 09_펫시스템, 11_과금시스템
+  - 참조 문서 정리: 90_OOP설계문서 ResourceAllocator 클래스, 91_작업목록 6C-2 항목

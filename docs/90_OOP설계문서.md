@@ -346,11 +346,6 @@ EquipmentManager
 ├── findMergeCandidates(inventory): Equipment[][]
 └── autoMerge(inventory): Equipment[]
 
-ResourceAllocator
-├── allocateGold(player): AllocationPlan
-├── shouldSpendGems(player, purpose): bool
-├── getStaminaPriority(): ContentType
-└── generateDailyPlan(player): DailyPlan
 ```
 
 ## 이벤트 버스 (시스템 간 통신)
