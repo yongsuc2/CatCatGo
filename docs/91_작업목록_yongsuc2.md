@@ -82,6 +82,7 @@
 | Y-70 | 챕터 테마 시스템 (5테마×10챕터) | 상 | 완료 | 미생물→곤충→소형동물→중형동물→대형동물 5테마, 50종 적 템플릿, chapterThemes 풀/보스로테이션, EnemyTable 테마 인식 풀 선택, Chapter.ts/C# 동시 적용, 260 테스트 통과 |
 | Y-71 | 분노 시스템 리팩토링 | 중 | 완료 | ragePerAttack 캐릭터 스탯화, ragePowerMultiplier→SKILL_MODIFIER(RAGE), 적 빌트인 스킬 자동 부여, processUnitTurn 통합, 하드코딩 분노 로직 제거, battle.data.json 정리, 261 테스트 통과 |
 | Y-72 | 적 액티브 스킬 발동 수정 | 중 | 완료 | enemy.data.json에 UPPER 스킬 직접 지정 (bunno_flame/bunno_thunder/venom_sword + 대응 LOWEST), 플레이어와 동일한 UPPER→LOWEST 체인 구조 |
+| Y-73 | 재능 등급/서브등급/보상 기획서 정리 + Unity 동기화 | 하 | 완료 | 02_캐릭터성장시스템.md 서브등급 개수 오류 수정(5/15/30/50/100→2/5/10/17/33), 등급 구조 테이블 추가, 마일스톤/보너스 상세 기술, TalentScreen VIEW_RANGE 15로 원본 동기화 |
 
 ---
 

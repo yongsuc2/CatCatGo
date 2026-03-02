@@ -14,7 +14,7 @@ namespace CatCatGo.Presentation.Screens
 {
     public class TalentScreen : BaseScreen
     {
-        private const int VIEW_RANGE = 8;
+        private const int VIEW_RANGE = 15;
 
         private static readonly Dictionary<StatType, string> STAT_ICON_ID = new Dictionary<StatType, string>
         {
