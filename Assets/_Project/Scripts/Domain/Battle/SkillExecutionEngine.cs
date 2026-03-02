@@ -163,7 +163,7 @@ namespace CatCatGo.Domain.Battle
 
                         foreach (var t in targets)
                         {
-                            float finalCoeff = effect.Coefficient + source.GetMasteryBonus(skill.Id);
+                            float finalCoeff = effect.Coefficient * (1 + source.GetMasteryBonus(skill.Id));
                             var calcResult = CalculateSkillDamage(
                                 source, t, effect.AttackType, finalCoeff, effect.IsTargetHpBased);
                             int damage = Math.Max(1, calcResult.Damage);
@@ -316,38 +316,6 @@ namespace CatCatGo.Domain.Battle
             return results;
         }
 
-        private int CalculateRawDamage(
-            ISkillExecutionUnit source,
-            ISkillExecutionUnit target,
-            AttackType attackType,
-            float coefficient,
-            bool isTargetHpBased = false)
-        {
-            switch (attackType)
-            {
-                case AttackType.PHYSICAL:
-                {
-                    int def = target.GetEffectiveDef();
-                    float k = BattleDataTable.Data.Damage.DefenseConstant;
-                    if (isTargetHpBased)
-                        return Math.Max(1, (int)(target.MaxHp * coefficient * (k / (k + def))));
-                    int atk = source.GetEffectiveAtk() + source.GetHpBonusDamage();
-                    return Math.Max(1, (int)(atk * coefficient * (k / (k + def))));
-                }
-                case AttackType.MAGIC:
-                {
-                    int atk = source.GetEffectiveAtk();
-                    int def = target.GetEffectiveDef();
-                    float k = BattleDataTable.Data.Damage.MagicDefenseConstant;
-                    return Math.Max(1, (int)(atk * source.MagicCoefficient * coefficient * (k / (k + def))));
-                }
-                case AttackType.FIXED:
-                    return Math.Max(1, (int)(source.GetEffectiveAtk() * coefficient));
-                default:
-                    return 1;
-            }
-        }
-
         private DamageCalcResult CalculateSkillDamage(
             ISkillExecutionUnit source,
             ISkillExecutionUnit target,
@@ -355,13 +323,40 @@ namespace CatCatGo.Domain.Battle
             float coefficient,
             bool isTargetHpBased = false)
         {
-            int rawDamage = CalculateRawDamage(source, target, attackType, coefficient, isTargetHpBased);
             bool isCrit = attackType == AttackType.PHYSICAL && _rng.Chance(source.GetEffectiveCrit());
             float critMult = isCrit ? BattleDataTable.Data.Damage.CritMultiplier : 1.0f;
+            float damage;
+
+            switch (attackType)
+            {
+                case AttackType.PHYSICAL:
+                {
+                    float baseValue = isTargetHpBased
+                        ? target.MaxHp
+                        : source.GetEffectiveAtk() + source.GetHpBonusDamage();
+                    int def = target.GetEffectiveDef();
+                    float k = BattleDataTable.Data.Damage.DefenseConstant;
+                    damage = baseValue * coefficient * critMult * (k / (k + def));
+                    break;
+                }
+                case AttackType.MAGIC:
+                {
+                    int def = target.GetEffectiveDef();
+                    float k = BattleDataTable.Data.Damage.MagicDefenseConstant;
+                    damage = source.GetEffectiveAtk() * source.MagicCoefficient * coefficient * (k / (k + def));
+                    break;
+                }
+                case AttackType.FIXED:
+                    damage = source.GetEffectiveAtk() * coefficient;
+                    break;
+                default:
+                    damage = 1;
+                    break;
+            }
 
             return new DamageCalcResult
             {
-                Damage = Math.Max(1, (int)(rawDamage * critMult)),
+                Damage = Math.Max(1, (int)damage),
                 IsCrit = isCrit,
             };
         }
