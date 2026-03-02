@@ -11,6 +11,7 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("varianceMin")] public float VarianceMin;
         [JsonProperty("varianceMax")] public float VarianceMax;
         [JsonProperty("critMultiplier")] public float CritMultiplier;
+        [JsonProperty("counterCoefficient")] public float CounterCoefficient;
     }
 
     public class RageConfig

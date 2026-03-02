@@ -305,8 +305,11 @@ namespace CatCatGo.Domain.Battle
         private void ProcessCounter(BattleUnit defender, BattleUnit attacker)
         {
             float baseDamage = CalculateBaseDamage(defender, attacker);
+            float coefficient = BattleDataTable.Data.Damage.CounterCoefficient;
+            float mastery = 1f + defender.GetMasteryBonus("counter");
             bool isCrit = _rng.Chance(defender.GetEffectiveCrit());
-            float finalDamageF = isCrit ? baseDamage * BattleDataTable.Data.Damage.CritMultiplier : baseDamage;
+            float finalDamageF = baseDamage * coefficient * mastery;
+            if (isCrit) finalDamageF *= BattleDataTable.Data.Damage.CritMultiplier;
             int finalDamage = Math.Max(1, (int)finalDamageF);
             int dealt = attacker.TakeDamage(finalDamage);
             Log.Add(new BattleLogEntry

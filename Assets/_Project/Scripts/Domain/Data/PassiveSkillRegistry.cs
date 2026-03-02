@@ -122,6 +122,14 @@ namespace CatCatGo.Domain.Data
                 },
                 new PassiveSkillFamilyDef
                 {
+                    Id = "counter_mastery", Name = "\ubc18\uaca9 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udee1\ufe0f",
+                    Tags = new SkillTag[0], HeritageSynergy = new[] { HeritageRoute.KNIGHT },
+                    Traits = new[] { "\ubc18\uaca9 \ud53c\ud574 \uac15\ud654", "\ubc18\uaca9 \ube4c\ub4dc \ud575\uc2ec" },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetSkillId = "counter", DamageMultiplier = V(Td("counter_mastery", t), "damageBonus") },
+                    BuildDescription = t => $"\ubc18\uaca9 \ub370\ubbf8\uc9c0 +{Pct(V(Td("counter_mastery", t), "damageBonus"))}",
+                },
+                new PassiveSkillFamilyDef
+                {
                     Id = "lance_mastery", Name = "\uad11\ucc3d \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udd31",
                     Tags = new[] { SkillTag.LANCE }, HeritageSynergy = new[] { HeritageRoute.KNIGHT },
                     Traits = new[] { "\uad11\ucc3d \uc2a4\ud0ac \uc804\uc6a9", "\ub9c8\ubc95 \ube4c\ub4dc \uc2dc\ub108\uc9c0" },

@@ -5,7 +5,8 @@
     "baseMagicCoefficient": 0.5,
     "varianceMin": 0.9,
     "varianceMax": 1.1,
-    "critMultiplier": 1.5
+    "critMultiplier": 1.5,
+    "counterCoefficient": 1.0
   },
   "rage": {
     "maxRage": 100

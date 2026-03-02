@@ -54,6 +54,11 @@
   { "skill": "lance_mastery", "tier": 3, "damageBonus": 0.32 },
   { "skill": "lance_mastery", "tier": 4, "damageBonus": 0.48 },
 
+  { "skill": "counter_mastery", "tier": 1, "damageBonus": 0.12 },
+  { "skill": "counter_mastery", "tier": 2, "damageBonus": 0.27 },
+  { "skill": "counter_mastery", "tier": 3, "damageBonus": 0.48 },
+  { "skill": "counter_mastery", "tier": 4, "damageBonus": 0.72 },
+
   { "skill": "angel_power", "tier": 4, "value": 0.3 },
 
   { "skill": "magic_mastery", "tier": 1, "value": 0.1 },
