@@ -23,6 +23,7 @@ namespace CatCatGo.Tests.Domain
             public int RagePerAttack { get; set; }
             public float MagicCoefficient { get; set; }
             public HashSet<string> UsedOnceConditions { get; set; }
+            public List<StatusEffect> AppliedEffects;
 
             private Func<float> _getEffectiveAtk;
             private Func<float> _getEffectiveDef;
@@ -36,6 +37,7 @@ namespace CatCatGo.Tests.Domain
                 Func<float> getEffectiveAtk = null,
                 Func<float> getEffectiveDef = null,
                 Func<float> getEffectiveCrit = null,
+                Func<string, float> getMasteryBonus = null,
                 int rage = 0,
                 int maxRage = 100,
                 float magicCoefficient = 0f)
@@ -47,10 +49,11 @@ namespace CatCatGo.Tests.Domain
                 MaxRage = maxRage;
                 MagicCoefficient = magicCoefficient == 0f ? BattleDataTable.Data.Damage.BaseMagicCoefficient : magicCoefficient;
                 UsedOnceConditions = new HashSet<string>();
+                AppliedEffects = new List<StatusEffect>();
                 _getEffectiveAtk = getEffectiveAtk ?? (() => 50f);
                 _getEffectiveDef = getEffectiveDef ?? (() => 20f);
                 _getEffectiveCrit = getEffectiveCrit ?? (() => 0f);
-                _getMasteryBonus = _ => 0f;
+                _getMasteryBonus = getMasteryBonus ?? (_ => 0f);
             }
 
             public float GetEffectiveAtk() => _getEffectiveAtk();
@@ -71,21 +74,42 @@ namespace CatCatGo.Tests.Domain
                 return actual;
             }
 
-            public void AddStatusEffect(StatusEffect effect) { }
+            public void AddStatusEffect(StatusEffect effect) { AppliedEffects.Add(effect); }
             public bool IsAlive() => CurrentHp > 0;
             public float GetHpPercent() => MaxHp > 0 ? (float)CurrentHp / MaxHp : 0;
             public float GetMasteryBonus(string skillId) => _getMasteryBonus(skillId);
         }
 
+        private ActiveSkill MakeAttackSkill(
+            string id,
+            AttackType attackType,
+            float coefficient,
+            DamageBase damageBase = DamageBase.ATK,
+            int duration = 0,
+            bool isAoe = false)
+        {
+            return new ActiveSkill(
+                id, id, "X",
+                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = attackType,
+                    Coefficient = coefficient,
+                    DamageBase = damageBase,
+                    Duration = duration,
+                    IsAoe = isAoe,
+                }});
+        }
+
+        #region Basic Skill Effects
+
         [Test]
         public void ExecutesSimplePhysicalAttackSkill()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_attack", "Test Attack", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 1.0f } });
+            var skill = MakeAttackSkill("test_attack", AttackType.PHYSICAL, 1.0f);
 
             var source = new MockUnit();
             var target = new MockUnit();
@@ -100,11 +124,7 @@ namespace CatCatGo.Tests.Domain
         public void ExecutesMagicAttackWithMagicCoefficient()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_magic", "Test Magic", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.MAGIC, Coefficient = 0.5f } });
+            var skill = MakeAttackSkill("test_magic", AttackType.MAGIC, 0.5f);
 
             var source = new MockUnit();
             var target = new MockUnit();
@@ -231,6 +251,10 @@ namespace CatCatGo.Tests.Domain
             Assert.AreEqual(0, source.Rage);
         }
 
+        #endregion
+
+        #region Trigger Evaluation
+
         [Test]
         public void EvaluateTriggerChecksEveryNTurns()
         {
@@ -279,6 +303,10 @@ namespace CatCatGo.Tests.Domain
             Assert.IsFalse(engine.EvaluateTrigger(t, 1, source));
         }
 
+        #endregion
+
+        #region Target Alive Checks
+
         [Test]
         public void StopsExecutingWhenTargetDies()
         {
@@ -296,17 +324,8 @@ namespace CatCatGo.Tests.Domain
                     new ActiveSkillEffect { Type = SkillEffectType.TRIGGER_SKILL, TargetSkillId = "hit2", Count = 1 },
                 });
 
-            var hit1 = new ActiveSkill(
-                "hit1", "Hit 1", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 10.0f } });
-
-            var hit2 = new ActiveSkill(
-                "hit2", "Hit 2", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 10.0f } });
+            var hit1 = MakeAttackSkill("hit1", AttackType.PHYSICAL, 10.0f);
+            var hit2 = MakeAttackSkill("hit2", AttackType.PHYSICAL, 10.0f);
 
             var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill, hit1, hit2 });
 
@@ -318,11 +337,7 @@ namespace CatCatGo.Tests.Domain
         public void AoeAttackHitsAllAliveTargets()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_aoe", "AoE Attack", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 1.0f, IsAoe = true } });
+            var skill = MakeAttackSkill("test_aoe", AttackType.PHYSICAL, 1.0f, isAoe: true);
 
             var source = new MockUnit(getEffectiveAtk: () => 50);
             var target1 = new MockUnit(name: "Enemy1", currentHp: 100);
@@ -342,11 +357,7 @@ namespace CatCatGo.Tests.Domain
         public void AoeSkipsDeadTargets()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_aoe", "AoE Attack", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 1.0f, IsAoe = true } });
+            var skill = MakeAttackSkill("test_aoe", AttackType.PHYSICAL, 1.0f, isAoe: true);
 
             var source = new MockUnit(getEffectiveAtk: () => 50);
             var target1 = new MockUnit(name: "Dead", currentHp: 0);
@@ -359,15 +370,692 @@ namespace CatCatGo.Tests.Domain
             Assert.AreEqual("Alive", results[0].TargetName);
         }
 
+        #endregion
+
+        #region Physical Damage Formula
+
+        [Test]
+        public void PhysicalDamage_AtkBase_WithDefense()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(1, results.Count);
+            Assert.IsFalse(results[0].IsCrit);
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_AtkBase_HigherCoefficient()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_high", AttackType.PHYSICAL, 2.5f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(250, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_WithCriticalHit()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_crit", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 1.0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.IsTrue(results[0].IsCrit);
+            Assert.AreEqual(150, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_WithMasteryBonus()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_mastery", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                getMasteryBonus: id => id == "phys_mastery" ? 0.5f : 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(150, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_WithCritAndMastery()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_both", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 1.0f,
+                getMasteryBonus: id => id == "phys_both" ? 0.5f : 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.IsTrue(results[0].IsCrit);
+            Assert.AreEqual(225, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_ZeroDefense_FullDamage()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_nodef", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(200, results[0].Damage);
+        }
+
+        #endregion
+
+        #region DamageBase Variants (압도, 분쇄)
+
+        [Test]
+        public void PhysicalDamage_SourceMaxHpBase()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("apdo", AttackType.PHYSICAL, 0.1f, DamageBase.SOURCE_MAX_HP);
+
+            var source = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(50, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_TargetMaxHpBase()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("bunsoe", AttackType.PHYSICAL, 0.05f, DamageBase.TARGET_MAX_HP);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 2000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(50, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_SourceMaxHpBase_WithCritAndMastery()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("apdo_full", AttackType.PHYSICAL, 0.1f, DamageBase.SOURCE_MAX_HP);
+
+            var source = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 1.0f,
+                getMasteryBonus: id => id == "apdo_full" ? 0.5f : 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.IsTrue(results[0].IsCrit);
+            Assert.AreEqual(112, results[0].Damage);
+        }
+
+        [Test]
+        public void PhysicalDamage_SourceMaxHpBase_IgnoresAtk()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("apdo_atk", AttackType.PHYSICAL, 0.1f, DamageBase.SOURCE_MAX_HP);
+
+            var source1 = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 100f,
+                getEffectiveCrit: () => 0f);
+            var source2 = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 999f,
+                getEffectiveCrit: () => 0f);
+            var target1 = new MockUnit(currentHp: 10000, maxHp: 10000, getEffectiveDef: () => 100f);
+            var target2 = new MockUnit(currentHp: 10000, maxHp: 10000, getEffectiveDef: () => 100f);
+
+            var r1 = engine.ExecuteSkillEffects(skill, source1, target1, new List<ActiveSkill> { skill });
+            var r2 = engine.ExecuteSkillEffects(skill, source2, target2, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(r1[0].Damage, r2[0].Damage);
+        }
+
+        #endregion
+
+        #region Magic Damage Formula
+
+        [Test]
+        public void MagicDamage_WithDefense()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("magic", AttackType.MAGIC, 2.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 150f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        [Test]
+        public void MagicDamage_NeverCrits()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("magic_nocrit", AttackType.MAGIC, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 1.0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.IsFalse(results[0].IsCrit);
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        [Test]
+        public void MagicDamage_WithMastery()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("magic_mastery", AttackType.MAGIC, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f,
+                getMasteryBonus: id => id == "magic_mastery" ? 0.5f : 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(150, results[0].Damage);
+        }
+
+        [Test]
+        public void MagicDamage_ZeroDefense_FullDamage()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("magic_nodef", AttackType.MAGIC, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        #endregion
+
+        #region Fixed Damage Formula
+
+        [Test]
+        public void FixedDamage_IgnoresDefense()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("fixed", AttackType.FIXED, 0.5f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 9999f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        [Test]
+        public void FixedDamage_NeverCrits()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("fixed_nocrit", AttackType.FIXED, 0.5f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 1.0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.IsFalse(results[0].IsCrit);
+            Assert.AreEqual(100, results[0].Damage);
+        }
+
+        [Test]
+        public void FixedDamage_WithMastery()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("fixed_mastery", AttackType.FIXED, 0.5f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                getMasteryBonus: id => id == "fixed_mastery" ? 1.0f : 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 0f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(200, results[0].Damage);
+        }
+
+        #endregion
+
+        #region Float Precision
+
+        [Test]
+        public void FloatChain_NoPrematureTruncation()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("float_test", AttackType.PHYSICAL, 1.5f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 33f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 70f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(29, results[0].Damage);
+        }
+
+        [Test]
+        public void FloatChain_AnotherPrecisionCase()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("float_test2", AttackType.PHYSICAL, 1.7f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 57f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            float k = BattleDataTable.Data.Damage.DefenseConstant;
+            float expected = 57f * 1.7f * 1.0f * 1.0f * (k / (k + 100f));
+            Assert.AreEqual(Math.Max(1, (int)expected), results[0].Damage);
+        }
+
+        #endregion
+
+        #region DOT Snapshot
+
+        [Test]
+        public void DotSnapshot_PhysicalCreatesPoison()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("phys_dot", AttackType.PHYSICAL, 1.0f, duration: 3);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(1, target.AppliedEffects.Count);
+            var dot = target.AppliedEffects[0];
+            Assert.AreEqual(StatusEffectType.POISON, dot.Type);
+            Assert.AreEqual(3, dot.RemainingTurns);
+            Assert.AreEqual(100, (int)dot.Value);
+            Assert.AreEqual("phys_dot", dot.SourceSkillId);
+        }
+
+        [Test]
+        public void DotSnapshot_MagicCreatesBurn()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("magic_dot", AttackType.MAGIC, 2.0f, duration: 2);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 150f);
+
+            engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(1, target.AppliedEffects.Count);
+            var dot = target.AppliedEffects[0];
+            Assert.AreEqual(StatusEffectType.BURN, dot.Type);
+            Assert.AreEqual(2, dot.RemainingTurns);
+            Assert.AreEqual(100, (int)dot.Value);
+            Assert.AreEqual(AttackType.MAGIC, dot.AttackType);
+        }
+
+        [Test]
+        public void DotSnapshot_FixedCreatesPoison()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("fixed_dot", AttackType.FIXED, 0.5f, duration: 4);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(1, target.AppliedEffects.Count);
+            var dot = target.AppliedEffects[0];
+            Assert.AreEqual(StatusEffectType.POISON, dot.Type);
+            Assert.AreEqual(4, dot.RemainingTurns);
+            Assert.AreEqual(100, (int)dot.Value);
+        }
+
+        [Test]
+        public void DotSnapshot_StoresDamageBeforeDefenseIsNotReapplied()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("dot_snapshot", AttackType.MAGIC, 2.0f, duration: 3);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 150f);
+
+            engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            var dot = target.AppliedEffects[0];
+            Assert.AreEqual(100, (int)dot.Value);
+            Assert.AreEqual(dot.GetDamagePerTurn(), dot.Value);
+        }
+
+        #endregion
+
+        #region Combined Scenarios
+
+        [Test]
+        public void CombinedScenario_NormalAttackPlusUpperSkills()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+
+            var normalAttack = new ActiveSkill(
+                "ilban_attack", "일반 공격", "X",
+                SkillHierarchy.BUILTIN, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = AttackType.PHYSICAL,
+                    Coefficient = 1.0f,
+                    DamageBase = DamageBase.ATK,
+                }});
+
+            var apdo = new ActiveSkill(
+                "max_hp_damage", "압도", "X",
+                SkillHierarchy.UPPER, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = AttackType.PHYSICAL,
+                    Coefficient = 0.1f,
+                    DamageBase = DamageBase.SOURCE_MAX_HP,
+                }});
+
+            var bunsoe = new ActiveSkill(
+                "hp_crush", "분쇄", "X",
+                SkillHierarchy.UPPER, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = AttackType.PHYSICAL,
+                    Coefficient = 0.05f,
+                    DamageBase = DamageBase.TARGET_MAX_HP,
+                }});
+
+            var source = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 2000,
+                getEffectiveDef: () => 100f);
+
+            var allSkills = new List<ActiveSkill> { normalAttack, apdo, bunsoe };
+
+            var normalResults = engine.ExecuteSkillEffects(normalAttack, source, target, allSkills);
+            Assert.AreEqual(1, normalResults.Count);
+            Assert.AreEqual(100, normalResults[0].Damage);
+            Assert.AreEqual("ilban_attack", normalResults[0].SkillId);
+
+            var apdoResults = engine.ExecuteSkillEffects(apdo, source, target, allSkills);
+            Assert.AreEqual(1, apdoResults.Count);
+            Assert.AreEqual(50, apdoResults[0].Damage);
+            Assert.AreEqual("max_hp_damage", apdoResults[0].SkillId);
+
+            var bunsoeResults = engine.ExecuteSkillEffects(bunsoe, source, target, allSkills);
+            Assert.AreEqual(1, bunsoeResults.Count);
+            Assert.AreEqual(50, bunsoeResults[0].Damage);
+            Assert.AreEqual("hp_crush", bunsoeResults[0].SkillId);
+
+            int totalDamage = normalResults[0].Damage + apdoResults[0].Damage + bunsoeResults[0].Damage;
+            Assert.AreEqual(200, totalDamage);
+        }
+
+        [Test]
+        public void CombinedScenario_UpperSkillsAreIndependentFromNormalAttack()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+
+            var normalAttack = new ActiveSkill(
+                "ilban_attack", "일반 공격", "X",
+                SkillHierarchy.BUILTIN, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = AttackType.PHYSICAL,
+                    Coefficient = 1.0f,
+                }});
+
+            var apdo = new ActiveSkill(
+                "max_hp_damage", "압도", "X",
+                SkillHierarchy.UPPER, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
+                new[] { new ActiveSkillEffect
+                {
+                    Type = SkillEffectType.ATTACK,
+                    AttackType = AttackType.PHYSICAL,
+                    Coefficient = 0.1f,
+                    DamageBase = DamageBase.SOURCE_MAX_HP,
+                }});
+
+            var weakSource = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 50f,
+                getEffectiveCrit: () => 0f);
+            var strongSource = new MockUnit(
+                maxHp: 1000, currentHp: 1000,
+                getEffectiveAtk: () => 500f,
+                getEffectiveCrit: () => 0f);
+            var target1 = new MockUnit(currentHp: 10000, maxHp: 10000, getEffectiveDef: () => 100f);
+            var target2 = new MockUnit(currentHp: 10000, maxHp: 10000, getEffectiveDef: () => 100f);
+
+            var allSkills = new List<ActiveSkill> { normalAttack, apdo };
+
+            var weakApdo = engine.ExecuteSkillEffects(apdo, weakSource, target1, allSkills);
+            var strongApdo = engine.ExecuteSkillEffects(apdo, strongSource, target2, allSkills);
+
+            Assert.AreEqual(weakApdo[0].Damage, strongApdo[0].Damage);
+        }
+
+        [Test]
+        public void CombinedScenario_PhysicalMagicFixedAllInOneSkill()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+
+            var multiSkill = new ActiveSkill(
+                "multi", "Multi Attack", "X",
+                SkillHierarchy.LOWER, 1, new SkillTag[0], new HeritageRoute[0],
+                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
+                new[]
+                {
+                    new ActiveSkillEffect
+                    {
+                        Type = SkillEffectType.ATTACK,
+                        AttackType = AttackType.PHYSICAL,
+                        Coefficient = 1.0f,
+                    },
+                    new ActiveSkillEffect
+                    {
+                        Type = SkillEffectType.ATTACK,
+                        AttackType = AttackType.MAGIC,
+                        Coefficient = 1.0f,
+                    },
+                    new ActiveSkillEffect
+                    {
+                        Type = SkillEffectType.ATTACK,
+                        AttackType = AttackType.FIXED,
+                        Coefficient = 0.5f,
+                    },
+                });
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f,
+                magicCoefficient: 0.5f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var results = engine.ExecuteSkillEffects(multiSkill, source, target, new List<ActiveSkill> { multiSkill });
+
+            Assert.AreEqual(3, results.Count);
+
+            Assert.AreEqual(AttackType.PHYSICAL, results[0].AttackType);
+            Assert.AreEqual(100, results[0].Damage);
+
+            float kMagic = BattleDataTable.Data.Damage.MagicDefenseConstant;
+            int expectedMagic = Math.Max(1, (int)(200f * 0.5f * 1.0f * (kMagic / (kMagic + 100f))));
+            Assert.AreEqual(AttackType.MAGIC, results[1].AttackType);
+            Assert.AreEqual(expectedMagic, results[1].Damage);
+
+            Assert.AreEqual(AttackType.FIXED, results[2].AttackType);
+            Assert.AreEqual(100, results[2].Damage);
+        }
+
+        [Test]
+        public void CombinedScenario_MultiHitVerifiesConsistentDamage()
+        {
+            var engine = new SkillExecutionEngine(new SeededRandom(42));
+            var skill = MakeAttackSkill("multi_hit", AttackType.PHYSICAL, 1.0f);
+
+            var source = new MockUnit(
+                getEffectiveAtk: () => 200f,
+                getEffectiveCrit: () => 0f);
+            var target = new MockUnit(
+                currentHp: 10000, maxHp: 10000,
+                getEffectiveDef: () => 100f);
+
+            var r1 = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+            var r2 = engine.ExecuteSkillEffects(skill, source, target, new List<ActiveSkill> { skill });
+
+            Assert.AreEqual(r1[0].Damage, r2[0].Damage);
+            Assert.AreEqual(100, r1[0].Damage);
+        }
+
+        #endregion
+
+        #region Defense Formula Verification
+
         [Test]
         public void PercentageDefenseFormulaPhysicalDamage()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_phys", "Phys", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = 1.0f } });
+            var skill = MakeAttackSkill("test_phys", AttackType.PHYSICAL, 1.0f);
 
             int atk = 100;
             int def = 50;
@@ -387,11 +1075,7 @@ namespace CatCatGo.Tests.Domain
         public void PercentageDefenseFormulaMagicDamageIncludesMagicCoefficient()
         {
             var engine = new SkillExecutionEngine(new SeededRandom(42));
-            var skill = new ActiveSkill(
-                "test_magic_def", "Magic", "X",
-                SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
-                TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1)),
-                new[] { new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.MAGIC, Coefficient = 0.5f } });
+            var skill = MakeAttackSkill("test_magic_def", AttackType.MAGIC, 0.5f);
 
             int atk = 100;
             int def = 50;
@@ -409,5 +1093,7 @@ namespace CatCatGo.Tests.Domain
 
             Assert.AreEqual(expectedDamage, results[0].Damage);
         }
+
+        #endregion
     }
 }
