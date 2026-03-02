@@ -40,8 +40,6 @@ namespace CatCatGo.Services
         public Forge ForgeService;
         public EquipmentManager EquipmentManagerService;
         public PetManager PetManagerService;
-        public ResourceAllocator ResourceAllocatorService;
-
         public AttendanceSystem AttendanceSystem;
 
         public SeededRandom Rng;
@@ -83,7 +81,6 @@ namespace CatCatGo.Services
             ForgeService = new Forge();
             EquipmentManagerService = new EquipmentManager();
             PetManagerService = new PetManager();
-            ResourceAllocatorService = new ResourceAllocator();
 
             AttendanceSystem = new AttendanceSystem();
 
@@ -319,7 +316,6 @@ namespace CatCatGo.Services
             ForgeService = new Forge();
             EquipmentManagerService = new EquipmentManager();
             PetManagerService = new PetManager();
-            ResourceAllocatorService = new ResourceAllocator();
             AttendanceSystem = new AttendanceSystem();
             Rng = new SeededRandom(Environment.TickCount);
             InitNewGame();
