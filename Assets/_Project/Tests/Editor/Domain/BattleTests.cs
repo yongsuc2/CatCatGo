@@ -121,6 +121,8 @@ namespace CatCatGo.Tests.Domain
     [TestFixture]
     public class BattleTests
     {
+        private static ActiveSkill[] Builtins => ActiveSkillRegistry.GetBuiltinSkills().ToArray();
+
         private static ActiveSkill MakeLowestAttackSkill(string id, string name, float coefficient)
         {
             return new ActiveSkill(id, name, "X", SkillHierarchy.LOWEST, 1, new SkillTag[0], new HeritageRoute[0],
@@ -136,8 +138,8 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void PlayerWinsAgainstWeakerEnemy()
         {
-            var player = new BattleUnit("Player", Stats.Create(hp: 200, maxHp: 200, atk: 30, def: 10, crit: 0.1f), null, null, true);
-            var enemy = new BattleUnit("Slime", Stats.Create(hp: 50, maxHp: 50, atk: 5, def: 2), null, null, false);
+            var player = new BattleUnit("Player", Stats.Create(hp: 200, maxHp: 200, atk: 30, def: 10, crit: 0.1f), Builtins, null, true);
+            var enemy = new BattleUnit("Slime", Stats.Create(hp: 50, maxHp: 50, atk: 5, def: 2), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();
@@ -150,8 +152,8 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void PlayerLosesAgainstMuchStrongerEnemy()
         {
-            var player = new BattleUnit("Player", Stats.Create(hp: 50, maxHp: 50, atk: 5, def: 2), null, null, true);
-            var enemy = new BattleUnit("Dragon", Stats.Create(hp: 500, maxHp: 500, atk: 50, def: 20), null, null, false);
+            var player = new BattleUnit("Player", Stats.Create(hp: 50, maxHp: 50, atk: 5, def: 2), Builtins, null, true);
+            var enemy = new BattleUnit("Dragon", Stats.Create(hp: 500, maxHp: 500, atk: 50, def: 20), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();
@@ -162,8 +164,8 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void TracksTurnCount()
         {
-            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 100, atk: 20, def: 5), null, null, true);
-            var enemy = new BattleUnit("Slime", Stats.Create(hp: 30, maxHp: 30, atk: 5, def: 2), null, null, false);
+            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 100, atk: 20, def: 5), Builtins, null, true);
+            var enemy = new BattleUnit("Slime", Stats.Create(hp: 30, maxHp: 30, atk: 5, def: 2), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();
@@ -177,9 +179,9 @@ namespace CatCatGo.Tests.Domain
         {
             var revive = MakePassive("revive", new PassiveEffect { Type = PassiveType.REVIVE, HpPercent = 0.3f, MaxUses = 1 });
 
-            var player = new BattleUnit("Player", Stats.Create(hp: 30, maxHp: 100, atk: 20, def: 5), null, new[] { revive }, true);
+            var player = new BattleUnit("Player", Stats.Create(hp: 30, maxHp: 100, atk: 20, def: 5), Builtins, new[] { revive }, true);
             player.CurrentHp = 30;
-            var enemy = new BattleUnit("Orc", Stats.Create(hp: 80, maxHp: 80, atk: 25, def: 5), null, null, false);
+            var enemy = new BattleUnit("Orc", Stats.Create(hp: 80, maxHp: 80, atk: 25, def: 5), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();
@@ -198,8 +200,8 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void GeneratesBattleLogEntries()
         {
-            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 100, atk: 20, def: 5), null, null, true);
-            var enemy = new BattleUnit("Slime", Stats.Create(hp: 40, maxHp: 40, atk: 8, def: 2), null, null, false);
+            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 100, atk: 20, def: 5), Builtins, null, true);
+            var enemy = new BattleUnit("Slime", Stats.Create(hp: 40, maxHp: 40, atk: 8, def: 2), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();
@@ -213,9 +215,9 @@ namespace CatCatGo.Tests.Domain
         {
             var lifesteal = MakePassive("ls", new PassiveEffect { Type = PassiveType.LIFESTEAL, Rate = 0.5f });
 
-            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 200, atk: 30, def: 5), null, new[] { lifesteal }, true);
+            var player = new BattleUnit("Player", Stats.Create(hp: 100, maxHp: 200, atk: 30, def: 5), Builtins, new[] { lifesteal }, true);
             player.CurrentHp = 100;
-            var enemy = new BattleUnit("Orc", Stats.Create(hp: 200, maxHp: 200, atk: 10, def: 3), null, null, false);
+            var enemy = new BattleUnit("Orc", Stats.Create(hp: 200, maxHp: 200, atk: 10, def: 3), Builtins, null, false);
 
             var battle = new Battle(player, enemy, 42);
             battle.RunToCompletion();

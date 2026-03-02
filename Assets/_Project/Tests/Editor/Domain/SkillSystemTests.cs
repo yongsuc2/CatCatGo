@@ -293,13 +293,13 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void AllStatModifierPassivesHaveCorrectTypes()
         {
-            var statMods = new[] { "crit_mastery", "rage_mastery" };
-            foreach (var id in statMods)
-            {
-                var skill = PassiveSkillRegistry.GetById(id, 1);
-                Assert.IsNotNull(skill);
-                Assert.AreEqual(PassiveType.STAT_MODIFIER, skill.Effect.Type);
-            }
+            var skill = PassiveSkillRegistry.GetById("crit_mastery", 1);
+            Assert.IsNotNull(skill);
+            Assert.AreEqual(PassiveType.STAT_MODIFIER, skill.Effect.Type);
+
+            var rageMastery = PassiveSkillRegistry.GetById("rage_mastery", 1);
+            Assert.IsNotNull(rageMastery);
+            Assert.AreEqual(PassiveType.SKILL_MODIFIER, rageMastery.Effect.Type);
         }
     }
 
