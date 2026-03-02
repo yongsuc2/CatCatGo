@@ -8,6 +8,7 @@ using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Battle;
 using CatCatGo.Domain.Chapter;
+using CatCatGo.Domain.Content;
 using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Meta;
 using CatCatGo.Domain.Data;
