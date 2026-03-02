@@ -15,7 +15,7 @@ namespace CatCatGo.Domain.Entities
         public int MaxUses;
         public float HealPerTurn;
         public float Chance;
-        public SkillTag? TargetTag;
+        public string TargetSkillId;
         public float CritBonus;
         public float DamageMultiplier;
         public float MaxBonus;
