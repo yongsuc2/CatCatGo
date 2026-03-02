@@ -793,6 +793,7 @@ namespace CatCatGo.Presentation.Screens
         private void ShowResult()
         {
             SetState(ScreenState.Result);
+            UI.Refresh();
 
             _resultTitle.text = _chapterResult.IsVictory ? "\uc2b9\ub9ac!" : "\ud328\ubc30";
             _resultTitle.color = _chapterResult.IsVictory ? ColorPalette.Heal : ColorPalette.Hp;
