@@ -28,19 +28,10 @@ namespace CatCatGo.Domain.Data
         public int FoodMax;
     }
 
-    public class GachaGemConfig
-    {
-        public int CostPerPull;
-        public int PityThreshold;
-        public int GemsMin;
-        public int GemsMax;
-    }
-
     public static class GachaDataTable
     {
         private static GachaChestConfig _equipment;
         private static GachaPetConfig _pet;
-        private static GachaGemConfig _gem;
         private static float _sRate;
         private static HashSet<EquipmentGrade> _sEligibleGrades;
 
@@ -76,20 +67,10 @@ namespace CatCatGo.Domain.Data
                 FoodMin = p["foodMin"].Value<int>(),
                 FoodMax = p["foodMax"].Value<int>(),
             };
-
-            var g = data["gem"];
-            _gem = new GachaGemConfig
-            {
-                CostPerPull = g["costPerPull"].Value<int>(),
-                PityThreshold = g["pityThreshold"].Value<int>(),
-                GemsMin = g["gemsMin"].Value<int>(),
-                GemsMax = g["gemsMax"].Value<int>(),
-            };
         }
 
         public static GachaChestConfig Equipment { get { EnsureLoaded(); return _equipment; } }
         public static GachaPetConfig Pet { get { EnsureLoaded(); return _pet; } }
-        public static GachaGemConfig Gem { get { EnsureLoaded(); return _gem; } }
         public static float SRate { get { EnsureLoaded(); return _sRate; } }
         public static HashSet<EquipmentGrade> SEligibleGrades { get { EnsureLoaded(); return _sEligibleGrades; } }
     }

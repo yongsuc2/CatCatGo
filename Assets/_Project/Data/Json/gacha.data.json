@@ -19,11 +19,5 @@
     "eggAmount": 1,
     "foodMin": 1,
     "foodMax": 5
-  },
-  "gem": {
-    "costPerPull": 0,
-    "pityThreshold": 0,
-    "gemsMin": 20,
-    "gemsMax": 100
   }
 }

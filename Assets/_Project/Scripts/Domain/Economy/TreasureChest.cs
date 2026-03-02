@@ -44,7 +44,6 @@ namespace CatCatGo.Domain.Economy
             {
                 case ChestType.EQUIPMENT: return GachaDataTable.Equipment.CostPerPull;
                 case ChestType.PET: return GachaDataTable.Pet.CostPerPull;
-                case ChestType.GEM: return GachaDataTable.Gem.CostPerPull;
                 default: return 0;
             }
         }
@@ -60,14 +59,13 @@ namespace CatCatGo.Domain.Economy
             {
                 case ChestType.EQUIPMENT: return GachaDataTable.Equipment.PityThreshold;
                 case ChestType.PET: return GachaDataTable.Pet.PityThreshold;
-                case ChestType.GEM: return GachaDataTable.Gem.PityThreshold;
                 default: return 0;
             }
         }
 
         public PullResult Pull(SeededRandom rng)
         {
-            if (Type == ChestType.PET || Type == ChestType.GEM)
+            if (Type == ChestType.PET)
                 return PullSpecial(rng);
 
             PityCount += 1;
@@ -136,26 +134,13 @@ namespace CatCatGo.Domain.Economy
 
         private PullResult PullSpecial(SeededRandom rng)
         {
-            if (Type == ChestType.PET)
-            {
-                return new PullResult
-                {
-                    Equipment = null,
-                    Resources = new List<ResourceReward>
-                    {
-                        new ResourceReward(ResourceType.PET_EGG, GachaDataTable.Pet.EggAmount),
-                        new ResourceReward(ResourceType.PET_FOOD, rng.NextInt(GachaDataTable.Pet.FoodMin, GachaDataTable.Pet.FoodMax)),
-                    },
-                    IsPity = false,
-                };
-            }
-
             return new PullResult
             {
                 Equipment = null,
                 Resources = new List<ResourceReward>
                 {
-                    new ResourceReward(ResourceType.GEMS, rng.NextInt(GachaDataTable.Gem.GemsMin, GachaDataTable.Gem.GemsMax)),
+                    new ResourceReward(ResourceType.PET_EGG, GachaDataTable.Pet.EggAmount),
+                    new ResourceReward(ResourceType.PET_FOOD, rng.NextInt(GachaDataTable.Pet.FoodMin, GachaDataTable.Pet.FoodMax)),
                 },
                 IsPity = false,
             };

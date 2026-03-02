@@ -547,3 +547,10 @@
   - 엘리트/보스 금상자 보상: T3 신화 전용 풀→BuildSkillPool (우연 상자와 동일한 스킬 풀)
   - chapterBossAssignment 죽은 데이터 삭제: encounter.data.json, EncounterDataTable 클래스/필드/메서드
   - Chapter.ResolveEncounter COMBAT choiceIndex 죽은 분기 삭제
+- **보석 상자 제거 (3종→2종 전환)** (Y-77)
+  - 보석 상자 기획 폐기 결정 → 장비/펫 2종 상자만 유지
+  - ChestType.GEM enum 삭제, GachaGemConfig 클래스 삭제
+  - gacha.data.json gem 섹션 삭제 (Data/Json + Resources 양쪽)
+  - TreasureChest: GEM 분기 삭제 (GetCostPerPull, GetPityThreshold, Pull, PullSpecial)
+  - GachaScreen: 탭 3개→2개(장비/펫), CHEST_LABELS/OnTabChanged/GetChestIconColor GEM 제거
+  - 기획서 동기화: 06_가챠시스템.md, 뽑기화면_기획서.md

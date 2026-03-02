@@ -114,7 +114,6 @@ namespace CatCatGo.Domain.Enums
     {
         EQUIPMENT,
         PET,
-        GEM,
     }
 
     public enum StatusEffectType
