@@ -184,10 +184,11 @@ namespace CatCatGo.Presentation.Screens
             cardGo.transform.SetParent(parent, false);
             var cardLe = cardGo.AddComponent<LayoutElement>();
             cardLe.preferredHeight = 80;
-            cardGo.AddComponent<Image>().color = ColorPalette.Card;
+            var cardImage = cardGo.AddComponent<Image>();
+            cardImage.color = ColorPalette.Card;
 
             var cardBtn = cardGo.AddComponent<Button>();
-            cardBtn.targetGraphic = cardGo.GetComponent<Image>();
+            cardBtn.targetGraphic = cardImage;
             cardBtn.onClick.AddListener(() => ShowSubPanel(view));
 
             var cardLayout = cardGo.AddComponent<HorizontalLayoutGroup>();

@@ -147,7 +147,7 @@ namespace CatCatGo.Presentation.Screens
             dbt.color = ColorPalette.Text;
             dbt.alignment = TextAlignmentOptions.Center;
             dbt.raycastTarget = false;
-            UIManager.StretchFull(detailBtnText.GetComponent<RectTransform>());
+            UIManager.StretchFull(dbt.rectTransform);
 
             _hpText = CreateStatRow(cardGo.transform, "체력");
             _atkText = CreateStatRow(cardGo.transform, "공격력");
@@ -393,7 +393,7 @@ namespace CatCatGo.Presentation.Screens
             cbt.color = ColorPalette.Text;
             cbt.alignment = TextAlignmentOptions.Center;
             cbt.raycastTarget = false;
-            UIManager.StretchFull(closeBtnText.GetComponent<RectTransform>());
+            UIManager.StretchFull(cbt.rectTransform);
 
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);

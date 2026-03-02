@@ -18,10 +18,7 @@ namespace CatCatGo.Presentation.Components
         private void BuildUI()
         {
             _root = gameObject.GetComponent<RectTransform>();
-            if (_root == null)
-                _root = gameObject.GetComponent<RectTransform>();
-
-                if (_root == null) _root = gameObject.AddComponent<RectTransform>();
+            if (_root == null) _root = gameObject.AddComponent<RectTransform>();
             _root.sizeDelta = new Vector2(0f, 36f);
 
             var bgImage = gameObject.AddComponent<Image>();

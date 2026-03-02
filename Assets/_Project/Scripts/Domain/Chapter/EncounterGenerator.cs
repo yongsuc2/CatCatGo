@@ -305,6 +305,7 @@ namespace CatCatGo.Domain.Chapter
                     GoldCost = 0,
                     SuccessRate = d.NormalRate,
                     Reward = SkillReward(mythicSkill != null ? new List<SessionSkillWrapper> { mythicSkill } : new List<SessionSkillWrapper>()),
+                    SkillId = mythicSkill?.Id,
                 },
             };
 
@@ -318,6 +319,7 @@ namespace CatCatGo.Domain.Chapter
                     GoldCost = 0,
                     SuccessRate = d.AngelRate,
                     Reward = SkillReward(new List<SessionSkillWrapper> { angelPower }),
+                    SkillId = angelPower.Id,
                 });
             }
 
@@ -331,6 +333,7 @@ namespace CatCatGo.Domain.Chapter
                     GoldCost = 0,
                     SuccessRate = d.DemonRate,
                     Reward = SkillReward(new List<SessionSkillWrapper> { demonPower }),
+                    SkillId = demonPower.Id,
                 });
             }
 
