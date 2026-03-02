@@ -140,13 +140,8 @@ namespace CatCatGo.Domain.Entities
         {
             int totalLevel = GetTotalLevel();
             return TalentTable.GetAllMilestones()
-                .Where(m => totalLevel >= m.Level && !claimedMilestones.Contains($"LV_{m.Level}"))
+                .Where(m => totalLevel >= m.Level && !claimedMilestones.Contains(GetMilestoneKey(m.Level)))
                 .ToList();
-        }
-
-        public bool IsMilestoneReached(int level)
-        {
-            return GetTotalLevel() >= level;
         }
     }
 

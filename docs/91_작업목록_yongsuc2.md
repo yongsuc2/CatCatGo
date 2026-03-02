@@ -83,6 +83,7 @@
 | Y-71 | 분노 시스템 리팩토링 | 중 | 완료 | ragePerAttack 캐릭터 스탯화, ragePowerMultiplier→SKILL_MODIFIER(RAGE), 적 빌트인 스킬 자동 부여, processUnitTurn 통합, 하드코딩 분노 로직 제거, battle.data.json 정리, 261 테스트 통과 |
 | Y-72 | 적 액티브 스킬 발동 수정 | 중 | 완료 | enemy.data.json에 UPPER 스킬 직접 지정 (bunno_flame/bunno_thunder/venom_sword + 대응 LOWEST), 플레이어와 동일한 UPPER→LOWEST 체인 구조 |
 | Y-73 | 재능 등급/서브등급/보상 기획서 정리 + Unity 동기화 | 하 | 완료 | 02_캐릭터성장시스템.md 서브등급 개수 오류 수정(5/15/30/50/100→2/5/10/17/33), 등급 구조 테이블 추가, 마일스톤/보너스 상세 기술, TalentScreen VIEW_RANGE 15로 원본 동기화 |
+| Y-74 | 재능/보상 죽은 코드 삭제 + 중복 코드 중앙화 | 하 | 완료 | Talent.IsMilestoneReached 삭제, TalentTable 미사용 메서드 6개 삭제, 마일스톤 키 하드코딩→GetMilestoneKey() 중앙화, TalentScreen 보상 수령 중복→ProcessSingleClaim 추출 |
 
 ---
 

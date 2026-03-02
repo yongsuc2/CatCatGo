@@ -167,7 +167,7 @@ namespace CatCatGo.Domain.Entities
             foreach (var m in TalentTable.GetAllMilestones())
             {
                 if (m.RewardType != "GOLD_BOOST") continue;
-                if (ClaimedMilestones.Contains($"LV_{m.Level}")) boost += m.RewardAmount;
+                if (ClaimedMilestones.Contains(Talent.GetMilestoneKey(m.Level))) boost += m.RewardAmount;
             }
             return 1f + boost / 100f;
         }
