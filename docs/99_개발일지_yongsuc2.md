@@ -559,3 +559,22 @@
   - 코드 삭제: ResourceAllocator.cs(GoldAllocationPlan/ShouldSpendGems/AutoUpgradeTalent), ResourceAllocatorTests.cs, GameManager.cs ResourceAllocatorService 참조 3곳
   - 기획서 AI Agent 섹션 삭제 (8개): 00_게임개요(인카운터 테이블 AI Agent 열+의사결정 섹션), 01_전투시스템, 02_캐릭터성장시스템, 03_장비시스템, 05_스테이지던전시스템, 07_재화시스템, 08_PvP시스템, 09_펫시스템, 11_과금시스템
   - 참조 문서 정리: 90_OOP설계문서 ResourceAllocator 클래스, 91_작업목록 6C-2 항목
+- **종합 버그 감사 #5~#11 수정** (Y-79)
+  - #5: 적 스킬 명시화 — BuildEnemySkills() 암묵적 주입 제거, enemy.data.json에 `ilban_attack/bunno_attack/rage_accumulate` 명시
+  - #6/#7: quest.data.json에서 삭제된 daily_arena/daily_travel 제거, resource-labels.data.json에서 ARENA_TICKET 제거 + 던전 키 수정
+  - #8: ExecuteUpperSkills 블랙리스트→화이트리스트 전환 (UPPER 스킬만 실행)
+  - #10: PlayerStatsBarView/ContentScreen/MainScreen 중복 GetComponent 수정
+  - #11: 대박 룰렛 인카운터 옵션에 누락된 SkillId 추가
+- **반격 마스터리 패시브 스킬 구현** (Y-80)
+  - counter_mastery 패시브: SKILL_MODIFIER TargetSkillId="counter", T1~T4 (+12%~+72%)
+  - ProcessCounter에 coefficient × mastery 적용 (일반 물리 데미지와 동일 공식)
+  - battle.data.json에 counterCoefficient 추가, passive-skill-tier.data.json에 counter_mastery 티어 데이터 추가
+- **Claude 스킬 프로젝트 내 이전** (Y-81)
+  - 전역 플러그인(~/.claude/local-plugins/) 3개를 프로젝트 스킬(.claude/skills/)로 이전
+  - .gitignore: `.claude/` → `.claude/*` + `!.claude/skills/` (스킬만 추적)
+- **전투 UI 바/아이콘 레이아웃 개선** (Y-82)
+  - StatusEffectIconView 재구성: 별도 Icon 자식(36x36) + Label(14px, 18px 높이)
+  - HP 바 높이 축소 (36→12), HP 텍스트 오버플로우 유지 (fontSize 27)
+  - 분노 바를 HP 바와 동일 크기로 통일
+  - 세로 배치: HP 바 → 간격 → 분노 바 → 간격 → 상태 아이콘 (겹침 제거)
+  - 모험화면_기획서.md 전투 영역 바/아이콘 레이아웃 설명 업데이트

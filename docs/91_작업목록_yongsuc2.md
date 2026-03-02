@@ -88,6 +88,10 @@
 | Y-76 | 봉인의 전투 구현 | 중 | 대기 | 협력 보스 콘텐츠 — 다수 플레이어 누적 데미지 시스템 |
 | Y-77 | 보석 상자 제거 (3종→2종 전환) | 하 | 완료 | ChestType.GEM 삭제, GachaGemConfig 삭제, gacha.data.json gem 섹션 삭제, GachaScreen 탭 2개(장비/펫)로 축소, TreasureChest GEM 분기 삭제 |
 | Y-78 | AI Agent 기획/구현 전면 삭제 | 중 | 완료 | ResourceAllocator.cs+테스트 삭제, GameManager 참조 제거, 기획서 8개 AI Agent 섹션 삭제, OOP설계문서/작업목록 참조 제거 |
+| Y-79 | 종합 버그 감사 #5~#11 수정 | 중 | 완료 | 적 스킬 명시화(BuildEnemySkills→ActiveSkills), 삭제된 시스템 참조 제거(quest/resource-labels), ExecuteUpperSkills 화이트리스트, 중복 GetComponent 수정, 대박 룰렛 SkillId 추가 |
+| Y-80 | 반격 마스터리 패시브 스킬 구현 | 하 | 완료 | counter_mastery SKILL_MODIFIER(counter) T1~T4 (+12%~72%), ProcessCounter에 coefficient×mastery 적용, counterCoefficient 데이터 테이블 |
+| Y-81 | Claude 스킬 프로젝트 내 이전 | 하 | 완료 | 전역 플러그인 3개→.claude/skills/ 이전, .gitignore 스킬 추적 설정 |
+| Y-82 | 전투 UI 바/아이콘 레이아웃 개선 | 중 | 완료 | StatusEffectIconView 재구성(Icon 36x36+Label 18px), HP 바 축소(36→12), 분노 바 HP 바와 동일 크기 통일, 세로 배치 겹침 제거, 모험화면_기획서 업데이트 |
 
 ---
 
