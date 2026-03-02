@@ -8,7 +8,6 @@ using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Battle;
 using CatCatGo.Domain.Chapter;
-using CatCatGo.Domain.Content;
 using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Meta;
 using CatCatGo.Domain.Data;
@@ -28,7 +27,6 @@ namespace CatCatGo.Services
         public CatacombDungeon Catacomb;
         public DailyDungeonManager DungeonManager;
         public Arena ArenaSystem;
-        public Travel TravelSystem;
         public GoblinMiner GoblinMinerSystem;
 
         public TreasureChest EquipmentChestSystem;
@@ -36,7 +34,6 @@ namespace CatCatGo.Services
         public DailyResetSystem DailyResetSystem;
         public EventManager EventManagerSystem;
         public DailyRoutineScheduler RoutineScheduler;
-        public OfflineRewardCalculator OfflineCalc;
 
         public ChapterTreasure ChapterTreasureSystem;
         public BattleManager BattleManagerService;
@@ -74,7 +71,6 @@ namespace CatCatGo.Services
             Catacomb = new CatacombDungeon();
             DungeonManager = new DailyDungeonManager();
             ArenaSystem = new Arena();
-            TravelSystem = new Travel();
             GoblinMinerSystem = new GoblinMiner();
 
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
@@ -82,8 +78,6 @@ namespace CatCatGo.Services
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
             RoutineScheduler = new DailyRoutineScheduler();
-            OfflineCalc = new OfflineRewardCalculator();
-
             ChapterTreasureSystem = new ChapterTreasure();
             BattleManagerService = new BattleManager();
             ForgeService = new Forge();
@@ -202,18 +196,6 @@ namespace CatCatGo.Services
             return EquipmentChestSystem.Pull10(Rng);
         }
 
-        public Result<TravelRunResult> TravelRun(int stamina)
-        {
-            var result = TravelSystem.Run(stamina, (int)Player.Resources.Stamina);
-            if (result.IsOk() && result.Data != null)
-            {
-                Player.Resources.Spend(ResourceType.STAMINA, result.Data.StaminaSpent);
-                foreach (var r in result.Data.Reward.Resources)
-                    Player.Resources.Add(r.Type, r.Amount);
-            }
-            return result;
-        }
-
         public void UpdateQuestProgress(string missionId, int amount = 1)
         {
             foreach (var evt in EventManagerSystem.GetActiveEvents())
@@ -326,14 +308,12 @@ namespace CatCatGo.Services
             Catacomb = new CatacombDungeon();
             DungeonManager = new DailyDungeonManager();
             ArenaSystem = new Arena();
-            TravelSystem = new Travel();
             GoblinMinerSystem = new GoblinMiner();
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
             CollectionSystem = new Collection();
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
             RoutineScheduler = new DailyRoutineScheduler();
-            OfflineCalc = new OfflineRewardCalculator();
             ChapterTreasureSystem = new ChapterTreasure();
             BattleManagerService = new BattleManager();
             ForgeService = new Forge();

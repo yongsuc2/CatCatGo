@@ -621,7 +621,6 @@ namespace CatCatGo.Presentation.Screens
                 if (chapter != null)
                 {
                     Game.Player.ClearedChapterMax = Mathf.Max(Game.Player.ClearedChapterMax, chapter.Id);
-                    Game.TravelSystem.MaxClearedChapter = Game.Player.ClearedChapterMax;
                     int clearGold = Mathf.FloorToInt(EncounterDataTable.GetChapterClearGold(chapter.Id) * Game.Player.GetGoldMultiplier());
                     int clearGems = EncounterDataTable.GetChapterClearGems(chapter.Id);
                     Game.Player.Resources.Add(ResourceType.GOLD, clearGold);

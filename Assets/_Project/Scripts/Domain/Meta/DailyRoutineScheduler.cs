@@ -41,8 +41,7 @@ namespace CatCatGo.Domain.Meta
             new RoutineStep { Action = RoutineAction.CATACOMB_RUN, Priority = 5, Description = "Catacomb dungeon run", RequiredResource = null },
             new RoutineStep { Action = RoutineAction.ARENA_FIGHT, Priority = 6, Description = "Arena PvP", RequiredResource = ResourceType.ARENA_TICKET },
             new RoutineStep { Action = RoutineAction.CHAPTER_PROGRESS, Priority = 7, Description = "Chapter progress", RequiredResource = ResourceType.STAMINA },
-            new RoutineStep { Action = RoutineAction.TRAVEL, Priority = 8, Description = "Travel farming", RequiredResource = ResourceType.STAMINA },
-            new RoutineStep { Action = RoutineAction.GOBLIN_MINE, Priority = 9, Description = "Goblin mining", RequiredResource = ResourceType.PICKAXE },
+            new RoutineStep { Action = RoutineAction.GOBLIN_MINE, Priority = 8, Description = "Goblin mining", RequiredResource = ResourceType.PICKAXE },
         };
 
         public List<RoutineStep> GetFullRoutine()
@@ -82,10 +81,6 @@ namespace CatCatGo.Domain.Meta
                     case RoutineAction.CHAPTER_PROGRESS:
                         available = context.Stamina >= 5;
                         reason = available ? "Ready" : "Not enough stamina";
-                        break;
-                    case RoutineAction.TRAVEL:
-                        available = context.Stamina > 0;
-                        reason = available ? "Ready" : "No stamina";
                         break;
                     case RoutineAction.GOBLIN_MINE:
                         available = context.Pickaxes > 0;

@@ -264,7 +264,6 @@ namespace CatCatGo.Domain.Enums
         CATACOMB_RUN,
         ARENA_FIGHT,
         CHAPTER_PROGRESS,
-        TRAVEL,
         GOBLIN_MINE,
     }
 

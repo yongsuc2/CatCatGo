@@ -109,7 +109,6 @@ namespace CatCatGo.Services
         public CatacombSaveData Catacomb;
         public DungeonsSaveData Dungeons;
         public ArenaSaveData Arena;
-        public TravelSaveData Travel;
         public GoblinMinerSaveData GoblinMiner;
         public EquipmentChestSaveData EquipmentChest;
         public List<string> Collection;
@@ -176,13 +175,6 @@ namespace CatCatGo.Services
         public ArenaTier Tier;
         public int Points;
         public int TodayEntries;
-    }
-
-    [Serializable]
-    public class TravelSaveData
-    {
-        public int MaxClearedChapter;
-        public int Multiplier;
     }
 
     [Serializable]
@@ -302,11 +294,6 @@ namespace CatCatGo.Services
                     Points = game.ArenaSystem.Points,
                     TodayEntries = game.ArenaSystem.TodayEntries,
                 },
-                Travel = new TravelSaveData
-                {
-                    MaxClearedChapter = game.TravelSystem.MaxClearedChapter,
-                    Multiplier = game.TravelSystem.Multiplier,
-                },
                 GoblinMiner = new GoblinMinerSaveData { OreCount = game.GoblinMinerSystem.OreCount },
                 EquipmentChest = new EquipmentChestSaveData { PityCount = game.EquipmentChestSystem.PityCount },
                 Collection = collectionIds,
@@ -415,9 +402,6 @@ namespace CatCatGo.Services
             game.ArenaSystem.Tier = data.Arena.Tier;
             game.ArenaSystem.Points = data.Arena.Points;
             game.ArenaSystem.TodayEntries = data.Arena.TodayEntries;
-
-            game.TravelSystem.MaxClearedChapter = data.Travel.MaxClearedChapter;
-            game.TravelSystem.Multiplier = data.Travel.Multiplier;
 
             game.GoblinMinerSystem.OreCount = data.GoblinMiner.OreCount;
 

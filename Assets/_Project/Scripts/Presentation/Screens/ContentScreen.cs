@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Battle;
-using CatCatGo.Domain.Content;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Utils;
@@ -20,7 +19,6 @@ namespace CatCatGo.Presentation.Screens
             Tower,
             Dungeon,
             Arena,
-            Travel,
             GoblinMine,
             Catacomb,
         }
@@ -33,7 +31,6 @@ namespace CatCatGo.Presentation.Screens
         private TextMeshProUGUI _towerInfo;
         private TextMeshProUGUI _dungeonInfo;
         private TextMeshProUGUI _arenaInfo;
-        private TextMeshProUGUI _travelInfo;
         private TextMeshProUGUI _goblinInfo;
         private TextMeshProUGUI _catacombInfo;
 
@@ -58,7 +55,6 @@ namespace CatCatGo.Presentation.Screens
                 ("\ud0d1", "\ud1a0\uc804", ContentView.Tower),
                 ("\ub358\uc804", "\uc77c\uc77c \ub358\uc804", ContentView.Dungeon),
                 ("\uc544\ub808\ub098", "\uc544\ub808\ub098", ContentView.Arena),
-                ("\uc5ec\ud589", "\uc5ec\ud589", ContentView.Travel),
                 ("\uad11\uc0b0", "\uace0\ube14\ub9b0 \uad11\uc0b0", ContentView.GoblinMine),
                 ("\uc9c0\ud558\ubb18\uc9c0", "\uce74\ud0c0\ucf64", ContentView.Catacomb),
             };
@@ -66,9 +62,8 @@ namespace CatCatGo.Presentation.Screens
             _towerInfo = CreateContentCard(menuScroll, cards[0].Item1, cards[0].Item2, cards[0].Item3);
             _dungeonInfo = CreateContentCard(menuScroll, cards[1].Item1, cards[1].Item2, cards[1].Item3);
             _arenaInfo = CreateContentCard(menuScroll, cards[2].Item1, cards[2].Item2, cards[2].Item3);
-            _travelInfo = CreateContentCard(menuScroll, cards[3].Item1, cards[3].Item2, cards[3].Item3);
-            _goblinInfo = CreateContentCard(menuScroll, cards[4].Item1, cards[4].Item2, cards[4].Item3);
-            _catacombInfo = CreateContentCard(menuScroll, cards[5].Item1, cards[5].Item2, cards[5].Item3);
+            _goblinInfo = CreateContentCard(menuScroll, cards[3].Item1, cards[3].Item2, cards[3].Item3);
+            _catacombInfo = CreateContentCard(menuScroll, cards[4].Item1, cards[4].Item2, cards[4].Item3);
 
             _subPanel = UIManager.CreateRectTransform("SubPanel", transform);
             UIManager.StretchFull(_subPanel);
@@ -273,7 +268,6 @@ namespace CatCatGo.Presentation.Screens
                 case ContentView.Tower: BuildTowerSub(); break;
                 case ContentView.Dungeon: BuildDungeonSub(); break;
                 case ContentView.Arena: BuildArenaSub(); break;
-                case ContentView.Travel: BuildTravelSub(); break;
                 case ContentView.GoblinMine: BuildGoblinMineSub(); break;
                 case ContentView.Catacomb: BuildCatacombSub(); break;
             }
@@ -425,35 +419,6 @@ namespace CatCatGo.Presentation.Screens
             });
         }
 
-        private void BuildTravelSub()
-        {
-            _subTitle.text = "\uc5ec\ud589";
-            var travel = Game.TravelSystem;
-            travel.MaxClearedChapter = Mathf.Max(1, Game.Player.ClearedChapterMax);
-            int stamina = (int)Game.Player.Resources.Stamina;
-
-            CreateInfoRow(_subContent, $"\ucd5c\uace0 \ud074\ub9ac\uc5b4 \ucc55\ud130: {travel.MaxClearedChapter}  \uc2a4\ud0dc\ubbf8\ub098: {stamina}");
-
-            var multipliers = travel.GetAvailableMultipliers();
-            foreach (int mult in multipliers)
-            {
-                int goldPreview = travel.GetGoldPreview(mult);
-                int capturedMult = mult;
-                CreateActionButton(_subContent, $"\uc5ec\ud589 x{mult} (\uace8\ub4dc: {NumberFormatter.FormatInt(goldPreview)})", () =>
-                {
-                    var result = Game.TravelRun(capturedMult);
-                    if (result.IsFail()) { _resultText.text = result.Message; return; }
-
-                    string rewardStr = "";
-                    foreach (var r in result.Data.Reward.Resources)
-                        rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                    _resultText.text = $"\uc5ec\ud589 \uc644\ub8cc! {rewardStr}";
-                    Game.SaveGame();
-                    ShowSubPanel(ContentView.Travel);
-                });
-            }
-        }
-
         private void BuildGoblinMineSub()
         {
             _subTitle.text = "\uace0\ube14\ub9b0 \uad11\uc0b0";
@@ -600,8 +565,6 @@ namespace CatCatGo.Presentation.Screens
                 _dungeonInfo.text = $"\ub0a8\uc740 \uc785\uc7a5: {dungeonRemaining}/{Game.DungeonManager.DailyLimit}";
 
                 _arenaInfo.text = $"{Game.ArenaSystem.Tier}  \ub0a8\uc740: {Game.ArenaSystem.GetRemainingEntries()}";
-
-                _travelInfo.text = $"\uc2a4\ud0dc\ubbf8\ub098: {(int)Game.Player.Resources.Stamina}";
 
                 _goblinInfo.text = $"\uad11\uc11d: {Game.GoblinMinerSystem.OreCount}/30  \uace1\uad2d\uc774: {(int)Game.Player.Resources.Pickaxes}";
 
