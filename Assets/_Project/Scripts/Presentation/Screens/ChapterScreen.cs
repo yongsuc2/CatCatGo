@@ -19,6 +19,7 @@ using ChapterInstance = CatCatGo.Domain.Chapter.Chapter;
 using ChapterEncounter = CatCatGo.Domain.Chapter.Encounter;
 using SessionSkillWrapper = CatCatGo.Domain.Chapter.SessionSkillWrapper;
 using CatCatGo.Domain.Chapter;
+using CatCatGo.Presentation.Popups;
 
 namespace CatCatGo.Presentation.Screens
 {
@@ -96,7 +97,6 @@ namespace CatCatGo.Presentation.Screens
         private Button _resultHomeButton;
         private Button _resultContinueButton;
 
-        private RectTransform _eliteOptionsContainer;
         private RectTransform _sessionSkillsContainer;
         private RectTransform _skillTooltip;
         private TextMeshProUGUI _skillTooltipText;
@@ -389,90 +389,112 @@ namespace CatCatGo.Presentation.Screens
 
             var chapter = Game.CurrentChapter;
 
+            bool hasSkillOptions = _encounter.Options.Any(o => !string.IsNullOrEmpty(o.SkillId));
+            if (hasSkillOptions)
+            {
+                ShowSkillSelectPopup(_encounter.Options, EncounterDataTable.GetLabel(_encounter.Type));
+                _rerollButton.gameObject.SetActive(false);
+                return;
+            }
+
             for (int i = 0; i < _encounter.Options.Count; i++)
             {
                 int idx = i;
                 var opt = _encounter.Options[i];
-
-                var optGo = new GameObject($"Option_{i}");
-                optGo.transform.SetParent(_optionsContainer, false);
-                var optRt = optGo.GetComponent<RectTransform>();
-
-                if (optRt == null) optRt = optGo.AddComponent<RectTransform>();
-                optRt.sizeDelta = new Vector2(0f, 120f);
-                var optLe = optGo.AddComponent<LayoutElement>();
-                optLe.flexibleWidth = 1f;
-                optLe.preferredHeight = 120f;
-
-                var optBg = optGo.AddComponent<Image>();
-                optBg.color = ColorPalette.CardLight;
-
-                var optBtn = optGo.AddComponent<Button>();
-                optBtn.targetGraphic = optBg;
-                optBtn.onClick.AddListener(() => SelectOption(idx));
-
-                var optLayout = optGo.AddComponent<VerticalLayoutGroup>();
-                optLayout.padding = new RectOffset(12, 12, 8, 8);
-                optLayout.spacing = 4f;
-                optLayout.childForceExpandWidth = true;
-                optLayout.childForceExpandHeight = false;
-
-                var labelRowGo = new GameObject("LabelRow");
-                labelRowGo.transform.SetParent(optGo.transform, false);
-                labelRowGo.AddComponent<RectTransform>();
-                var labelRowLe = labelRowGo.AddComponent<LayoutElement>();
-                labelRowLe.preferredHeight = 76f;
-                var labelRowHlg = labelRowGo.AddComponent<HorizontalLayoutGroup>();
-                labelRowHlg.spacing = 8f;
-                labelRowHlg.childForceExpandWidth = false;
-                labelRowHlg.childForceExpandHeight = true;
-                labelRowHlg.childAlignment = TextAnchor.MiddleLeft;
-
-                if (!string.IsNullOrEmpty(opt.SkillId))
-                {
-                    var optIconGo = new GameObject("SkillIcon");
-                    optIconGo.transform.SetParent(labelRowGo.transform, false);
-                    var optIconLe = optIconGo.AddComponent<LayoutElement>();
-                    optIconLe.preferredWidth = 72f;
-                    optIconLe.preferredHeight = 72f;
-                    var optIconImg = optIconGo.AddComponent<Image>();
-                    optIconImg.sprite = SpriteManager.Instance.GetSkillIcon(opt.SkillId);
-                    optIconImg.preserveAspect = true;
-                    optIconImg.raycastTarget = false;
-                }
-
-                var labelGo = new GameObject("Label");
-                labelGo.transform.SetParent(labelRowGo.transform, false);
-                labelGo.AddComponent<RectTransform>();
-                var labelLe = labelGo.AddComponent<LayoutElement>();
-                labelLe.flexibleWidth = 1f;
-                var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
-                labelTmp.text = opt.Label;
-                labelTmp.fontSize = 30f;
-                labelTmp.color = ColorPalette.Text;
-                labelTmp.fontStyle = FontStyles.Bold;
-                labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
-                labelTmp.textWrappingMode = TextWrappingModes.NoWrap;
-                labelTmp.raycastTarget = false;
-
-                var descGo = new GameObject("Desc");
-                descGo.transform.SetParent(optGo.transform, false);
-                descGo.AddComponent<RectTransform>();
-                var descLe = descGo.AddComponent<LayoutElement>();
-                descLe.preferredHeight = 56f;
-                var descTmp = descGo.AddComponent<TextMeshProUGUI>();
-                descTmp.text = opt.Description;
-                descTmp.fontSize = 26f;
-                descTmp.color = ColorPalette.TextDim;
-                descTmp.alignment = TextAlignmentOptions.TopLeft;
-                descTmp.textWrappingMode = TextWrappingModes.Normal;
-                descTmp.raycastTarget = false;
+                BuildInlineOption(opt, idx);
             }
 
             bool canReroll = chapter != null && chapter.SessionRerollsRemaining > 0;
             _rerollButton.gameObject.SetActive(canReroll);
             if (canReroll)
                 _rerollText.text = $"\ub9ac\ub864 ({chapter.SessionRerollsRemaining})";
+        }
+
+        private void OpenSkillSelectPopup(string title, List<SkillSelectOption> options, Action<int> onSelected)
+        {
+            var chapter = Game.CurrentChapter;
+            var owned = new List<OwnedSkillInfo>();
+            if (chapter != null)
+            {
+                foreach (var s in chapter.SessionSkills)
+                    owned.Add(new OwnedSkillInfo { SkillId = s.Id, Name = s.Name });
+            }
+
+            UI.ShowPopupFromType<SkillSelectPopup>(new SkillSelectPopupData
+            {
+                Title = title,
+                Options = options,
+                OnSelected = onSelected,
+                OwnedSkills = owned,
+            });
+        }
+
+        private void ShowSkillSelectPopup(List<EncounterOption> options, string title)
+        {
+            var popupOptions = new List<SkillSelectOption>();
+            foreach (var opt in options)
+            {
+                popupOptions.Add(new SkillSelectOption
+                {
+                    SkillId = opt.SkillId,
+                    Name = opt.Label,
+                    Description = opt.Description,
+                });
+            }
+            OpenSkillSelectPopup(title, popupOptions, SelectOption);
+        }
+
+        private void BuildInlineOption(EncounterOption opt, int idx)
+        {
+            var optGo = new GameObject($"Option_{idx}");
+            optGo.transform.SetParent(_optionsContainer, false);
+            var optRt = optGo.GetComponent<RectTransform>();
+
+            if (optRt == null) optRt = optGo.AddComponent<RectTransform>();
+            optRt.sizeDelta = new Vector2(0f, 120f);
+            var optLe = optGo.AddComponent<LayoutElement>();
+            optLe.flexibleWidth = 1f;
+            optLe.preferredHeight = 120f;
+
+            var optBg = optGo.AddComponent<Image>();
+            optBg.color = ColorPalette.CardLight;
+
+            var optBtn = optGo.AddComponent<Button>();
+            optBtn.targetGraphic = optBg;
+            optBtn.onClick.AddListener(() => SelectOption(idx));
+
+            var optLayout = optGo.AddComponent<VerticalLayoutGroup>();
+            optLayout.padding = new RectOffset(12, 12, 8, 8);
+            optLayout.spacing = 4f;
+            optLayout.childForceExpandWidth = true;
+            optLayout.childForceExpandHeight = false;
+
+            var labelGo = new GameObject("Label");
+            labelGo.transform.SetParent(optGo.transform, false);
+            labelGo.AddComponent<RectTransform>();
+            var labelLe = labelGo.AddComponent<LayoutElement>();
+            labelLe.preferredHeight = 40f;
+            var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
+            labelTmp.text = opt.Label;
+            labelTmp.fontSize = 30f;
+            labelTmp.color = ColorPalette.Text;
+            labelTmp.fontStyle = FontStyles.Bold;
+            labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
+            labelTmp.textWrappingMode = TextWrappingModes.NoWrap;
+            labelTmp.raycastTarget = false;
+
+            var descGo = new GameObject("Desc");
+            descGo.transform.SetParent(optGo.transform, false);
+            descGo.AddComponent<RectTransform>();
+            var descLe = descGo.AddComponent<LayoutElement>();
+            descLe.preferredHeight = 56f;
+            var descTmp = descGo.AddComponent<TextMeshProUGUI>();
+            descTmp.text = opt.Description;
+            descTmp.fontSize = 26f;
+            descTmp.color = ColorPalette.TextDim;
+            descTmp.alignment = TextAlignmentOptions.TopLeft;
+            descTmp.textWrappingMode = TextWrappingModes.Normal;
+            descTmp.raycastTarget = false;
         }
 
         private void SelectOption(int index)
@@ -732,93 +754,20 @@ namespace CatCatGo.Presentation.Screens
             _eliteRewardChoices = shuffled.Take(3).ToList();
 
             SetState(ScreenState.EliteReward);
-            BuildEliteRewardOptions();
-            Refresh();
-        }
 
-        private void BuildEliteRewardOptions()
-        {
-            foreach (Transform child in _eliteOptionsContainer)
-                Destroy(child.gameObject);
-
-            if (_eliteRewardChoices == null) return;
-
-            for (int i = 0; i < _eliteRewardChoices.Count; i++)
+            var popupOptions = new List<SkillSelectOption>();
+            foreach (var skill in _eliteRewardChoices)
             {
-                int idx = i;
-                var skill = _eliteRewardChoices[i];
-
-                var cardGo = new GameObject($"SkillCard_{i}");
-                cardGo.transform.SetParent(_eliteOptionsContainer, false);
-                var cardRt = cardGo.GetComponent<RectTransform>();
-
-                if (cardRt == null) cardRt = cardGo.AddComponent<RectTransform>();
-                cardRt.sizeDelta = new Vector2(0f, 80f);
-                var cardLe = cardGo.AddComponent<LayoutElement>();
-                cardLe.flexibleWidth = 1f;
-                cardLe.preferredHeight = 80f;
-
-                var cardBg = cardGo.AddComponent<Image>();
-                cardBg.color = ColorPalette.CardLight;
-
-                var cardLayout = cardGo.AddComponent<VerticalLayoutGroup>();
-                cardLayout.padding = new RectOffset(10, 10, 6, 6);
-                cardLayout.spacing = 4f;
-                cardLayout.childForceExpandWidth = true;
-                cardLayout.childForceExpandHeight = false;
-
-                var nameRowGo = new GameObject("NameRow");
-                nameRowGo.transform.SetParent(cardGo.transform, false);
-                nameRowGo.AddComponent<RectTransform>();
-                var nameRowLe = nameRowGo.AddComponent<LayoutElement>();
-                nameRowLe.preferredHeight = 68f;
-                var nameRowLayout = nameRowGo.AddComponent<HorizontalLayoutGroup>();
-                nameRowLayout.spacing = 8f;
-                nameRowLayout.childForceExpandWidth = false;
-                nameRowLayout.childForceExpandHeight = true;
-                nameRowLayout.childAlignment = TextAnchor.MiddleLeft;
-
-                var iconImgGo = new GameObject("SkillIcon");
-                iconImgGo.transform.SetParent(nameRowGo.transform, false);
-                var iconImgLe = iconImgGo.AddComponent<LayoutElement>();
-                iconImgLe.preferredWidth = 64f;
-                iconImgLe.preferredHeight = 64f;
-                var iconImg = iconImgGo.AddComponent<Image>();
-                iconImg.sprite = SpriteManager.Instance.GetSkillIcon(skill.Id);
-                iconImg.preserveAspect = true;
-                iconImg.raycastTarget = false;
-
-                var nameGo = new GameObject("Name");
-                nameGo.transform.SetParent(nameRowGo.transform, false);
-                nameGo.AddComponent<RectTransform>();
-                var nameLe = nameGo.AddComponent<LayoutElement>();
-                nameLe.flexibleWidth = 1f;
-                var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-                nameTmp.text = skill.Name;
-                nameTmp.fontSize = 22f;
-                nameTmp.color = ColorPalette.Text;
-                nameTmp.fontStyle = FontStyles.Bold;
-                nameTmp.alignment = TextAlignmentOptions.MidlineLeft;
-                nameTmp.textWrappingMode = TextWrappingModes.NoWrap;
-                nameTmp.raycastTarget = false;
-
-                var descGo = new GameObject("Desc");
-                descGo.transform.SetParent(cardGo.transform, false);
-                descGo.AddComponent<RectTransform>();
-                var descLe = descGo.AddComponent<LayoutElement>();
-                descLe.preferredHeight = 44f;
-                var descTmp = descGo.AddComponent<TextMeshProUGUI>();
-                descTmp.text = skill.Description;
-                descTmp.fontSize = 22f;
-                descTmp.color = ColorPalette.TextDim;
-                descTmp.alignment = TextAlignmentOptions.TopLeft;
-                descTmp.textWrappingMode = TextWrappingModes.Normal;
-                descTmp.raycastTarget = false;
-
-                var btn = cardGo.AddComponent<Button>();
-                btn.targetGraphic = cardBg;
-                btn.onClick.AddListener(() => SelectEliteReward(idx));
+                popupOptions.Add(new SkillSelectOption
+                {
+                    SkillId = skill.Id,
+                    Name = skill.Name,
+                    Description = skill.Description,
+                });
             }
+            OpenSkillSelectPopup("\uae08\uc0c1\uc790! \uc2a4\ud0ac\uc744 \uc120\ud0dd\ud558\uc138\uc694", popupOptions, SelectEliteReward);
+
+            Refresh();
         }
 
         private void SelectEliteReward(int index)
@@ -1672,42 +1621,7 @@ namespace CatCatGo.Presentation.Screens
             var go = new GameObject("EliteRewardPanel");
             go.transform.SetParent(parent, false);
             _eliteRewardPanel = go.GetComponent<RectTransform>();
-
             if (_eliteRewardPanel == null) _eliteRewardPanel = go.AddComponent<RectTransform>();
-            var le = go.AddComponent<LayoutElement>();
-            le.flexibleHeight = 1f;
-
-            var layout = go.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(4, 4, 8, 8);
-            layout.spacing = 6f;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = false;
-
-            var titleGo = new GameObject("Title");
-            titleGo.transform.SetParent(go.transform, false);
-            titleGo.AddComponent<RectTransform>();
-            var titleLe = titleGo.AddComponent<LayoutElement>();
-            titleLe.preferredHeight = 26f;
-            var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
-            titleTmp.text = "\uae08\uc0c1\uc790! \uc2a4\ud0ac\uc744 \uc120\ud0dd\ud558\uc138\uc694";
-            titleTmp.fontSize = 24f;
-            titleTmp.color = ColorPalette.Gold;
-            titleTmp.fontStyle = FontStyles.Bold;
-            titleTmp.alignment = TextAlignmentOptions.Center;
-            titleTmp.raycastTarget = false;
-
-            var optionsGo = new GameObject("EliteOptions");
-            optionsGo.transform.SetParent(go.transform, false);
-            _eliteOptionsContainer = optionsGo.GetComponent<RectTransform>();
-
-            if (_eliteOptionsContainer == null) _eliteOptionsContainer = optionsGo.AddComponent<RectTransform>();
-            var optionsLayout = optionsGo.AddComponent<VerticalLayoutGroup>();
-            optionsLayout.spacing = 6f;
-            optionsLayout.childForceExpandWidth = true;
-            optionsLayout.childForceExpandHeight = false;
-            var optionsFitter = optionsGo.AddComponent<ContentSizeFitter>();
-            optionsFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
             _eliteRewardPanel.gameObject.SetActive(false);
         }
 

@@ -105,7 +105,7 @@ namespace CatCatGo.Presentation.Battle
                 _text.fontSize = 55f;
             }
 
-            float duration = 0.6f / Mathf.Max(speed, 0.1f);
+            float duration = 1.2f / Mathf.Max(speed, 0.1f);
             _animCoroutine = StartCoroutine(AnimatePopup(duration));
         }
 
@@ -119,14 +119,17 @@ namespace CatCatGo.Presentation.Battle
             Color iconEndColor = new Color(1f, 1f, 1f, 0f);
             bool hasIcon = _iconImage.gameObject.activeSelf;
 
+            float fadeStart = 0.5f;
             float elapsed = 0f;
             while (elapsed < duration)
             {
                 float t = elapsed / duration;
                 _rectTransform.anchoredPosition = Vector3.Lerp(startPos, endPos, t);
-                _text.color = Color.Lerp(startColor, endColor, t);
+                float alpha = t < fadeStart ? 1f : 1f - (t - fadeStart) / (1f - fadeStart);
+                Color textColor = new Color(startColor.r, startColor.g, startColor.b, alpha);
+                _text.color = textColor;
                 if (hasIcon)
-                    _iconImage.color = Color.Lerp(iconStartColor, iconEndColor, t);
+                    _iconImage.color = new Color(1f, 1f, 1f, alpha);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
