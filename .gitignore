@@ -66,4 +66,5 @@ TestLog.txt
 TestResults.xml
 
 # Claude
-.claude/
+.claude/*
+!.claude/skills/
