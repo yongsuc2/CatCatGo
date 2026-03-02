@@ -19,7 +19,6 @@ namespace CatCatGo.Presentation.Screens
         {
             { ChestType.EQUIPMENT, "\uc7a5\ube44 \ubb51\uae30" },
             { ChestType.PET, "\ud3ab \ubb51\uae30" },
-            { ChestType.GEM, "\ubcf4\uc11d \ubb51\uae30" },
         };
 
         private TabBarView _tabBar;
@@ -67,7 +66,7 @@ namespace CatCatGo.Presentation.Screens
             tabLe.flexibleHeight = 0;
             tabGo.AddComponent<Image>().color = ColorPalette.Card;
             _tabBar = tabGo.AddComponent<TabBarView>();
-            _tabBar.Initialize(new[] { "\uc7a5\ube44", "\ud3ab", "\ubcf4\uc11d" });
+            _tabBar.Initialize(new[] { "\uc7a5\ube44", "\ud3ab" });
             _tabBar.OnTabSelected += OnTabChanged;
         }
 
@@ -265,7 +264,6 @@ namespace CatCatGo.Presentation.Screens
             {
                 case 0: _activeChest = ChestType.EQUIPMENT; break;
                 case 1: _activeChest = ChestType.PET; break;
-                case 2: _activeChest = ChestType.GEM; break;
             }
             Refresh();
         }
@@ -323,7 +321,6 @@ namespace CatCatGo.Presentation.Screens
             {
                 case ChestType.EQUIPMENT: return ColorPalette.GradeLegendary;
                 case ChestType.PET: return ColorPalette.Heal;
-                case ChestType.GEM: return ColorPalette.Gems;
                 default: return ColorPalette.GradeLegendary;
             }
         }

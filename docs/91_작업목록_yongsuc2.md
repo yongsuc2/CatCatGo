@@ -86,6 +86,7 @@
 | Y-74 | 재능/보상 죽은 코드 삭제 + 중복 코드 중앙화 | 하 | 완료 | Talent.IsMilestoneReached 삭제, TalentTable 미사용 메서드 6개 삭제, 마일스톤 키 하드코딩→GetMilestoneKey() 중앙화, TalentScreen 보상 수령 중복→ProcessSingleClaim 추출 |
 | Y-75 | 스테이지/던전 시스템 기획서 불일치 수정 | 중 | 완료 | COMBAT 죽은 코드 삭제, 던전 enum 이름 기획 일치(GIANT_BEEHIVE/ANCIENT_TREE/TIGER_CLIFF), 타워 보상 5/10단계만, 30일/5일 챕터 삭제(60일만), 엘리트/보스 금상자→우연 스킬풀 동일화, chapterBossAssignment 죽은 데이터 삭제 |
 | Y-76 | 봉인의 전투 구현 | 중 | 대기 | 협력 보스 콘텐츠 — 다수 플레이어 누적 데미지 시스템 |
+| Y-77 | 보석 상자 제거 (3종→2종 전환) | 하 | 완료 | ChestType.GEM 삭제, GachaGemConfig 삭제, gacha.data.json gem 섹션 삭제, GachaScreen 탭 2개(장비/펫)로 축소, TreasureChest GEM 분기 삭제 |
 
 ---
 
