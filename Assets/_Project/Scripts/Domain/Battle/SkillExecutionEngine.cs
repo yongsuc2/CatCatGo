@@ -185,18 +185,7 @@ namespace CatCatGo.Domain.Battle
 
                             if (effect.Duration > 0)
                             {
-                                int dotDamage;
-                                if (effect.AttackType == AttackType.MAGIC)
-                                {
-                                    int dotAtk = source.GetEffectiveAtk();
-                                    int dotDef = t.GetEffectiveDef();
-                                    float mk = BattleDataTable.Data.Damage.MagicDefenseConstant;
-                                    dotDamage = Math.Max(1, (int)(dotAtk * source.MagicCoefficient * effect.Coefficient * (mk / (mk + dotDef))));
-                                }
-                                else
-                                {
-                                    dotDamage = (int)(source.GetEffectiveAtk() * effect.Coefficient);
-                                }
+                                int dotDamage = CalculateRawDamage(source, t, effect.AttackType, effect.Coefficient);
                                 var dotType = effect.AttackType == AttackType.MAGIC
                                     ? StatusEffectType.BURN : StatusEffectType.POISON;
                                 t.AddStatusEffect(new StatusEffect(dotType, effect.Duration, dotDamage, skill.Id));
@@ -327,15 +316,13 @@ namespace CatCatGo.Domain.Battle
             return results;
         }
 
-        private DamageCalcResult CalculateSkillDamage(
+        private int CalculateRawDamage(
             ISkillExecutionUnit source,
             ISkillExecutionUnit target,
             AttackType attackType,
             float coefficient,
             bool isTargetHpBased = false)
         {
-            int rawDamage;
-
             switch (attackType)
             {
                 case AttackType.PHYSICAL:
@@ -343,34 +330,32 @@ namespace CatCatGo.Domain.Battle
                     int def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.DefenseConstant;
                     if (isTargetHpBased)
-                    {
-                        rawDamage = Math.Max(1, (int)(target.MaxHp * coefficient * (k / (k + def))));
-                    }
-                    else
-                    {
-                        int atk = source.GetEffectiveAtk() + source.GetHpBonusDamage();
-                        rawDamage = Math.Max(1, (int)(atk * coefficient * (k / (k + def))));
-                    }
-                    break;
+                        return Math.Max(1, (int)(target.MaxHp * coefficient * (k / (k + def))));
+                    int atk = source.GetEffectiveAtk() + source.GetHpBonusDamage();
+                    return Math.Max(1, (int)(atk * coefficient * (k / (k + def))));
                 }
                 case AttackType.MAGIC:
                 {
                     int atk = source.GetEffectiveAtk();
                     int def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.MagicDefenseConstant;
-                    rawDamage = Math.Max(1, (int)(atk * source.MagicCoefficient * coefficient * (k / (k + def))));
-                    break;
+                    return Math.Max(1, (int)(atk * source.MagicCoefficient * coefficient * (k / (k + def))));
                 }
                 case AttackType.FIXED:
-                {
-                    rawDamage = (int)(source.GetEffectiveAtk() * coefficient);
-                    break;
-                }
+                    return Math.Max(1, (int)(source.GetEffectiveAtk() * coefficient));
                 default:
-                    rawDamage = 1;
-                    break;
+                    return 1;
             }
+        }
 
+        private DamageCalcResult CalculateSkillDamage(
+            ISkillExecutionUnit source,
+            ISkillExecutionUnit target,
+            AttackType attackType,
+            float coefficient,
+            bool isTargetHpBased = false)
+        {
+            int rawDamage = CalculateRawDamage(source, target, attackType, coefficient, isTargetHpBased);
             bool isCrit = attackType == AttackType.PHYSICAL && _rng.Chance(source.GetEffectiveCrit());
             float critMult = isCrit ? BattleDataTable.Data.Damage.CritMultiplier : 1.0f;
 
