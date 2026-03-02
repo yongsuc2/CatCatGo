@@ -251,17 +251,25 @@ namespace CatCatGo.Domain.Data
                     HeritageSynergy = new[] { HeritageRoute.RANGER },
                     Traits = new[] { "\uc218\ub9ac\uac80+\ubd84\ub178 \ubcf5\ud569", "\ubd84\ub178 \uac8c\uc774\uc9c0 \ube60\ub978 \ucd95\uc801" },
                     BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.EveryNTurns(2)),
-                    BuildEffects = t => new[]
+                    BuildEffects = t =>
                     {
-                        new ActiveSkillEffect { Type = SkillEffectType.TRIGGER_SKILL, TargetSkillId = "shuriken_summon", Count = 1 },
-                        new ActiveSkillEffect
+                        float p = V(Td("rage_shuriken", t), "injectedProbability");
+                        return new[]
                         {
-                            Type = SkillEffectType.INJECT_EFFECT, TargetSkillId = "shuriken_summon",
-                            InjectedEffects = new List<ActiveSkillEffect>
+                            new ActiveSkillEffect { Type = SkillEffectType.TRIGGER_SKILL, TargetSkillId = "shuriken_summon", Count = 1 },
+                            new ActiveSkillEffect
                             {
-                                new ActiveSkillEffect { Type = SkillEffectType.ADD_RAGE, Amount = (int)V(Td("rage_accumulate", t), "amount") },
+                                Type = SkillEffectType.INJECT_EFFECT, TargetSkillId = "shuriken_summon",
+                                InjectedEffects = new List<ActiveSkillEffect>
+                                {
+                                    new ActiveSkillEffect
+                                    {
+                                        Type = SkillEffectType.TRIGGER_SKILL, TargetSkillId = "rage_accumulate", Count = 1,
+                                        TriggerConditions = TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("shuriken_summon"), TriggerFactory.Prob(p)),
+                                    },
+                                },
                             },
-                        },
+                        };
                     },
                     BuildDescription = t => $"2\ud134\ub9c8\ub2e4 \uc218\ub9ac\uac80 \uc18c\ud658, \uc218\ub9ac\uac80\uc774 {Pct(V(Td("rage_shuriken", t), "injectedProbability"))} \ud655\ub960\ub85c \ubd84\ub178 \ucd94\uac00",
                 },

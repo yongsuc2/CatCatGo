@@ -26,7 +26,7 @@ namespace CatCatGo.Domain.Battle
         bool IsAlive();
         float GetHpPercent();
         HashSet<string> UsedOnceConditions { get; set; }
-        float GetSkillDamageMultiplier(SkillTag[] tags);
+        float GetSkillDamageMultiplier(string skillId);
         int GetHpBonusDamage();
     }
 
@@ -165,8 +165,8 @@ namespace CatCatGo.Domain.Battle
                         {
                             var calcResult = CalculateSkillDamage(
                                 source, t, effect.AttackType, effect.Coefficient, effect.IsTargetHpBased);
-                            var tagMult = source.GetSkillDamageMultiplier(skill.Tags);
-                            int damage = Math.Max(1, (int)(calcResult.Damage * tagMult));
+                            var skillMult = source.GetSkillDamageMultiplier(skill.Id);
+                            int damage = Math.Max(1, (int)(calcResult.Damage * skillMult));
                             int dealt = t.TakeDamage(damage);
 
                             results.Add(new SkillDamageResult
@@ -185,7 +185,18 @@ namespace CatCatGo.Domain.Battle
 
                             if (effect.Duration > 0)
                             {
-                                int dotDamage = (int)(source.GetEffectiveAtk() * effect.Coefficient);
+                                int dotDamage;
+                                if (effect.AttackType == AttackType.MAGIC)
+                                {
+                                    int dotAtk = source.GetEffectiveAtk();
+                                    int dotDef = t.GetEffectiveDef();
+                                    float mk = BattleDataTable.Data.Damage.MagicDefenseConstant;
+                                    dotDamage = Math.Max(1, (int)(dotAtk * source.MagicCoefficient * effect.Coefficient * (mk / (mk + dotDef))));
+                                }
+                                else
+                                {
+                                    dotDamage = (int)(source.GetEffectiveAtk() * effect.Coefficient);
+                                }
                                 var dotType = effect.AttackType == AttackType.MAGIC
                                     ? StatusEffectType.BURN : StatusEffectType.POISON;
                                 t.AddStatusEffect(new StatusEffect(dotType, effect.Duration, dotDamage, skill.Id));

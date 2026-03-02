@@ -101,7 +101,7 @@ namespace CatCatGo.Domain.Data
                     Id = "rage_mastery", Name = "\ubd84\ub178 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udca2",
                     Tags = new[] { SkillTag.RAGE }, HeritageSynergy = new[] { HeritageRoute.SKULL, HeritageRoute.KNIGHT },
                     Traits = new[] { "\ubd84\ub178 \uacf5\uaca9 \uac15\ud654 \uc804\uc6a9", "\ubd84\ub178 \ube4c\ub4dc \ud575\uc2ec" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetTag = SkillTag.RAGE, DamageMultiplier = V(Td("rage_mastery", t), "value") },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetSkillId = "bunno_attack", DamageMultiplier = V(Td("rage_mastery", t), "value") },
                     BuildDescription = t => $"\ubd84\ub178 \uacf5\uaca9 \ub370\ubbf8\uc9c0 +{Pct(V(Td("rage_mastery", t), "value"))}",
                 },
                 new PassiveSkillFamilyDef
@@ -109,7 +109,7 @@ namespace CatCatGo.Domain.Data
                     Id = "lightning_mastery", Name = "\ubc88\uac1c \ub9c8\uc2a4\ud130\ub9ac", Icon = "\u26a1",
                     Tags = new[] { SkillTag.LIGHTNING }, HeritageSynergy = new[] { HeritageRoute.GHOST },
                     Traits = new[] { "\ubc88\uac1c \uc2a4\ud0ac \uc804\uc6a9", "\ub9c8\ubc95 \ube4c\ub4dc \uc2dc\ub108\uc9c0" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetTag = SkillTag.LIGHTNING, DamageMultiplier = V(Td("lightning_mastery", t), "damageBonus") },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetSkillId = "lightning_summon", DamageMultiplier = V(Td("lightning_mastery", t), "damageBonus") },
                     BuildDescription = t => $"\ubc88\uac1c \uc2a4\ud0ac \ub370\ubbf8\uc9c0 +{Pct(V(Td("lightning_mastery", t), "damageBonus"))}",
                 },
                 new PassiveSkillFamilyDef
@@ -117,7 +117,7 @@ namespace CatCatGo.Domain.Data
                     Id = "shuriken_mastery", Name = "\uc218\ub9ac\uac80 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83c\udf00",
                     Tags = new[] { SkillTag.SHURIKEN }, HeritageSynergy = new[] { HeritageRoute.RANGER },
                     Traits = new[] { "\uc218\ub9ac\uac80 \uc2a4\ud0ac \uc804\uc6a9", "\ubb3c\ub9ac \ube4c\ub4dc \uc2dc\ub108\uc9c0" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetTag = SkillTag.SHURIKEN, DamageMultiplier = V(Td("shuriken_mastery", t), "damageBonus") },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetSkillId = "shuriken_summon", DamageMultiplier = V(Td("shuriken_mastery", t), "damageBonus") },
                     BuildDescription = t => $"\uc218\ub9ac\uac80 \uc2a4\ud0ac \ub370\ubbf8\uc9c0 +{Pct(V(Td("shuriken_mastery", t), "damageBonus"))}",
                 },
                 new PassiveSkillFamilyDef
@@ -125,7 +125,7 @@ namespace CatCatGo.Domain.Data
                     Id = "lance_mastery", Name = "\uad11\ucc3d \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udd31",
                     Tags = new[] { SkillTag.LANCE }, HeritageSynergy = new[] { HeritageRoute.KNIGHT },
                     Traits = new[] { "\uad11\ucc3d \uc2a4\ud0ac \uc804\uc6a9", "\ub9c8\ubc95 \ube4c\ub4dc \uc2dc\ub108\uc9c0" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetTag = SkillTag.LANCE, DamageMultiplier = V(Td("lance_mastery", t), "damageBonus") },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.SKILL_MODIFIER, TargetSkillId = "lance_summon", DamageMultiplier = V(Td("lance_mastery", t), "damageBonus") },
                     BuildDescription = t => $"\uad11\ucc3d \uc2a4\ud0ac \ub370\ubbf8\uc9c0 +{Pct(V(Td("lance_mastery", t), "damageBonus"))}",
                 },
                 new PassiveSkillFamilyDef
@@ -141,7 +141,7 @@ namespace CatCatGo.Domain.Data
                     Id = "magic_mastery", Name = "\ub9c8\ubc95 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udd2e",
                     Tags = new[] { SkillTag.MAGIC }, HeritageSynergy = new[] { HeritageRoute.GHOST },
                     Traits = new[] { "\ubaa8\ub4e0 \ub9c8\ubc95 \uacf5\uaca9 \uac15\ud654", "\ub9c8\ubc95 \ube4c\ub4dc \ud575\uc2ec" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Value = V(Td("magic_mastery", t), "value"), IsPercentage = false },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Stat = StatType.MAGIC_COEFFICIENT, Value = V(Td("magic_mastery", t), "value"), IsPercentage = false },
                     BuildDescription = t => $"\ub9c8\ubc95 \uacc4\uc218 +{Pct(V(Td("magic_mastery", t), "value"))}",
                 },
                 new PassiveSkillFamilyDef

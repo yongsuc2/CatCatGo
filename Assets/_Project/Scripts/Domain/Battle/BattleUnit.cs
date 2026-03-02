@@ -31,7 +31,7 @@ namespace CatCatGo.Domain.Battle
         public float MagicCoefficient { get; set; }
         public int Shield;
         public HashSet<string> UsedOnceConditions { get; set; }
-        public Dictionary<SkillTag, float> SkillTagBonuses;
+        public Dictionary<string, float> SkillIdBonuses;
         public List<LowHpModifier> LowHpModifiers;
         public float HpDamageCoefficient;
         public string TemplateId;
@@ -64,7 +64,7 @@ namespace CatCatGo.Domain.Battle
             MagicCoefficient = BattleDataTable.Data.Damage.BaseMagicCoefficient;
             Shield = 0;
             UsedOnceConditions = new HashSet<string>();
-            SkillTagBonuses = new Dictionary<SkillTag, float>();
+            SkillIdBonuses = new Dictionary<string, float>();
             LowHpModifiers = new List<LowHpModifier>();
             HpDamageCoefficient = 0;
 
@@ -148,12 +148,12 @@ namespace CatCatGo.Domain.Battle
                     break;
                 case PassiveType.SKILL_MODIFIER:
                 {
-                    var targetTag = skill.Effect.TargetTag;
+                    var targetSkillId = skill.Effect.TargetSkillId;
                     var damageMultiplier = skill.Effect.DamageMultiplier;
-                    if (targetTag.HasValue && damageMultiplier != 0)
+                    if (targetSkillId != null && damageMultiplier != 0)
                     {
-                        SkillTagBonuses.TryGetValue(targetTag.Value, out var current);
-                        SkillTagBonuses[targetTag.Value] = current + damageMultiplier;
+                        SkillIdBonuses.TryGetValue(targetSkillId, out var current);
+                        SkillIdBonuses[targetSkillId] = current + damageMultiplier;
                     }
                     break;
                 }
@@ -231,14 +231,9 @@ namespace CatCatGo.Domain.Battle
             return Math.Min(1.0f, crit);
         }
 
-        public float GetSkillDamageMultiplier(SkillTag[] tags)
+        public float GetSkillDamageMultiplier(string skillId)
         {
-            float bonus = 0;
-            foreach (var tag in tags)
-            {
-                SkillTagBonuses.TryGetValue(tag, out var val);
-                bonus += val;
-            }
+            SkillIdBonuses.TryGetValue(skillId, out var bonus);
             return 1 + bonus;
         }
 
