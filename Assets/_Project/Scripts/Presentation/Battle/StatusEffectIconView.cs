@@ -42,7 +42,7 @@ namespace CatCatGo.Presentation.Battle
             var rt = gameObject.GetComponent<RectTransform>();
 
             if (rt == null) rt = gameObject.AddComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(90f, 90f);
+            rt.sizeDelta = new Vector2(180f, 180f);
 
             _icon = gameObject.AddComponent<Image>();
             _icon.preserveAspect = true;
@@ -56,10 +56,10 @@ namespace CatCatGo.Presentation.Battle
             textRt.anchorMax = new Vector2(1f, 0f);
             textRt.pivot = new Vector2(0.5f, 1f);
             textRt.anchoredPosition = Vector2.zero;
-            textRt.sizeDelta = new Vector2(0f, 24f);
+            textRt.sizeDelta = new Vector2(0f, 48f);
 
             _label = textGo.AddComponent<TextMeshProUGUI>();
-            _label.fontSize = 20f;
+            _label.fontSize = 40f;
             _label.color = Color.white;
             _label.alignment = TextAlignmentOptions.Center;
             _label.textWrappingMode = TextWrappingModes.NoWrap;
