@@ -52,13 +52,14 @@ namespace CatCatGo.Presentation.Battle
             var textRt = textGo.GetComponent<RectTransform>();
 
             if (textRt == null) textRt = textGo.AddComponent<RectTransform>();
-            textRt.anchorMin = Vector2.zero;
-            textRt.anchorMax = Vector2.one;
-            textRt.offsetMin = Vector2.zero;
-            textRt.offsetMax = Vector2.zero;
+            textRt.anchorMin = new Vector2(0f, 0f);
+            textRt.anchorMax = new Vector2(1f, 0f);
+            textRt.pivot = new Vector2(0.5f, 1f);
+            textRt.anchoredPosition = Vector2.zero;
+            textRt.sizeDelta = new Vector2(0f, 24f);
 
             _label = textGo.AddComponent<TextMeshProUGUI>();
-            _label.fontSize = 28f;
+            _label.fontSize = 20f;
             _label.color = Color.white;
             _label.alignment = TextAlignmentOptions.Center;
             _label.textWrappingMode = TextWrappingModes.NoWrap;
