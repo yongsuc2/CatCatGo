@@ -133,7 +133,6 @@ namespace CatCatGo.Presentation.Screens
             CreateDebugButton(contentGo.transform, "+10 \uac01\uc885 \ud1a0\ud070", () =>
             {
                 Game.Player.Resources.Add(ResourceType.CHALLENGE_TOKEN, 10);
-                Game.Player.Resources.Add(ResourceType.ARENA_TICKET, 10);
                 Game.Player.Resources.Add(ResourceType.PICKAXE, 10);
                 Game.Player.Resources.Add(ResourceType.EQUIPMENT_STONE, 10);
                 Game.Player.Resources.Add(ResourceType.POWER_STONE, 10);

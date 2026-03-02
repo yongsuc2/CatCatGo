@@ -26,7 +26,6 @@ namespace CatCatGo.Services
         public Tower Tower;
         public CatacombDungeon Catacomb;
         public DailyDungeonManager DungeonManager;
-        public Arena ArenaSystem;
         public GoblinMiner GoblinMinerSystem;
 
         public TreasureChest EquipmentChestSystem;
@@ -68,7 +67,6 @@ namespace CatCatGo.Services
             Tower = new Tower();
             Catacomb = new CatacombDungeon();
             DungeonManager = new DailyDungeonManager();
-            ArenaSystem = new Arena();
             GoblinMinerSystem = new GoblinMiner();
 
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
@@ -255,7 +253,7 @@ namespace CatCatGo.Services
         {
             if (DailyResetSystem.NeedsReset())
             {
-                DailyResetSystem.PerformReset(Player.Resources, DungeonManager, ArenaSystem);
+                DailyResetSystem.PerformReset(Player.Resources, DungeonManager);
                 EventManagerSystem.CleanupExpired();
                 EventManagerSystem.CreateDailyQuests();
                 if (!EventManagerSystem.HasActiveWeeklyQuest())
@@ -304,7 +302,6 @@ namespace CatCatGo.Services
             Tower = new Tower();
             Catacomb = new CatacombDungeon();
             DungeonManager = new DailyDungeonManager();
-            ArenaSystem = new Arena();
             GoblinMinerSystem = new GoblinMiner();
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
             CollectionSystem = new Collection();

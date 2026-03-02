@@ -102,16 +102,6 @@ namespace CatCatGo.Domain.Enums
         TIGER_CLIFF,
     }
 
-    public enum ArenaTier
-    {
-        BRONZE,
-        SILVER,
-        GOLD,
-        PLATINUM,
-        DIAMOND,
-        MASTER,
-    }
-
     public enum ChestType
     {
         EQUIPMENT,
@@ -144,7 +134,6 @@ namespace CatCatGo.Domain.Enums
         GEMS,
         STAMINA,
         CHALLENGE_TOKEN,
-        ARENA_TICKET,
         PICKAXE,
         EQUIPMENT_STONE,
         POWER_STONE,
@@ -262,7 +251,6 @@ namespace CatCatGo.Domain.Enums
         DAILY_DUNGEON_TIGER,
         TOWER_CHALLENGE,
         CATACOMB_RUN,
-        ARENA_FIGHT,
         CHAPTER_PROGRESS,
         GOBLIN_MINE,
     }

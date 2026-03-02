@@ -40,7 +40,6 @@ namespace CatCatGo.Domain.Entities
         public float Gems => Get(ResourceType.GEMS);
         public float Stamina => Get(ResourceType.STAMINA);
         public float ChallengeTokens => Get(ResourceType.CHALLENGE_TOKEN);
-        public float ArenaTickets => Get(ResourceType.ARENA_TICKET);
         public float Pickaxes => Get(ResourceType.PICKAXE);
         public float EquipmentStones => Get(ResourceType.EQUIPMENT_STONE);
         public float PowerStones => Get(ResourceType.POWER_STONE);
@@ -110,7 +109,6 @@ namespace CatCatGo.Domain.Entities
         public void DailyReset()
         {
             _amounts[ResourceType.CHALLENGE_TOKEN] = 5;
-            _amounts[ResourceType.ARENA_TICKET] = 5;
             _amounts[ResourceType.PICKAXE] = 10;
         }
 

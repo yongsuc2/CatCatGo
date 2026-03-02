@@ -11,17 +11,6 @@ namespace CatCatGo.Presentation.Screens
 {
     public class MainScreen : BaseScreen
     {
-        private static readonly System.Collections.Generic.Dictionary<ArenaTier, string> ArenaTierLabels =
-            new System.Collections.Generic.Dictionary<ArenaTier, string>
-            {
-                { ArenaTier.BRONZE, "브론즈" },
-                { ArenaTier.SILVER, "실버" },
-                { ArenaTier.GOLD, "골드" },
-                { ArenaTier.PLATINUM, "플래티넘" },
-                { ArenaTier.DIAMOND, "다이아몬드" },
-                { ArenaTier.MASTER, "마스터" },
-            };
-
         private TextMeshProUGUI _hpText;
         private TextMeshProUGUI _atkText;
         private TextMeshProUGUI _defText;
@@ -30,7 +19,6 @@ namespace CatCatGo.Presentation.Screens
         private TextMeshProUGUI _talentGradeText;
         private TextMeshProUGUI _clearedChapterText;
         private TextMeshProUGUI _towerFloorText;
-        private TextMeshProUGUI _arenaTierText;
 
         private TextMeshProUGUI _adventureInfo;
         private TextMeshProUGUI _contentInfo;
@@ -217,7 +205,6 @@ namespace CatCatGo.Presentation.Screens
             _talentGradeText = CreateInfoRow(cardGo.transform, "재능 등급");
             _clearedChapterText = CreateInfoRow(cardGo.transform, "클리어 챕터");
             _towerFloorText = CreateInfoRow(cardGo.transform, "탑 층수");
-            _arenaTierText = CreateInfoRow(cardGo.transform, "아레나 티어");
         }
 
         private TextMeshProUGUI CreateInfoRow(Transform parent, string label)
@@ -336,9 +323,6 @@ namespace CatCatGo.Presentation.Screens
             _talentGradeText.text = $"<color=#{gradeHex}>{subGradeLabel}</color>";
             _clearedChapterText.text = $"{player.ClearedChapterMax}";
             _towerFloorText.text = $"{Game.Tower.CurrentFloor}-{Game.Tower.CurrentStage}";
-
-            string tierLabel = ArenaTierLabels.TryGetValue(Game.ArenaSystem.Tier, out var label) ? label : Game.ArenaSystem.Tier.ToString();
-            _arenaTierText.text = tierLabel;
 
             _adventureInfo.text = $"스태미나: {(int)player.Resources.Stamina}/{player.Resources.GetStaminaMax()}";
             _contentInfo.text = "탑/던전";

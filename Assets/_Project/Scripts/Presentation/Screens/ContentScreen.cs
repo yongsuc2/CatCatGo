@@ -18,7 +18,6 @@ namespace CatCatGo.Presentation.Screens
             Menu,
             Tower,
             Dungeon,
-            Arena,
             GoblinMine,
             Catacomb,
         }
@@ -30,7 +29,6 @@ namespace CatCatGo.Presentation.Screens
 
         private TextMeshProUGUI _towerInfo;
         private TextMeshProUGUI _dungeonInfo;
-        private TextMeshProUGUI _arenaInfo;
         private TextMeshProUGUI _goblinInfo;
         private TextMeshProUGUI _catacombInfo;
 
@@ -54,16 +52,14 @@ namespace CatCatGo.Presentation.Screens
             {
                 ("\ud0d1", "\ud1a0\uc804", ContentView.Tower),
                 ("\ub358\uc804", "\uc77c\uc77c \ub358\uc804", ContentView.Dungeon),
-                ("\uc544\ub808\ub098", "\uc544\ub808\ub098", ContentView.Arena),
                 ("\uad11\uc0b0", "\uace0\ube14\ub9b0 \uad11\uc0b0", ContentView.GoblinMine),
                 ("\uc9c0\ud558\ubb18\uc9c0", "\uce74\ud0c0\ucf64", ContentView.Catacomb),
             };
 
             _towerInfo = CreateContentCard(menuScroll, cards[0].Item1, cards[0].Item2, cards[0].Item3);
             _dungeonInfo = CreateContentCard(menuScroll, cards[1].Item1, cards[1].Item2, cards[1].Item3);
-            _arenaInfo = CreateContentCard(menuScroll, cards[2].Item1, cards[2].Item2, cards[2].Item3);
-            _goblinInfo = CreateContentCard(menuScroll, cards[3].Item1, cards[3].Item2, cards[3].Item3);
-            _catacombInfo = CreateContentCard(menuScroll, cards[4].Item1, cards[4].Item2, cards[4].Item3);
+            _goblinInfo = CreateContentCard(menuScroll, cards[2].Item1, cards[2].Item2, cards[2].Item3);
+            _catacombInfo = CreateContentCard(menuScroll, cards[3].Item1, cards[3].Item2, cards[3].Item3);
 
             _subPanel = UIManager.CreateRectTransform("SubPanel", transform);
             UIManager.StretchFull(_subPanel);
@@ -267,7 +263,6 @@ namespace CatCatGo.Presentation.Screens
             {
                 case ContentView.Tower: BuildTowerSub(); break;
                 case ContentView.Dungeon: BuildDungeonSub(); break;
-                case ContentView.Arena: BuildArenaSub(); break;
                 case ContentView.GoblinMine: BuildGoblinMineSub(); break;
                 case ContentView.Catacomb: BuildCatacombSub(); break;
             }
@@ -382,41 +377,6 @@ namespace CatCatGo.Presentation.Screens
                     });
                 }
             }
-        }
-
-        private void BuildArenaSub()
-        {
-            _subTitle.text = "\uc544\ub808\ub098";
-            var arena = Game.ArenaSystem;
-            int tickets = (int)Game.Player.Resources.ArenaTickets;
-
-            CreateInfoRow(_subContent, $"\ub4f1\uae09: {arena.Tier}  \ud3ec\uc778\ud2b8: {arena.Points}");
-            CreateInfoRow(_subContent, $"\ub0a8\uc740 \uc785\uc7a5: {arena.GetRemainingEntries()}  \ud2f0\ucf13: {tickets}");
-
-            CreateActionButton(_subContent, "\ub300\uc804 (\ud2f0\ucf13 1\uac1c)", () =>
-            {
-                var playerUnit = Game.BattleManagerService.CreatePlayerUnit(Game.Player, null, new Domain.Entities.PassiveSkill[0]);
-                var result = arena.Fight(playerUnit, tickets, Game.Rng);
-                if (result.IsFail()) { _resultText.text = result.Message; return; }
-
-                Game.Player.Resources.Spend(ResourceType.ARENA_TICKET, 1);
-                int wins = 0;
-                for (int i = 0; i < result.Data.Results.Count; i++)
-                {
-                    if (result.Data.Results[i] == BattleState.VICTORY) wins++;
-                }
-
-                var reward = arena.GetReward();
-                if (wins > 0)
-                {
-                    foreach (var r in reward.Resources)
-                        Game.Player.Resources.Add(r.Type, r.Amount);
-                }
-
-                _resultText.text = $"\uacb0\uacfc: {wins}\uc2b9 {4 - wins}\ud328  \ub4f1\uae09: {arena.Tier}  \ud3ec\uc778\ud2b8: {arena.Points}";
-                Game.SaveGame();
-                ShowSubPanel(ContentView.Arena);
-            });
         }
 
         private void BuildGoblinMineSub()
@@ -563,8 +523,6 @@ namespace CatCatGo.Presentation.Screens
 
                 int dungeonRemaining = Game.DungeonManager.GetRemainingCount();
                 _dungeonInfo.text = $"\ub0a8\uc740 \uc785\uc7a5: {dungeonRemaining}/{Game.DungeonManager.DailyLimit}";
-
-                _arenaInfo.text = $"{Game.ArenaSystem.Tier}  \ub0a8\uc740: {Game.ArenaSystem.GetRemainingEntries()}";
 
                 _goblinInfo.text = $"\uad11\uc11d: {Game.GoblinMinerSystem.OreCount}/30  \uace1\uad2d\uc774: {(int)Game.Player.Resources.Pickaxes}";
 

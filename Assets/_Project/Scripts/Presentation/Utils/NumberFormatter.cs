@@ -12,7 +12,6 @@ namespace CatCatGo.Presentation.Utils
                 { ResourceType.GEMS, "\ubcf4\uc11d" },
                 { ResourceType.STAMINA, "\uc2a4\ud0dc\ubbf8\ub098" },
                 { ResourceType.CHALLENGE_TOKEN, "\ub3c4\uc804 \ud1a0\ud070" },
-                { ResourceType.ARENA_TICKET, "\uc544\ub808\ub098 \ud2f0\ucf13" },
                 { ResourceType.PICKAXE, "\uace1\uad2d\uc774" },
                 { ResourceType.EQUIPMENT_STONE, "\uc7a5\ube44\uc11d" },
                 { ResourceType.POWER_STONE, "\uac15\ud654\uc11d" },

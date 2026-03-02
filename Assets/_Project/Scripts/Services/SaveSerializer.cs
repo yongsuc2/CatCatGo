@@ -108,7 +108,6 @@ namespace CatCatGo.Services
         public TowerSaveData Tower;
         public CatacombSaveData Catacomb;
         public DungeonsSaveData Dungeons;
-        public ArenaSaveData Arena;
         public GoblinMinerSaveData GoblinMiner;
         public EquipmentChestSaveData EquipmentChest;
         public List<string> Collection;
@@ -169,13 +168,6 @@ namespace CatCatGo.Services
         public Dictionary<string, int> ClearedStages;
     }
 
-    [Serializable]
-    public class ArenaSaveData
-    {
-        public ArenaTier Tier;
-        public int Points;
-        public int TodayEntries;
-    }
 
     [Serializable]
     public class GoblinMinerSaveData
@@ -288,12 +280,6 @@ namespace CatCatGo.Services
                     TodayCount = game.DungeonManager.TodayCount,
                     ClearedStages = clearedStages,
                 },
-                Arena = new ArenaSaveData
-                {
-                    Tier = game.ArenaSystem.Tier,
-                    Points = game.ArenaSystem.Points,
-                    TodayEntries = game.ArenaSystem.TodayEntries,
-                },
                 GoblinMiner = new GoblinMinerSaveData { OreCount = game.GoblinMinerSystem.OreCount },
                 EquipmentChest = new EquipmentChestSaveData { PityCount = game.EquipmentChestSystem.PityCount },
                 Collection = collectionIds,
@@ -398,10 +384,6 @@ namespace CatCatGo.Services
                     }
                 }
             }
-
-            game.ArenaSystem.Tier = data.Arena.Tier;
-            game.ArenaSystem.Points = data.Arena.Points;
-            game.ArenaSystem.TodayEntries = data.Arena.TodayEntries;
 
             game.GoblinMinerSystem.OreCount = data.GoblinMiner.OreCount;
 

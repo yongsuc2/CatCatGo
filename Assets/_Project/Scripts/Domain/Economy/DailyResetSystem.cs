@@ -1,6 +1,5 @@
 using System;
 using CatCatGo.Domain.Entities;
-using CatCatGo.Domain.Content;
 
 namespace CatCatGo.Domain.Economy
 {
@@ -18,11 +17,10 @@ namespace CatCatGo.Domain.Economy
             return GetTodayString() != _lastResetDate;
         }
 
-        public void PerformReset(Resources resources, DailyDungeonManager dungeonManager, Arena arena)
+        public void PerformReset(Resources resources, DailyDungeonManager dungeonManager)
         {
             resources.DailyReset();
             dungeonManager.DailyResetAll();
-            arena.DailyReset();
             _lastResetDate = GetTodayString();
         }
 

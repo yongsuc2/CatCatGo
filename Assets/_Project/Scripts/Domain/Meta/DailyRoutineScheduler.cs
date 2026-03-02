@@ -25,7 +25,6 @@ namespace CatCatGo.Domain.Meta
         public int DungeonAncientTreeRemaining;
         public int DungeonTigerCliffRemaining;
         public int ChallengeTokens;
-        public int ArenaTickets;
         public int Stamina;
         public int Pickaxes;
     }
@@ -39,9 +38,8 @@ namespace CatCatGo.Domain.Meta
             new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_TIGER, Priority = 3, Description = "Tiger Cliff dungeon", RequiredResource = null },
             new RoutineStep { Action = RoutineAction.TOWER_CHALLENGE, Priority = 4, Description = "Tower challenge", RequiredResource = ResourceType.CHALLENGE_TOKEN },
             new RoutineStep { Action = RoutineAction.CATACOMB_RUN, Priority = 5, Description = "Catacomb dungeon run", RequiredResource = null },
-            new RoutineStep { Action = RoutineAction.ARENA_FIGHT, Priority = 6, Description = "Arena PvP", RequiredResource = ResourceType.ARENA_TICKET },
-            new RoutineStep { Action = RoutineAction.CHAPTER_PROGRESS, Priority = 7, Description = "Chapter progress", RequiredResource = ResourceType.STAMINA },
-            new RoutineStep { Action = RoutineAction.GOBLIN_MINE, Priority = 8, Description = "Goblin mining", RequiredResource = ResourceType.PICKAXE },
+            new RoutineStep { Action = RoutineAction.CHAPTER_PROGRESS, Priority = 6, Description = "Chapter progress", RequiredResource = ResourceType.STAMINA },
+            new RoutineStep { Action = RoutineAction.GOBLIN_MINE, Priority = 7, Description = "Goblin mining", RequiredResource = ResourceType.PICKAXE },
         };
 
         public List<RoutineStep> GetFullRoutine()
@@ -73,10 +71,6 @@ namespace CatCatGo.Domain.Meta
                     case RoutineAction.TOWER_CHALLENGE:
                         available = context.ChallengeTokens > 0;
                         reason = available ? "Ready" : "No challenge tokens";
-                        break;
-                    case RoutineAction.ARENA_FIGHT:
-                        available = context.ArenaTickets > 0;
-                        reason = available ? "Ready" : "No arena tickets";
                         break;
                     case RoutineAction.CHAPTER_PROGRESS:
                         available = context.Stamina >= 5;
