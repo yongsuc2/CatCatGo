@@ -486,11 +486,11 @@ namespace CatCatGo.Presentation.Battle
             _statusContainer = statusGo.GetComponent<RectTransform>();
 
             if (_statusContainer == null) _statusContainer = statusGo.AddComponent<RectTransform>();
-            _statusContainer.anchoredPosition = new Vector2(0f, barY - 45f);
-            _statusContainer.sizeDelta = new Vector2(100f, 20f);
+            _statusContainer.anchoredPosition = new Vector2(0f, barY - 30f);
+            _statusContainer.sizeDelta = new Vector2(200f, 54f);
             var layout = statusGo.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 2f;
-            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = 4f;
+            layout.childAlignment = TextAnchor.UpperCenter;
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
         }
