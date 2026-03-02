@@ -91,8 +91,6 @@ namespace CatCatGo.Domain.Enums
     public enum ChapterType
     {
         SIXTY_DAY,
-        THIRTY_DAY,
-        FIVE_DAY,
     }
 
     public enum DungeonType

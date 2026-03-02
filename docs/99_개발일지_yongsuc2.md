@@ -276,8 +276,8 @@
 - **죽은 코드 삭제** — SkillTable.ts, SkillDataTable.ts, skill-tier.data.json (미사용 파일 제거)
 - **밸런스 실제 데이터 반영** — 이전 밸런스 변경이 죽은 코드에만 적용된 문제 수정, passive-skill-tier/active-skill-tier에 재적용
 - **속성 마스터리 패시브 3종 추가** (SKILL_MODIFIER 구현)
-  - 번개 마스터리, 수리검 마스터리, 광창 마스터리 — 태그 기반 데미지 증가 (+8%~25%)
-  - BattleUnit에 skillTagBonuses 저장, SkillExecutionEngine ATTACK 케이스에서 태그 배율 적용
+  - 번개 마스터리, 수리검 마스터리, 광창 마스터리 — 스킬 ID 기반 데미지 증가 (+8%~25%)
+  - BattleUnit에 SkillIdBonuses 저장, SkillExecutionEngine ATTACK 케이스에서 스킬 ID 배율 적용
 - **크리티컬 물리 전용** — 마법/고정 공격에서 크리티컬 제거, 물리만 적용
 - **데미지 분산 제거** — variance(0.9~1.1) 랜덤 배율 삭제
 - **폭군의 일격 밸런스 하향** — coefficient 0.3→0.11 (비례 하향)
@@ -510,7 +510,7 @@
 ### 완료 작업
 - **분노 시스템 리팩토링** — 플레이어/적 분노 시스템을 스킬 시스템으로 통합
   - `ragePerAttack`를 BattleUnit 캐릭터 스탯으로 추가 (rage_accumulate 티어 데이터에서 추출)
-  - `ragePowerMultiplier` 제거 → rage_mastery를 SKILL_MODIFIER(RAGE 태그)로 전환, 기존 스킬 태그 보너스 시스템 활용
+  - `ragePowerMultiplier` 제거 → rage_mastery를 SKILL_MODIFIER(스킬 ID 기반)로 전환, 기존 스킬 ID 보너스 시스템 활용
   - `AddRageEffect`에 `useSourceStat` 플래그 추가, rage_accumulate가 캐릭터의 ragePerAttack 스탯 사용
   - 적에게 빌트인 스킬(ilban_attack, bunno_attack, rage_accumulate) 자동 부여 (EnemyTemplate.buildEnemySkills)
   - Battle.ts: processPlayerTurn/processEnemyTurn → processUnitTurn으로 통합 (플레이어/적 동일 로직)
