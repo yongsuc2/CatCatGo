@@ -67,12 +67,7 @@ namespace CatCatGo.Domain.Chapter
 
         private ActiveSkill[] BuildEnemySkills()
         {
-            var builtins = ActiveSkillRegistry.GetBuiltinSkills();
-            var rageAccum = ActiveSkillRegistry.GetById("rage_accumulate", 1);
-            var skills = new List<ActiveSkill>(builtins);
-            if (rageAccum != null) skills.Add(rageAccum);
-            skills.AddRange(ActiveSkills);
-            return skills.ToArray();
+            return ActiveSkills;
         }
 
         public BattleUnit CreateInstance(int chapterLevel, float statMultiplier = 1.0f, float dayProgress = 0f)
