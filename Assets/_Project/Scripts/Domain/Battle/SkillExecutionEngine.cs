@@ -163,9 +163,9 @@ namespace CatCatGo.Domain.Battle
 
                         foreach (var t in targets)
                         {
-                            float finalCoeff = effect.Coefficient * (1 + source.GetMasteryBonus(skill.Id));
+                            float masteryMult = 1 + source.GetMasteryBonus(skill.Id);
                             var calcResult = CalculateSkillDamage(
-                                source, t, effect.AttackType, finalCoeff, effect.IsTargetHpBased);
+                                source, t, effect.AttackType, effect.Coefficient, effect.IsTargetHpBased, masteryMult);
                             int damage = Math.Max(1, calcResult.Damage);
                             int dealt = t.TakeDamage(damage);
 
@@ -321,7 +321,8 @@ namespace CatCatGo.Domain.Battle
             ISkillExecutionUnit target,
             AttackType attackType,
             float coefficient,
-            bool isTargetHpBased = false)
+            bool isTargetHpBased = false,
+            float masteryMultiplier = 1.0f)
         {
             bool isCrit = attackType == AttackType.PHYSICAL && _rng.Chance(source.GetEffectiveCrit());
             float critMult = isCrit ? BattleDataTable.Data.Damage.CritMultiplier : 1.0f;
@@ -336,18 +337,18 @@ namespace CatCatGo.Domain.Battle
                         : source.GetEffectiveAtk() + source.GetHpBonusDamage();
                     int def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.DefenseConstant;
-                    damage = baseValue * coefficient * critMult * (k / (k + def));
+                    damage = baseValue * coefficient * masteryMultiplier * critMult * (k / (k + def));
                     break;
                 }
                 case AttackType.MAGIC:
                 {
                     int def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.MagicDefenseConstant;
-                    damage = source.GetEffectiveAtk() * source.MagicCoefficient * coefficient * (k / (k + def));
+                    damage = source.GetEffectiveAtk() * source.MagicCoefficient * coefficient * masteryMultiplier * (k / (k + def));
                     break;
                 }
                 case AttackType.FIXED:
-                    damage = source.GetEffectiveAtk() * coefficient;
+                    damage = source.GetEffectiveAtk() * coefficient * masteryMultiplier;
                     break;
                 default:
                     damage = 1;
