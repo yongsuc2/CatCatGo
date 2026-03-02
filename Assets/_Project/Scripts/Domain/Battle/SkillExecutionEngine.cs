@@ -26,7 +26,7 @@ namespace CatCatGo.Domain.Battle
         bool IsAlive();
         float GetHpPercent();
         HashSet<string> UsedOnceConditions { get; set; }
-        float GetSkillDamageMultiplier(string skillId);
+        float GetMasteryBonus(string skillId);
         int GetHpBonusDamage();
     }
 
@@ -163,10 +163,10 @@ namespace CatCatGo.Domain.Battle
 
                         foreach (var t in targets)
                         {
+                            float finalCoeff = effect.Coefficient + source.GetMasteryBonus(skill.Id);
                             var calcResult = CalculateSkillDamage(
-                                source, t, effect.AttackType, effect.Coefficient, effect.IsTargetHpBased);
-                            var skillMult = source.GetSkillDamageMultiplier(skill.Id);
-                            int damage = Math.Max(1, (int)(calcResult.Damage * skillMult));
+                                source, t, effect.AttackType, finalCoeff, effect.IsTargetHpBased);
+                            int damage = Math.Max(1, calcResult.Damage);
                             int dealt = t.TakeDamage(damage);
 
                             results.Add(new SkillDamageResult

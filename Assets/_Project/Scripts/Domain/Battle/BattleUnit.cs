@@ -231,10 +231,10 @@ namespace CatCatGo.Domain.Battle
             return Math.Min(1.0f, crit);
         }
 
-        public float GetSkillDamageMultiplier(string skillId)
+        public float GetMasteryBonus(string skillId)
         {
             SkillIdBonuses.TryGetValue(skillId, out var bonus);
-            return 1 + bonus;
+            return bonus;
         }
 
         public int TakeDamage(int amount)

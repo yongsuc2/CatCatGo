@@ -318,6 +318,23 @@ namespace CatCatGo.Domain.Battle
                 Value = dealt,
                 Message = $"{defender.Name} counters {attacker.Name} for {dealt}",
             });
+            if (defender.LifestealRate > 0 && dealt > 0)
+            {
+                int healAmount = (int)(dealt * defender.LifestealRate);
+                int healed = defender.Heal(healAmount);
+                if (healed > 0)
+                {
+                    Log.Add(new BattleLogEntry
+                    {
+                        Turn = TurnCount,
+                        Type = BattleLogType.LIFESTEAL,
+                        Source = defender.Name,
+                        Target = defender.Name,
+                        Value = healed,
+                        Message = $"{defender.Name} heals {healed} from lifesteal",
+                    });
+                }
+            }
         }
 
         private void ProcessStatusEffects(BattleUnit unit)
