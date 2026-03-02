@@ -16,12 +16,6 @@ namespace CatCatGo.Tests.Domain
         {
             var ch60 = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             Assert.AreEqual(60, ch60.TotalDays);
-
-            var ch30 = new Chapter(2, ChapterType.THIRTY_DAY, 42);
-            Assert.AreEqual(30, ch30.TotalDays);
-
-            var ch5 = new Chapter(3, ChapterType.FIVE_DAY, 42);
-            Assert.AreEqual(5, ch5.TotalDays);
         }
 
         [Test]
@@ -37,21 +31,14 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void ReachesBossDayAfterAllDays()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 60; i++)
             {
                 chapter.AdvanceDay();
-                if (chapter.CurrentEncounter != null)
+                if (chapter.CurrentEncounter != null && chapter.CurrentEncounter.Type != EncounterType.COMBAT)
                 {
-                    if (chapter.CurrentEncounter.Type == EncounterType.COMBAT)
-                    {
-                        chapter.ResolveEncounter(1, 100, 100);
-                    }
-                    else
-                    {
-                        chapter.ResolveEncounter(0, 100, 100);
-                    }
+                    chapter.ResolveEncounter(0, 100, 100);
                 }
             }
 
@@ -85,17 +72,17 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void TracksProgressCorrectly()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             Assert.AreEqual(0f, chapter.GetProgress());
 
             chapter.AdvanceDay();
-            Assert.AreEqual(0.2f, chapter.GetProgress(), 0.01f);
+            Assert.AreEqual(1f / 60f, chapter.GetProgress(), 0.001f);
         }
 
         [Test]
         public void SetsFailedStateOnBattleDefeat()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             chapter.AdvanceDay();
             chapter.OnBattleEnd(BattleState.DEFEAT);
             Assert.AreEqual(ChapterState.FAILED, chapter.State);
@@ -104,7 +91,7 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void SetsClearedStateOnBossDefeated()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             chapter.OnBossDefeated();
             Assert.AreEqual(ChapterState.CLEARED, chapter.State);
         }
@@ -116,7 +103,7 @@ namespace CatCatGo.Tests.Domain
 
             for (int seed = 0; seed < 100; seed++)
             {
-                var chapter = new Chapter(1, ChapterType.FIVE_DAY, seed);
+                var chapter = new Chapter(1, ChapterType.SIXTY_DAY, seed);
                 var encounter = chapter.AdvanceDay();
 
                 if (encounter != null && encounter.Type == EncounterType.COMBAT)
@@ -158,7 +145,7 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void RecalcSessionMaxHpAppliesHpPassivesFromBase()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             chapter.InitSessionHp(100);
             chapter.SessionSkills.Add(new SessionSkillWrapper(MakeHpPassive(0.1f)));
             chapter.RecalcSessionMaxHp();
@@ -169,7 +156,7 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void RecalcSessionMaxHpPreservesHpRatio()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             chapter.InitSessionHp(100);
             chapter.SessionCurrentHp = 50;
             chapter.SessionSkills.Add(new SessionSkillWrapper(MakeHpPassive(0.1f)));
@@ -182,7 +169,7 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void RecalcSessionMaxHpRecalculatesFromBaseOnTierUpgrade()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             chapter.InitSessionHp(100);
 
             chapter.SessionSkills.Add(new SessionSkillWrapper(MakeHpPassive(0.05f)));
@@ -197,7 +184,7 @@ namespace CatCatGo.Tests.Domain
         [Test]
         public void GetBattlePassiveSkillsExcludesHpStatModifiers()
         {
-            var chapter = new Chapter(1, ChapterType.FIVE_DAY, 42);
+            var chapter = new Chapter(1, ChapterType.SIXTY_DAY, 42);
             var hpPassive = MakeHpPassive(0.1f);
             var otherPassive = new PassiveSkill("lifesteal", "\ud761\ud608", "X", 1, new SkillTag[0], new HeritageRoute[0],
                 new PassiveEffect { Type = PassiveType.LIFESTEAL, Rate = 0.1f });

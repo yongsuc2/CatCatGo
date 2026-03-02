@@ -91,15 +91,13 @@ namespace CatCatGo.Domain.Enums
     public enum ChapterType
     {
         SIXTY_DAY,
-        THIRTY_DAY,
-        FIVE_DAY,
     }
 
     public enum DungeonType
     {
-        DRAGON_NEST,
-        CELESTIAL_TREE,
-        SKY_ISLAND,
+        GIANT_BEEHIVE,
+        ANCIENT_TREE,
+        TIGER_CLIFF,
     }
 
     public enum ArenaTier
@@ -258,9 +256,9 @@ namespace CatCatGo.Domain.Enums
 
     public enum RoutineAction
     {
-        DAILY_DUNGEON_DRAGON,
-        DAILY_DUNGEON_CELESTIAL,
-        DAILY_DUNGEON_SKY,
+        DAILY_DUNGEON_BEEHIVE,
+        DAILY_DUNGEON_ANCIENT,
+        DAILY_DUNGEON_TIGER,
         TOWER_CHALLENGE,
         CATACOMB_RUN,
         ARENA_FIGHT,

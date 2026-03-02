@@ -82,13 +82,7 @@ namespace CatCatGo.Domain.Chapter
 
         private int GetDaysForType(ChapterType type)
         {
-            switch (type)
-            {
-                case ChapterType.SIXTY_DAY: return 60;
-                case ChapterType.THIRTY_DAY: return 30;
-                case ChapterType.FIVE_DAY: return 5;
-                default: return 60;
-            }
+            return 60;
         }
 
         public Encounter AdvanceDay()
@@ -144,13 +138,6 @@ namespace CatCatGo.Domain.Chapter
         public EncounterResult ResolveEncounter(int choiceIndex, int playerCurrentHp, int playerMaxHp)
         {
             if (CurrentEncounter == null) return null;
-
-            var encType = CurrentEncounter.Type;
-
-            if (encType == EncounterType.COMBAT && choiceIndex == 0)
-            {
-                return null;
-            }
 
             float roll = _rng.Next();
             var result = CurrentEncounter.Resolve(

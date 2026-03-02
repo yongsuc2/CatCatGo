@@ -19,7 +19,7 @@ namespace CatCatGo.Tests.Content
         [Test]
         public void CreatesBattleWithStageScaling()
         {
-            var dungeon = new DailyDungeon(DungeonType.DRAGON_NEST);
+            var dungeon = new DailyDungeon(DungeonType.GIANT_BEEHIVE);
             var result = dungeon.CreateBattle(MakePlayerUnit());
             Assert.IsTrue(result.IsOk());
             Assert.IsNotNull(result.Data.Battle);
@@ -29,7 +29,7 @@ namespace CatCatGo.Tests.Content
         [Test]
         public void IncrementsClearedStageOnVictory()
         {
-            var dungeon = new DailyDungeon(DungeonType.DRAGON_NEST);
+            var dungeon = new DailyDungeon(DungeonType.GIANT_BEEHIVE);
             Assert.AreEqual(0, dungeon.ClearedStage);
 
             var reward = dungeon.OnBattleVictory();
@@ -40,7 +40,7 @@ namespace CatCatGo.Tests.Content
         [Test]
         public void ScalesRewardsPerStage()
         {
-            var dungeon = new DailyDungeon(DungeonType.DRAGON_NEST);
+            var dungeon = new DailyDungeon(DungeonType.GIANT_BEEHIVE);
             var stage1 = dungeon.GetRewardForStage(1);
             var stage5 = dungeon.GetRewardForStage(5);
 
@@ -53,7 +53,7 @@ namespace CatCatGo.Tests.Content
         [Test]
         public void ReturnsAccumulatedSweepReward()
         {
-            var dungeon = new DailyDungeon(DungeonType.CELESTIAL_TREE);
+            var dungeon = new DailyDungeon(DungeonType.ANCIENT_TREE);
             Assert.AreEqual(0, dungeon.GetSweepReward().Resources.Count);
 
             dungeon.OnBattleVictory();
@@ -82,7 +82,7 @@ namespace CatCatGo.Tests.Content
         [Test]
         public void ReturnsRewardPreviewForNextStage()
         {
-            var dungeon = new DailyDungeon(DungeonType.SKY_ISLAND);
+            var dungeon = new DailyDungeon(DungeonType.TIGER_CLIFF);
             var preview = dungeon.GetRewardPreview();
             Assert.Greater(preview.Count, 0);
 
@@ -138,7 +138,7 @@ namespace CatCatGo.Tests.Content
         public void PreservesClearedStageAcrossDailyReset()
         {
             var manager = new DailyDungeonManager();
-            var dungeon = manager.GetDungeon(DungeonType.DRAGON_NEST);
+            var dungeon = manager.GetDungeon(DungeonType.GIANT_BEEHIVE);
             dungeon.OnBattleVictory();
             dungeon.OnBattleVictory();
 

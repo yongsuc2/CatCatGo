@@ -727,40 +727,9 @@ namespace CatCatGo.Presentation.Screens
                 return;
             }
 
-            var ownedMap = new Dictionary<string, int>();
-            foreach (var s in chapter.SessionSkills)
-                ownedMap[s.Id] = s.Tier;
-
-            var allFamilies = new List<(string id, bool isActive)>();
-            foreach (var s in ActiveSkillRegistry.GetUpperTier1Skills())
-            {
-                if (!ActiveSkillRegistry.IsSpecialSkill(s.Id) && !ActiveSkillRegistry.IsBuiltinSkill(s.Id))
-                    allFamilies.Add((s.Id, true));
-            }
-            foreach (var s in PassiveSkillRegistry.GetTier1Skills())
-            {
-                if (!PassiveSkillRegistry.IsSpecialSkill(s.Id))
-                    allFamilies.Add((s.Id, false));
-            }
-
-            var shuffled = allFamilies.OrderBy(_ => UnityEngine.Random.value).ToList();
-            _eliteRewardChoices = new List<SessionSkillWrapper>();
-            foreach (var (familyId, isActive) in shuffled)
-            {
-                if (_eliteRewardChoices.Count >= 3) break;
-                int currentTier = ownedMap.ContainsKey(familyId) ? ownedMap[familyId] : 0;
-                int nextTier = currentTier + 1;
-                if (isActive)
-                {
-                    var skill = ActiveSkillRegistry.GetAll().FirstOrDefault(s => s.Id == familyId && s.Tier == nextTier);
-                    if (skill != null) _eliteRewardChoices.Add(new SessionSkillWrapper(skill));
-                }
-                else
-                {
-                    var skill = PassiveSkillRegistry.GetAll().FirstOrDefault(s => s.Id == familyId && s.Tier == nextTier);
-                    if (skill != null) _eliteRewardChoices.Add(new SessionSkillWrapper(skill));
-                }
-            }
+            var pool = EncounterGenerator.BuildSkillPool(chapter.SessionSkills);
+            var shuffled = pool.OrderBy(_ => UnityEngine.Random.value).ToList();
+            _eliteRewardChoices = shuffled.Take(3).ToList();
 
             SetState(ScreenState.EliteReward);
             BuildEliteRewardOptions();

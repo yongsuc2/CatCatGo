@@ -68,14 +68,6 @@ namespace CatCatGo.Domain.Data
         public string SkipDescription;
     }
 
-    public class CombatConfig
-    {
-        public string FightLabel;
-        public string FightDescription;
-        public string AvoidLabel;
-        public string AvoidDescription;
-    }
-
     public class SkillSwapConfig
     {
         public string SkipLabel;
@@ -108,13 +100,6 @@ namespace CatCatGo.Domain.Data
         public int GemsPerChapter;
     }
 
-    public class ChapterBossAssignment
-    {
-        public string Elite;
-        public string MidBoss;
-        public string Boss;
-    }
-
     public static class EncounterDataTable
     {
         private static Dictionary<EncounterType, EncounterTypeInfo> _typeInfo;
@@ -123,14 +108,12 @@ namespace CatCatGo.Domain.Data
         private static ChanceConfig _chance;
         private static JungbakRouletteConfig _jungbakRoulette;
         private static DaebakRouletteConfig _daebakRoulette;
-        private static CombatConfig _combat;
         private static int _rerollsPerSession;
         private static SkillSwapConfig _skillSwap;
         private static CounterThresholdConfig _counterThreshold;
         private static ForcedBattleDaysConfig _forcedBattleDays;
         private static List<OptionalEliteDay> _optionalEliteDays;
         private static ChapterClearRewardConfig _chapterClearReward;
-        private static List<ChapterBossAssignment> _chapterBossAssignment;
 
         private static void EnsureLoaded()
         {
@@ -216,15 +199,6 @@ namespace CatCatGo.Domain.Data
                 SkipDescription = dr["skipDescription"].ToString(),
             };
 
-            var cb = data["combat"];
-            _combat = new CombatConfig
-            {
-                FightLabel = cb["fightLabel"].ToString(),
-                FightDescription = cb["fightDescription"].ToString(),
-                AvoidLabel = cb["avoidLabel"].ToString(),
-                AvoidDescription = cb["avoidDescription"].ToString(),
-            };
-
             _rerollsPerSession = data["rerollsPerSession"].Value<int>();
 
             var sw = data["skillSwap"];
@@ -267,16 +241,6 @@ namespace CatCatGo.Domain.Data
                 GemsPerChapter = ccr["gemsPerChapter"].Value<int>(),
             };
 
-            _chapterBossAssignment = new List<ChapterBossAssignment>();
-            foreach (var a in data["chapterBossAssignment"])
-            {
-                _chapterBossAssignment.Add(new ChapterBossAssignment
-                {
-                    Elite = a["elite"].ToString(),
-                    MidBoss = a["midBoss"].ToString(),
-                    Boss = a["boss"].ToString(),
-                });
-            }
         }
 
         public static EncounterTypeInfo GetTypeInfo(EncounterType type)
@@ -307,7 +271,6 @@ namespace CatCatGo.Domain.Data
         public static ChanceConfig Chance { get { EnsureLoaded(); return _chance; } }
         public static JungbakRouletteConfig JungbakRoulette { get { EnsureLoaded(); return _jungbakRoulette; } }
         public static DaebakRouletteConfig DaebakRoulette { get { EnsureLoaded(); return _daebakRoulette; } }
-        public static CombatConfig Combat { get { EnsureLoaded(); return _combat; } }
         public static int RerollsPerSession { get { EnsureLoaded(); return _rerollsPerSession; } }
         public static SkillSwapConfig SkillSwap { get { EnsureLoaded(); return _skillSwap; } }
         public static CounterThresholdConfig CounterThreshold { get { EnsureLoaded(); return _counterThreshold; } }
@@ -327,10 +290,5 @@ namespace CatCatGo.Domain.Data
             return _chapterClearReward.GemsBase + _chapterClearReward.GemsPerChapter * chapterId;
         }
 
-        public static ChapterBossAssignment GetChapterBossAssignment(int chapterId)
-        {
-            EnsureLoaded();
-            return _chapterBossAssignment[(chapterId - 1) % _chapterBossAssignment.Count];
-        }
     }
 }

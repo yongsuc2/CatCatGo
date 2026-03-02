@@ -11,15 +11,6 @@
       { "type": "COMBAT", "weight": 40 },
       { "type": "DEMON", "weight": 7 },
       { "type": "CHANCE", "weight": 53 }
-    ],
-    "THIRTY_DAY": [
-      { "type": "COMBAT", "weight": 40 },
-      { "type": "DEMON", "weight": 7 },
-      { "type": "CHANCE", "weight": 53 }
-    ],
-    "FIVE_DAY": [
-      { "type": "COMBAT", "weight": 70 },
-      { "type": "CHANCE", "weight": 30 }
     ]
   },
   "demon": {
@@ -63,12 +54,6 @@
     "skipLabel": "건너뛰기",
     "skipDescription": "그냥 지나가기"
   },
-  "combat": {
-    "fightLabel": "전투",
-    "fightDescription": "전투에 돌입",
-    "avoidLabel": "회피",
-    "avoidDescription": "이번 전투 건너뛰기"
-  },
   "rerollsPerSession": 2,
   "skillSwap": {
     "skipLabel": "건너뛰기",
@@ -85,11 +70,6 @@
   "optionalEliteDays": [
     { "day": 40, "chance": 0.3 },
     { "day": 50, "chance": 0.3 }
-  ],
-  "chapterBossAssignment": [
-    { "elite": "elite_mantis", "midBoss": "boss_snake", "boss": "boss_bear" },
-    { "elite": "elite_eagle", "midBoss": "boss_elephant", "boss": "boss_snake" },
-    { "elite": "elite_mantis", "midBoss": "boss_bear", "boss": "boss_elephant" }
   ],
   "chapterClearReward": {
     "goldBase": 200,
