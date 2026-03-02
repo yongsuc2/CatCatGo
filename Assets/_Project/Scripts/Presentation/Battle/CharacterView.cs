@@ -450,16 +450,16 @@ namespace CatCatGo.Presentation.Battle
             nameGo.SetActive(false);
 
             float barY = -charSize / 2f - 4f;
-            float hpBarHeight = 12f;
-            float rageBarHeight = 5f;
+            float barHeight = 12f;
+            float barWidth = charSize + 20f;
             float statusHeight = 54f;
             float gap = 4f;
 
             float hpBarY = barY;
-            float rageBarY = hpBarY - hpBarHeight / 2f - gap - rageBarHeight / 2f;
-            float statusY = rageBarY - rageBarHeight / 2f - gap - statusHeight / 2f;
+            float rageBarY = hpBarY - barHeight / 2f - gap - barHeight / 2f;
+            float statusY = rageBarY - barHeight / 2f - gap - statusHeight / 2f;
 
-            _hpBar = CreateBar("HpBar", hpBarY, new Vector2(charSize + 20f, hpBarHeight), ColorPalette.Hp);
+            _hpBar = CreateBar("HpBar", hpBarY, new Vector2(barWidth, barHeight), ColorPalette.Hp);
             _hpFill = _hpBar.fillRect.GetComponent<Image>();
 
             var hpTextGo = new GameObject("HpText");
@@ -483,7 +483,7 @@ namespace CatCatGo.Presentation.Battle
             _shieldOverlay = CreateOverlay("Shield", _hpBar.transform, new Color(0.3f, 0.6f, 1f, 0.5f));
             _shieldOverlay.gameObject.SetActive(false);
 
-            _rageBar = CreateBar("RageBar", rageBarY, new Vector2(charSize + 10f, rageBarHeight), ColorPalette.Rage);
+            _rageBar = CreateBar("RageBar", rageBarY, new Vector2(barWidth, barHeight), ColorPalette.Rage);
             _rageFill = _rageBar.fillRect.GetComponent<Image>();
             _rageBar.gameObject.SetActive(false);
 
