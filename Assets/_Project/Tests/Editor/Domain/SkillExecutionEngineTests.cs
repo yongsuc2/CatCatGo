@@ -20,6 +20,7 @@ namespace CatCatGo.Tests.Domain
             public int MaxHp { get; set; }
             public int Rage { get; set; }
             public int MaxRage { get; set; }
+            public int RagePerAttack { get; set; }
             public float MagicCoefficient { get; set; }
             public HashSet<string> UsedOnceConditions { get; set; }
 

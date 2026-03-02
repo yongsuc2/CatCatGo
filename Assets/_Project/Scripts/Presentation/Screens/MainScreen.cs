@@ -464,7 +464,7 @@ namespace CatCatGo.Presentation.Screens
             _contentText.color = ColorPalette.Text;
             _contentText.alignment = TextAlignmentOptions.Left;
             _contentText.raycastTarget = false;
-            _contentText.enableWordWrapping = true;
+            _contentText.textWrappingMode = TextWrappingModes.Normal;
         }
 
         private void RefreshContent()

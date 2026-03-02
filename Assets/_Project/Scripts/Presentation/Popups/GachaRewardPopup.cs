@@ -182,7 +182,7 @@ namespace CatCatGo.Presentation.Popups
                     nameTmp.color = gradeColor;
                     nameTmp.fontStyle = FontStyles.Bold;
                     nameTmp.alignment = TextAlignmentOptions.Center;
-                    nameTmp.enableWordWrapping = false;
+                    nameTmp.textWrappingMode = TextWrappingModes.NoWrap;
                     nameTmp.overflowMode = TextOverflowModes.Truncate;
                     nameTmp.raycastTarget = false;
 

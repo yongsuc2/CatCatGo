@@ -208,7 +208,7 @@ namespace CatCatGo.Presentation.Screens
                 rewardText.color = ColorPalette.TextDim;
                 rewardText.alignment = TextAlignmentOptions.Center;
                 rewardText.raycastTarget = false;
-                rewardText.enableWordWrapping = true;
+                rewardText.textWrappingMode = TextWrappingModes.Normal;
 
                 var checkGo = new GameObject("Check");
                 checkGo.transform.SetParent(cellGo.transform, false);

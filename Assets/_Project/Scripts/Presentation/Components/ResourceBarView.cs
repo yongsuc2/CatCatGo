@@ -69,7 +69,7 @@ namespace CatCatGo.Presentation.Components
             valueText.fontSize = 30;
             valueText.color = color;
             valueText.alignment = TextAlignmentOptions.Left;
-            valueText.enableWordWrapping = false;
+            valueText.textWrappingMode = TextWrappingModes.NoWrap;
             valueText.overflowMode = TextOverflowModes.Ellipsis;
             valueText.raycastTarget = false;
             var valueLe = valueGo.AddComponent<LayoutElement>();

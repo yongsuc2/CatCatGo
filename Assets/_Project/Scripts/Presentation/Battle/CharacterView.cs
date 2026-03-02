@@ -447,7 +447,7 @@ namespace CatCatGo.Presentation.Battle
             _nameLabel.fontSize = 22f;
             _nameLabel.color = ColorPalette.Text;
             _nameLabel.alignment = TextAlignmentOptions.Center;
-            _nameLabel.enableWordWrapping = false;
+            _nameLabel.textWrappingMode = TextWrappingModes.NoWrap;
             _nameLabel.overflowMode = TextOverflowModes.Ellipsis;
             _nameLabel.raycastTarget = false;
             nameGo.SetActive(false);
@@ -470,7 +470,7 @@ namespace CatCatGo.Presentation.Battle
             _hpText.fontSize = 27f;
             _hpText.color = Color.white;
             _hpText.alignment = TextAlignmentOptions.Center;
-            _hpText.enableWordWrapping = false;
+            _hpText.textWrappingMode = TextWrappingModes.NoWrap;
             _hpText.overflowMode = TextOverflowModes.Overflow;
             _hpText.raycastTarget = false;
 

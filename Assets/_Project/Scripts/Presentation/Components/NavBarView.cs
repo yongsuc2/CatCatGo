@@ -125,7 +125,7 @@ namespace CatCatGo.Presentation.Components
             text.fontSize = 30;
             text.color = ColorPalette.NavBarInactive;
             text.alignment = TextAlignmentOptions.Center;
-            text.enableWordWrapping = false;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
             text.raycastTarget = false;
             var textRt = textGo.GetComponent<RectTransform>();
             textRt.anchorMin = Vector2.zero;

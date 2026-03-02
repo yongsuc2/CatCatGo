@@ -855,7 +855,7 @@ namespace CatCatGo.Presentation.Screens
                 descTmp.fontSize = 20f;
                 descTmp.color = node.Reached ? ColorPalette.Text : ColorPalette.TextDim;
                 descTmp.alignment = TextAlignmentOptions.Center;
-                descTmp.enableWordWrapping = false;
+                descTmp.textWrappingMode = TextWrappingModes.NoWrap;
                 descTmp.overflowMode = TextOverflowModes.Ellipsis;
                 descTmp.raycastTarget = false;
 

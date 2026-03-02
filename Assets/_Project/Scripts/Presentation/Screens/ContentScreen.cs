@@ -138,7 +138,7 @@ namespace CatCatGo.Presentation.Screens
             _resultText.color = ColorPalette.Gold;
             _resultText.alignment = TextAlignmentOptions.Center;
             _resultText.raycastTarget = false;
-            _resultText.enableWordWrapping = true;
+            _resultText.textWrappingMode = TextWrappingModes.Normal;
         }
 
         private Transform CreateScrollableContent(RectTransform parent)
@@ -214,7 +214,7 @@ namespace CatCatGo.Presentation.Screens
             iconText.fontSize = 38;
             iconText.color = ColorPalette.Gold;
             iconText.alignment = TextAlignmentOptions.Center;
-            iconText.enableWordWrapping = false;
+            iconText.textWrappingMode = TextWrappingModes.NoWrap;
             iconText.overflowMode = TextOverflowModes.Ellipsis;
             iconText.raycastTarget = false;
 

@@ -18,6 +18,7 @@ using BattleInstance = CatCatGo.Domain.Battle.Battle;
 using ChapterInstance = CatCatGo.Domain.Chapter.Chapter;
 using ChapterEncounter = CatCatGo.Domain.Chapter.Encounter;
 using SessionSkillWrapper = CatCatGo.Domain.Chapter.SessionSkillWrapper;
+using CatCatGo.Domain.Chapter;
 
 namespace CatCatGo.Presentation.Screens
 {
@@ -451,7 +452,7 @@ namespace CatCatGo.Presentation.Screens
                 labelTmp.color = ColorPalette.Text;
                 labelTmp.fontStyle = FontStyles.Bold;
                 labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
-                labelTmp.enableWordWrapping = false;
+                labelTmp.textWrappingMode = TextWrappingModes.NoWrap;
                 labelTmp.raycastTarget = false;
 
                 var descGo = new GameObject("Desc");
@@ -464,7 +465,7 @@ namespace CatCatGo.Presentation.Screens
                 descTmp.fontSize = 26f;
                 descTmp.color = ColorPalette.TextDim;
                 descTmp.alignment = TextAlignmentOptions.TopLeft;
-                descTmp.enableWordWrapping = true;
+                descTmp.textWrappingMode = TextWrappingModes.Normal;
                 descTmp.raycastTarget = false;
             }
 
@@ -799,7 +800,7 @@ namespace CatCatGo.Presentation.Screens
                 nameTmp.color = ColorPalette.Text;
                 nameTmp.fontStyle = FontStyles.Bold;
                 nameTmp.alignment = TextAlignmentOptions.MidlineLeft;
-                nameTmp.enableWordWrapping = false;
+                nameTmp.textWrappingMode = TextWrappingModes.NoWrap;
                 nameTmp.raycastTarget = false;
 
                 var descGo = new GameObject("Desc");
@@ -812,7 +813,7 @@ namespace CatCatGo.Presentation.Screens
                 descTmp.fontSize = 22f;
                 descTmp.color = ColorPalette.TextDim;
                 descTmp.alignment = TextAlignmentOptions.TopLeft;
-                descTmp.enableWordWrapping = true;
+                descTmp.textWrappingMode = TextWrappingModes.Normal;
                 descTmp.raycastTarget = false;
 
                 var btn = cardGo.AddComponent<Button>();
@@ -1044,7 +1045,7 @@ namespace CatCatGo.Presentation.Screens
                     descTmp.fontSize = 22f;
                     descTmp.color = ColorPalette.TextDim;
                     descTmp.alignment = TextAlignmentOptions.Left;
-                    descTmp.enableWordWrapping = true;
+                    descTmp.textWrappingMode = TextWrappingModes.Normal;
                     descTmp.raycastTarget = false;
                 }
 
@@ -1623,7 +1624,7 @@ namespace CatCatGo.Presentation.Screens
             _encounterDesc.fontSize = 22f;
             _encounterDesc.color = ColorPalette.TextDim;
             _encounterDesc.alignment = TextAlignmentOptions.Center;
-            _encounterDesc.enableWordWrapping = true;
+            _encounterDesc.textWrappingMode = TextWrappingModes.Normal;
             _encounterDesc.raycastTarget = false;
 
             var optionsGo = new GameObject("Options");
@@ -1765,7 +1766,7 @@ namespace CatCatGo.Presentation.Screens
             _skillTooltipText.fontSize = 28f;
             _skillTooltipText.color = Color.white;
             _skillTooltipText.alignment = TextAlignmentOptions.TopLeft;
-            _skillTooltipText.enableWordWrapping = true;
+            _skillTooltipText.textWrappingMode = TextWrappingModes.Normal;
             _skillTooltipText.raycastTarget = false;
 
             var dismissBtn = tooltipGo.AddComponent<Button>();
@@ -1852,7 +1853,7 @@ namespace CatCatGo.Presentation.Screens
             _resultInfo.fontSize = 28f;
             _resultInfo.color = ColorPalette.Text;
             _resultInfo.alignment = TextAlignmentOptions.Center;
-            _resultInfo.enableWordWrapping = true;
+            _resultInfo.textWrappingMode = TextWrappingModes.Normal;
             _resultInfo.raycastTarget = false;
 
             var rewardsGo = new GameObject("ResultRewards");

@@ -47,7 +47,7 @@ namespace CatCatGo.Presentation.Battle
             textGo.transform.SetParent(transform, false);
             _text = textGo.AddComponent<TextMeshProUGUI>();
             _text.alignment = TextAlignmentOptions.MidlineLeft;
-            _text.enableWordWrapping = false;
+            _text.textWrappingMode = TextWrappingModes.NoWrap;
             _text.overflowMode = TextOverflowModes.Overflow;
             _text.raycastTarget = false;
             var textLe = textGo.AddComponent<LayoutElement>();

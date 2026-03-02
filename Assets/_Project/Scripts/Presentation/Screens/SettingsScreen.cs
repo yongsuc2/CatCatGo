@@ -124,7 +124,7 @@ namespace CatCatGo.Presentation.Screens
             _exportText.color = ColorPalette.Text;
             _exportText.alignment = TextAlignmentOptions.TopLeft;
             _exportText.raycastTarget = true;
-            _exportText.enableWordWrapping = true;
+            _exportText.textWrappingMode = TextWrappingModes.Normal;
             _exportText.overflowMode = TextOverflowModes.Ellipsis;
             _exportPanel.gameObject.SetActive(false);
 
@@ -162,7 +162,7 @@ namespace CatCatGo.Presentation.Screens
             inputText.fontSize = 16;
             inputText.color = ColorPalette.Text;
             inputText.alignment = TextAlignmentOptions.TopLeft;
-            inputText.enableWordWrapping = true;
+            inputText.textWrappingMode = TextWrappingModes.Normal;
             var inputTextRt = inputTextGo.GetComponent<RectTransform>();
             UIManager.StretchFull(inputTextRt);
 

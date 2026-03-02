@@ -4,6 +4,7 @@ using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Battle;
+using CatCatGo.Domain.Data;
 
 namespace CatCatGo.Services
 {

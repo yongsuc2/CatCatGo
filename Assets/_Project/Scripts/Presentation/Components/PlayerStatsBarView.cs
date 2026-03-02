@@ -97,7 +97,7 @@ namespace CatCatGo.Presentation.Components
             _hpText.fontSize = 33f;
             _hpText.color = Color.white;
             _hpText.alignment = TextAlignmentOptions.Center;
-            _hpText.enableWordWrapping = false;
+            _hpText.textWrappingMode = TextWrappingModes.NoWrap;
             _hpText.raycastTarget = false;
 
             _atkText = CreateStatLabel("ATK", transform, new Color(1f, 0.5f, 0.5f));
@@ -115,7 +115,7 @@ namespace CatCatGo.Presentation.Components
             tmp.fontSize = 22f;
             tmp.color = color;
             tmp.alignment = TextAlignmentOptions.MidlineLeft;
-            tmp.enableWordWrapping = false;
+            tmp.textWrappingMode = TextWrappingModes.NoWrap;
             tmp.raycastTarget = false;
             return tmp;
         }

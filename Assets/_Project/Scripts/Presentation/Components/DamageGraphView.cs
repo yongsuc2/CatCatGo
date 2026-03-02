@@ -63,7 +63,7 @@ namespace CatCatGo.Presentation.Components
                 _titleText.fontSize = 22f;
                 _titleText.color = ColorPalette.Text;
                 _titleText.alignment = TextAlignmentOptions.MidlineLeft;
-                _titleText.enableWordWrapping = false;
+                _titleText.textWrappingMode = TextWrappingModes.NoWrap;
                 _titleText.raycastTarget = false;
 
                 var totalGo = new GameObject("Total");
@@ -76,7 +76,7 @@ namespace CatCatGo.Presentation.Components
                 _totalText.fontSize = 20f;
                 _totalText.color = ColorPalette.TextDim;
                 _totalText.alignment = TextAlignmentOptions.MidlineRight;
-                _totalText.enableWordWrapping = false;
+                _totalText.textWrappingMode = TextWrappingModes.NoWrap;
                 _totalText.raycastTarget = false;
             }
 
@@ -151,7 +151,7 @@ namespace CatCatGo.Presentation.Components
             labelTmp.fontStyle = FontStyles.Bold;
             labelTmp.color = ColorPalette.Text;
             labelTmp.alignment = TextAlignmentOptions.MidlineLeft;
-            labelTmp.enableWordWrapping = false;
+            labelTmp.textWrappingMode = TextWrappingModes.NoWrap;
             labelTmp.overflowMode = TextOverflowModes.Ellipsis;
             labelTmp.raycastTarget = false;
 
@@ -199,7 +199,7 @@ namespace CatCatGo.Presentation.Components
             valueTmp.fontSize = 22f;
             valueTmp.color = ColorPalette.Text;
             valueTmp.alignment = TextAlignmentOptions.MidlineRight;
-            valueTmp.enableWordWrapping = false;
+            valueTmp.textWrappingMode = TextWrappingModes.NoWrap;
             valueTmp.richText = true;
             valueTmp.raycastTarget = false;
 

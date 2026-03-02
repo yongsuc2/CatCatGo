@@ -61,7 +61,7 @@ namespace CatCatGo.Presentation.Battle
             _label.fontSize = 28f;
             _label.color = Color.white;
             _label.alignment = TextAlignmentOptions.Center;
-            _label.enableWordWrapping = false;
+            _label.textWrappingMode = TextWrappingModes.NoWrap;
             _label.overflowMode = TextOverflowModes.Overflow;
         }
 
