@@ -186,8 +186,7 @@ namespace CatCatGo.Domain.Battle
             foreach (var skill in unit.ActiveSkills)
             {
                 if (!allTargets.Any(e => e.IsAlive())) break;
-                if (skill.Hierarchy == SkillHierarchy.BUILTIN) continue;
-                if (skill.Hierarchy == SkillHierarchy.LOWEST) continue;
+                if (skill.Hierarchy != SkillHierarchy.UPPER) continue;
                 if (_engine.EvaluateTrigger(skill.Trigger, TurnCount, unit, triggerSkillId))
                 {
                     var results = _engine.ExecuteSkillEffects(skill, unit, target, allSkills, 0, allTargets);
