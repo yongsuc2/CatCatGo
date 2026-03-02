@@ -166,8 +166,6 @@ namespace CatCatGo.Tests.Meta
             "daily_chapter",
             "daily_dungeon",
             "daily_tower",
-            "daily_arena",
-            "daily_travel",
         };
 
         private static readonly string[] WeeklyMissionIds =
