@@ -585,6 +585,18 @@ namespace CatCatGo.Presentation.Screens
             }
         }
 
+        private bool ProcessSingleClaim(int level, string rewardType, int rewardAmount)
+        {
+            string key = Game.Player.Talent.GetMilestoneKey(level);
+            if (Game.Player.ClaimedMilestones.Contains(key)) return false;
+            Game.Player.ClaimedMilestones.Add(key);
+            if (rewardType != "GOLD_BOOST")
+            {
+                Game.Player.Resources.Add(ResourceType.GOLD, rewardAmount);
+            }
+            return true;
+        }
+
         private void OnClaimAll()
         {
             if (Game == null || Game.Player == null) return;
@@ -593,16 +605,7 @@ namespace CatCatGo.Presentation.Screens
             if (claimable.Count == 0) return;
 
             foreach (var milestone in claimable)
-            {
-                string key = $"LV_{milestone.Level}";
-                if (Game.Player.ClaimedMilestones.Contains(key)) continue;
-                Game.Player.ClaimedMilestones.Add(key);
-
-                if (milestone.RewardType != "GOLD_BOOST")
-                {
-                    Game.Player.Resources.Add(ResourceType.GOLD, milestone.RewardAmount);
-                }
-            }
+                ProcessSingleClaim(milestone.Level, milestone.RewardType, milestone.RewardAmount);
 
             Game.SaveGame();
             UI.Refresh();
@@ -611,15 +614,7 @@ namespace CatCatGo.Presentation.Screens
         private void ClaimMilestone(int level, string rewardType, int rewardAmount)
         {
             if (Game == null || Game.Player == null) return;
-
-            string key = $"LV_{level}";
-            if (Game.Player.ClaimedMilestones.Contains(key)) return;
-            Game.Player.ClaimedMilestones.Add(key);
-
-            if (rewardType != "GOLD_BOOST")
-            {
-                Game.Player.Resources.Add(ResourceType.GOLD, rewardAmount);
-            }
+            if (!ProcessSingleClaim(level, rewardType, rewardAmount)) return;
 
             Game.SaveGame();
             ShowRewardPopup(rewardType, rewardAmount);
@@ -748,7 +743,7 @@ namespace CatCatGo.Presentation.Screens
             foreach (var milestone in allMilestones)
             {
                 if (milestone.Level < windowStart || milestone.Level > windowEnd) continue;
-                string key = $"LV_{milestone.Level}";
+                string key = Game.Player.Talent.GetMilestoneKey(milestone.Level);
                 bool claimed = Game.Player.ClaimedMilestones.Contains(key);
                 bool reached = totalLevel >= milestone.Level;
                 string iconId = milestone.RewardType == "GOLD_BOOST" ? "icon_gold_boost" : "icon_gold";

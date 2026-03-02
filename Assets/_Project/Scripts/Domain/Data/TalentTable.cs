@@ -384,18 +384,6 @@ namespace CatCatGo.Domain.Data
             return result;
         }
 
-        public static TalentGrade[] GetGradeOrder()
-        {
-            EnsureLoaded();
-            return _gradeOrder;
-        }
-
-        public static int GetGradeIndex(TalentGrade grade)
-        {
-            EnsureLoaded();
-            return Array.IndexOf(_gradeOrder, grade);
-        }
-
         public static int? GetNextGradeThreshold(TalentGrade currentGrade)
         {
             EnsureLoaded();
@@ -404,14 +392,6 @@ namespace CatCatGo.Domain.Data
             var nextGrade = _gradeOrder[idx + 1];
             var threshold = _gradeThresholds.FirstOrDefault(t => t.Grade == nextGrade);
             if (threshold.Grade != nextGrade) return null;
-            return threshold.TotalLevel;
-        }
-
-        public static int GetGradeStartLevel(TalentGrade grade)
-        {
-            EnsureLoaded();
-            var threshold = _gradeThresholds.FirstOrDefault(t => t.Grade == grade);
-            if (threshold.Grade != grade) return 0;
             return threshold.TotalLevel;
         }
 
@@ -446,18 +426,6 @@ namespace CatCatGo.Domain.Data
             return _allTransitions;
         }
 
-        public static List<TransitionInfo> GetMainTransitions()
-        {
-            EnsureLoaded();
-            return _mainTransitions;
-        }
-
-        public static List<TalentMilestone> GetMilestonesInRange(int fromLevel, int toLevel)
-        {
-            EnsureLoaded();
-            return _milestones.Where(m => m.Level > fromLevel && m.Level < toLevel).ToList();
-        }
-
         public static List<TalentMilestone> GetAllMilestones()
         {
             EnsureLoaded();
@@ -468,12 +436,6 @@ namespace CatCatGo.Domain.Data
         {
             EnsureLoaded();
             return _levelsPerStat;
-        }
-
-        public static int GetLevelsPerTier()
-        {
-            EnsureLoaded();
-            return _levelsPerTier;
         }
 
         public static string GetGradeLabel(TalentGrade grade)

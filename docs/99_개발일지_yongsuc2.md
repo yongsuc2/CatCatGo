@@ -533,3 +533,9 @@
     - 마일스톤 보상 생성 규칙 상세화 (간격, 제외 조건, 보상 공식)
     - 재능 화면 UI 구성 4개 섹션 기술
   - TalentScreen.cs VIEW_RANGE 8→15로 원본 동기화
+- **재능/보상 죽은 코드 삭제 + 중복 코드 중앙화** (Y-74)
+  - 죽은 코드 삭제:
+    - `Talent.IsMilestoneReached()` — 어디서도 호출되지 않음 (TS도 동일)
+    - `TalentTable` 미사용 public 메서드 6개: GetGradeOrder, GetGradeIndex, GetGradeStartLevel, GetMainTransitions, GetMilestonesInRange, GetLevelsPerTier
+  - 마일스톤 키 `$"LV_{level}"` 하드코딩 6곳 → `GetMilestoneKey()` 호출로 중앙화 (Talent.cs, Player.cs, TalentScreen.cs)
+  - TalentScreen 보상 수령 중복 로직(OnClaimAll/ClaimMilestone) → `ProcessSingleClaim()` 추출
