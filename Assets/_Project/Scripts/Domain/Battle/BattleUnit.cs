@@ -184,40 +184,40 @@ namespace CatCatGo.Domain.Battle
             return bonus;
         }
 
-        public int GetHpBonusDamage()
+        public float GetHpBonusDamage()
         {
             if (HpDamageCoefficient <= 0) return 0;
-            return (int)(MaxHp * HpDamageCoefficient);
+            return MaxHp * HpDamageCoefficient;
         }
 
-        public int GetEffectiveAtk()
+        public float GetEffectiveAtk()
         {
-            int atk = BaseAtk;
+            float atk = BaseAtk;
             var lowHpBonus = GetLowHpBonus(StatType.ATK);
-            if (lowHpBonus > 0) atk = (int)(atk * (1 + lowHpBonus));
+            if (lowHpBonus > 0) atk *= (1 + lowHpBonus);
             foreach (var effect in StatusEffects)
             {
                 if (effect.Type == StatusEffectType.ATK_UP)
-                    atk = (int)(atk * (1 + effect.Value));
+                    atk *= (1 + effect.Value);
                 if (effect.Type == StatusEffectType.ATK_DOWN)
-                    atk = (int)(atk * (1 - effect.Value));
+                    atk *= (1 - effect.Value);
             }
-            return Math.Max(1, atk);
+            return Math.Max(1f, atk);
         }
 
-        public int GetEffectiveDef()
+        public float GetEffectiveDef()
         {
-            int def = BaseDef;
+            float def = BaseDef;
             var lowHpBonus = GetLowHpBonus(StatType.DEF);
-            if (lowHpBonus > 0) def = (int)(def * (1 + lowHpBonus));
+            if (lowHpBonus > 0) def *= (1 + lowHpBonus);
             foreach (var effect in StatusEffects)
             {
                 if (effect.Type == StatusEffectType.DEF_UP)
-                    def = (int)(def * (1 + effect.Value));
+                    def *= (1 + effect.Value);
                 if (effect.Type == StatusEffectType.DEF_DOWN)
-                    def = (int)(def * (1 - effect.Value));
+                    def *= (1 - effect.Value);
             }
-            return Math.Max(0, def);
+            return Math.Max(0f, def);
         }
 
         public float GetEffectiveCrit()

@@ -305,9 +305,10 @@ namespace CatCatGo.Domain.Battle
 
         private void ProcessCounter(BattleUnit defender, BattleUnit attacker)
         {
-            int baseDamage = CalculateBaseDamage(defender, attacker);
+            float baseDamage = CalculateBaseDamage(defender, attacker);
             bool isCrit = _rng.Chance(defender.GetEffectiveCrit());
-            int finalDamage = isCrit ? (int)(baseDamage * BattleDataTable.Data.Damage.CritMultiplier) : baseDamage;
+            float finalDamageF = isCrit ? baseDamage * BattleDataTable.Data.Damage.CritMultiplier : baseDamage;
+            int finalDamage = Math.Max(1, (int)finalDamageF);
             int dealt = attacker.TakeDamage(finalDamage);
             Log.Add(new BattleLogEntry
             {
@@ -383,14 +384,14 @@ namespace CatCatGo.Domain.Battle
             }
         }
 
-        private int CalculateBaseDamage(BattleUnit attacker, BattleUnit defender)
+        private float CalculateBaseDamage(BattleUnit attacker, BattleUnit defender)
         {
-            int atk = attacker.GetEffectiveAtk() + attacker.GetHpBonusDamage();
-            int def = defender.GetEffectiveDef();
+            float atk = attacker.GetEffectiveAtk() + attacker.GetHpBonusDamage();
+            float def = defender.GetEffectiveDef();
             float k = BattleDataTable.Data.Damage.DefenseConstant;
-            int raw = Math.Max(1, (int)(atk * (k / (k + def))));
+            float raw = atk * (k / (k + def));
             float variance = _rng.NextFloat(BattleDataTable.Data.Damage.VarianceMin, BattleDataTable.Data.Damage.VarianceMax);
-            return Math.Max(1, (int)(raw * variance));
+            return raw * variance;
         }
 
         private bool CheckDeath()

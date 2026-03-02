@@ -13,8 +13,8 @@ namespace CatCatGo.Domain.Battle
         string Name { get; }
         int CurrentHp { get; }
         int MaxHp { get; }
-        int GetEffectiveAtk();
-        int GetEffectiveDef();
+        float GetEffectiveAtk();
+        float GetEffectiveDef();
         float GetEffectiveCrit();
         int Rage { get; set; }
         int MaxRage { get; set; }
@@ -27,7 +27,7 @@ namespace CatCatGo.Domain.Battle
         float GetHpPercent();
         HashSet<string> UsedOnceConditions { get; set; }
         float GetMasteryBonus(string skillId);
-        int GetHpBonusDamage();
+        float GetHpBonusDamage();
     }
 
     public class SkillDamageResult
@@ -335,14 +335,14 @@ namespace CatCatGo.Domain.Battle
                     float baseValue = isTargetHpBased
                         ? target.MaxHp
                         : source.GetEffectiveAtk() + source.GetHpBonusDamage();
-                    int def = target.GetEffectiveDef();
+                    float def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.DefenseConstant;
                     damage = baseValue * coefficient * masteryMultiplier * critMult * (k / (k + def));
                     break;
                 }
                 case AttackType.MAGIC:
                 {
-                    int def = target.GetEffectiveDef();
+                    float def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.MagicDefenseConstant;
                     damage = source.GetEffectiveAtk() * source.MagicCoefficient * coefficient * masteryMultiplier * (k / (k + def));
                     break;

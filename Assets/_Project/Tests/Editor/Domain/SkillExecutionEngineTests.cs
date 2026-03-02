@@ -24,18 +24,18 @@ namespace CatCatGo.Tests.Domain
             public float MagicCoefficient { get; set; }
             public HashSet<string> UsedOnceConditions { get; set; }
 
-            private Func<int> _getEffectiveAtk;
-            private Func<int> _getEffectiveDef;
+            private Func<float> _getEffectiveAtk;
+            private Func<float> _getEffectiveDef;
             private Func<float> _getEffectiveCrit;
             private Func<string, float> _getMasteryBonus;
-            private Func<int> _getHpBonusDamage;
+            private Func<float> _getHpBonusDamage;
 
             public MockUnit(
                 string name = "TestUnit",
                 int currentHp = 100,
                 int maxHp = 100,
-                Func<int> getEffectiveAtk = null,
-                Func<int> getEffectiveDef = null,
+                Func<float> getEffectiveAtk = null,
+                Func<float> getEffectiveDef = null,
                 Func<float> getEffectiveCrit = null,
                 int rage = 0,
                 int maxRage = 100,
@@ -48,15 +48,15 @@ namespace CatCatGo.Tests.Domain
                 MaxRage = maxRage;
                 MagicCoefficient = magicCoefficient == 0f ? BattleDataTable.Data.Damage.BaseMagicCoefficient : magicCoefficient;
                 UsedOnceConditions = new HashSet<string>();
-                _getEffectiveAtk = getEffectiveAtk ?? (() => 50);
-                _getEffectiveDef = getEffectiveDef ?? (() => 20);
+                _getEffectiveAtk = getEffectiveAtk ?? (() => 50f);
+                _getEffectiveDef = getEffectiveDef ?? (() => 20f);
                 _getEffectiveCrit = getEffectiveCrit ?? (() => 0f);
                 _getMasteryBonus = _ => 0f;
-                _getHpBonusDamage = () => 0;
+                _getHpBonusDamage = () => 0f;
             }
 
-            public int GetEffectiveAtk() => _getEffectiveAtk();
-            public int GetEffectiveDef() => _getEffectiveDef();
+            public float GetEffectiveAtk() => _getEffectiveAtk();
+            public float GetEffectiveDef() => _getEffectiveDef();
             public float GetEffectiveCrit() => _getEffectiveCrit();
 
             public int TakeDamage(int amount)
@@ -77,7 +77,7 @@ namespace CatCatGo.Tests.Domain
             public bool IsAlive() => CurrentHp > 0;
             public float GetHpPercent() => MaxHp > 0 ? (float)CurrentHp / MaxHp : 0;
             public float GetMasteryBonus(string skillId) => _getMasteryBonus(skillId);
-            public int GetHpBonusDamage() => _getHpBonusDamage();
+            public float GetHpBonusDamage() => _getHpBonusDamage();
         }
 
         [Test]
