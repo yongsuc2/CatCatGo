@@ -126,6 +126,11 @@
 
   { "skill": "demon_power", "tier": 4, "coefficient": 0.5 },
 
+  { "skill": "max_hp_damage", "tier": 1, "coefficient": 0.02 },
+  { "skill": "max_hp_damage", "tier": 2, "coefficient": 0.046 },
+  { "skill": "max_hp_damage", "tier": 3, "coefficient": 0.08 },
+  { "skill": "max_hp_damage", "tier": 4, "coefficient": 0.12 },
+
   { "skill": "hp_crush", "tier": 1, "coefficient": 0.04 },
   { "skill": "hp_crush", "tier": 2, "coefficient": 0.092 },
   { "skill": "hp_crush", "tier": 3, "coefficient": 0.16 },

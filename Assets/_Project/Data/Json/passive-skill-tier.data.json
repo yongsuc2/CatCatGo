@@ -84,10 +84,5 @@
   { "skill": "low_hp_def", "tier": 1, "maxBonus": 0.4 },
   { "skill": "low_hp_def", "tier": 2, "maxBonus": 0.92 },
   { "skill": "low_hp_def", "tier": 3, "maxBonus": 1.6 },
-  { "skill": "low_hp_def", "tier": 4, "maxBonus": 2.4 },
-
-  { "skill": "max_hp_damage", "tier": 1, "coefficient": 0.02 },
-  { "skill": "max_hp_damage", "tier": 2, "coefficient": 0.046 },
-  { "skill": "max_hp_damage", "tier": 3, "coefficient": 0.08 },
-  { "skill": "max_hp_damage", "tier": 4, "coefficient": 0.12 }
+  { "skill": "low_hp_def", "tier": 4, "maxBonus": 2.4 }
 ]

@@ -33,7 +33,6 @@ namespace CatCatGo.Domain.Battle
         public HashSet<string> UsedOnceConditions { get; set; }
         public Dictionary<string, float> SkillIdBonuses;
         public List<LowHpModifier> LowHpModifiers;
-        public float HpDamageCoefficient;
         public string TemplateId;
 
         public BattleUnit(
@@ -66,7 +65,7 @@ namespace CatCatGo.Domain.Battle
             UsedOnceConditions = new HashSet<string>();
             SkillIdBonuses = new Dictionary<string, float>();
             LowHpModifiers = new List<LowHpModifier>();
-            HpDamageCoefficient = 0;
+
 
             ApplyPassiveSkills();
         }
@@ -163,11 +162,6 @@ namespace CatCatGo.Domain.Battle
                         LowHpModifiers.Add(new LowHpModifier { Stat = skill.Effect.Stat.Value, MaxBonus = skill.Effect.MaxBonus });
                     break;
                 }
-                case PassiveType.MAX_HP_DAMAGE:
-                {
-                    HpDamageCoefficient += skill.Effect.Coefficient;
-                    break;
-                }
             }
         }
 
@@ -182,12 +176,6 @@ namespace CatCatGo.Domain.Battle
                 if (mod.Stat == stat) bonus += mod.MaxBonus * r * r;
             }
             return bonus;
-        }
-
-        public float GetHpBonusDamage()
-        {
-            if (HpDamageCoefficient <= 0) return 0;
-            return MaxHp * HpDamageCoefficient;
         }
 
         public float GetEffectiveAtk()

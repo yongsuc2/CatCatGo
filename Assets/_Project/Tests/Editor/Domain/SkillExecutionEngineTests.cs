@@ -28,7 +28,6 @@ namespace CatCatGo.Tests.Domain
             private Func<float> _getEffectiveDef;
             private Func<float> _getEffectiveCrit;
             private Func<string, float> _getMasteryBonus;
-            private Func<float> _getHpBonusDamage;
 
             public MockUnit(
                 string name = "TestUnit",
@@ -52,7 +51,6 @@ namespace CatCatGo.Tests.Domain
                 _getEffectiveDef = getEffectiveDef ?? (() => 20f);
                 _getEffectiveCrit = getEffectiveCrit ?? (() => 0f);
                 _getMasteryBonus = _ => 0f;
-                _getHpBonusDamage = () => 0f;
             }
 
             public float GetEffectiveAtk() => _getEffectiveAtk();
@@ -77,7 +75,6 @@ namespace CatCatGo.Tests.Domain
             public bool IsAlive() => CurrentHp > 0;
             public float GetHpPercent() => MaxHp > 0 ? (float)CurrentHp / MaxHp : 0;
             public float GetMasteryBonus(string skillId) => _getMasteryBonus(skillId);
-            public float GetHpBonusDamage() => _getHpBonusDamage();
         }
 
         [Test]

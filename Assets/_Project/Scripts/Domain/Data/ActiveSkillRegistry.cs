@@ -497,6 +497,20 @@ namespace CatCatGo.Domain.Data
                 },
                 new ActiveSkillFamilyDef
                 {
+                    Id = "max_hp_damage", Name = "\uc555\ub3c4", Icon = "\ud83d\udcaa",
+                    Hierarchy = SkillHierarchy.UPPER,
+                    Tags = new[] { SkillTag.PHYSICAL },
+                    HeritageSynergy = new[] { HeritageRoute.KNIGHT },
+                    Traits = new[] { "\uc77c\ubc18 \uacf5\uaca9 \uc5f0\uacc4", "\ucd5c\ub300 \uccb4\ub825 \ube44\ub840 \ucd94\uac00 \ub370\ubbf8\uc9c0" },
+                    BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
+                    BuildEffects = t => new[]
+                    {
+                        new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = V(Td("max_hp_damage", t), "coefficient"), DamageBase = DamageBase.SOURCE_MAX_HP },
+                    },
+                    BuildDescription = t => $"\uc77c\ubc18 \uacf5\uaca9 \uc2dc \ucd5c\ub300 \uccb4\ub825\uc758 {Pct(V(Td("max_hp_damage", t), "coefficient"))} \ubb3c\ub9ac \ucd94\uac00 \ub370\ubbf8\uc9c0",
+                },
+                new ActiveSkillFamilyDef
+                {
                     Id = "hp_crush", Name = "\ubd84\uc1c4", Icon = "\ud83d\udd28",
                     Hierarchy = SkillHierarchy.UPPER,
                     Tags = new[] { SkillTag.PHYSICAL },
@@ -505,7 +519,7 @@ namespace CatCatGo.Domain.Data
                     BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.OnSkillActivation("ilban_attack")),
                     BuildEffects = t => new[]
                     {
-                        new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = V(Td("hp_crush", t), "coefficient"), IsTargetHpBased = true },
+                        new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = V(Td("hp_crush", t), "coefficient"), DamageBase = DamageBase.TARGET_MAX_HP },
                     },
                     BuildDescription = t => $"\uc77c\ubc18 \uacf5\uaca9 \uc2dc \uc801 \ucd5c\ub300 \uccb4\ub825\uc758 {Pct(V(Td("hp_crush", t), "coefficient"))} \ubb3c\ub9ac \ub370\ubbf8\uc9c0",
                 },

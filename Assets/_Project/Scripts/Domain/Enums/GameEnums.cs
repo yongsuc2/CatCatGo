@@ -158,6 +158,13 @@ namespace CatCatGo.Domain.Enums
         FIXED,
     }
 
+    public enum DamageBase
+    {
+        ATK,
+        SOURCE_MAX_HP,
+        TARGET_MAX_HP,
+    }
+
     public enum SkillEffectType
     {
         ATTACK,
@@ -206,7 +213,6 @@ namespace CatCatGo.Domain.Enums
         MULTI_HIT,
         SKILL_MODIFIER,
         LOW_HP_MODIFIER,
-        MAX_HP_DAMAGE,
     }
 
     public enum BattleLogType

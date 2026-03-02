@@ -27,7 +27,6 @@ namespace CatCatGo.Domain.Battle
         float GetHpPercent();
         HashSet<string> UsedOnceConditions { get; set; }
         float GetMasteryBonus(string skillId);
-        float GetHpBonusDamage();
     }
 
     public class SkillDamageResult
@@ -165,7 +164,7 @@ namespace CatCatGo.Domain.Battle
                         {
                             float masteryMult = 1 + source.GetMasteryBonus(skill.Id);
                             var calcResult = CalculateSkillDamage(
-                                source, t, effect.AttackType, effect.Coefficient, effect.IsTargetHpBased, masteryMult);
+                                source, t, effect.AttackType, effect.Coefficient, effect.DamageBase, masteryMult);
                             int damage = Math.Max(1, calcResult.Damage);
                             int dealt = t.TakeDamage(damage);
 
@@ -321,7 +320,7 @@ namespace CatCatGo.Domain.Battle
             ISkillExecutionUnit target,
             AttackType attackType,
             float coefficient,
-            bool isTargetHpBased = false,
+            DamageBase damageBase = DamageBase.ATK,
             float masteryMultiplier = 1.0f)
         {
             bool isCrit = attackType == AttackType.PHYSICAL && _rng.Chance(source.GetEffectiveCrit());
@@ -332,9 +331,13 @@ namespace CatCatGo.Domain.Battle
             {
                 case AttackType.PHYSICAL:
                 {
-                    float baseValue = isTargetHpBased
-                        ? target.MaxHp
-                        : source.GetEffectiveAtk() + source.GetHpBonusDamage();
+                    float baseValue;
+                    switch (damageBase)
+                    {
+                        case DamageBase.SOURCE_MAX_HP: baseValue = source.MaxHp; break;
+                        case DamageBase.TARGET_MAX_HP: baseValue = target.MaxHp; break;
+                        default: baseValue = source.GetEffectiveAtk(); break;
+                    }
                     float def = target.GetEffectiveDef();
                     float k = BattleDataTable.Data.Damage.DefenseConstant;
                     damage = baseValue * coefficient * masteryMultiplier * critMult * (k / (k + def));

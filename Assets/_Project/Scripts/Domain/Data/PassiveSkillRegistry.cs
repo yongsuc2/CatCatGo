@@ -186,14 +186,6 @@ namespace CatCatGo.Domain.Data
                 },
                 new PassiveSkillFamilyDef
                 {
-                    Id = "max_hp_damage", Name = "\uc555\ub3c4", Icon = "\ud83d\udcaa",
-                    Tags = new[] { SkillTag.PHYSICAL }, HeritageSynergy = new[] { HeritageRoute.KNIGHT },
-                    Traits = new[] { "\ucd5c\ub300 \uccb4\ub825 \ube44\ub840 \ucd94\uac00 \ub370\ubbf8\uc9c0", "\ubb3c\ub9ac \uacf5\uaca9 \uc804\uc6a9", "\ud0f1\ud06c \ube4c\ub4dc \uc2dc\ub108\uc9c0" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.MAX_HP_DAMAGE, Coefficient = V(Td("max_hp_damage", t), "coefficient") },
-                    BuildDescription = t => $"\ubb3c\ub9ac \uacf5\uaca9 \uc2dc \ucd5c\ub300 \uccb4\ub825\uc758 {Pct(V(Td("max_hp_damage", t), "coefficient"))}\ub9cc\ud07c \ucd94\uac00 \ub370\ubbf8\uc9c0",
-                },
-                new PassiveSkillFamilyDef
-                {
                     Id = "angel_power", Name = "\ucc9c\uc0ac\uc758 \ud798", Icon = "\ud83d\ude07",
                     Tags = new SkillTag[0], HeritageSynergy = new HeritageRoute[0],
                     Traits = new[] { "\uacf5\uaca9\ub825 \uc9c1\uc811 \uc99d\uac00", "\ubaa8\ub4e0 \ube4c\ub4dc \ubc94\uc6a9" },

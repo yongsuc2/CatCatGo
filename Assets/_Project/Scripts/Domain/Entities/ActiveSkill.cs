@@ -36,7 +36,7 @@ namespace CatCatGo.Domain.Entities
         public float Coefficient;
         public int Duration;
         public bool IsAoe;
-        public bool IsTargetHpBased;
+        public DamageBase DamageBase;
         public string TargetSkillId;
         public int Count;
         public CompoundTrigger TriggerConditions;

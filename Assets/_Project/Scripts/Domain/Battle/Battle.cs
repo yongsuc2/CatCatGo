@@ -386,7 +386,7 @@ namespace CatCatGo.Domain.Battle
 
         private float CalculateBaseDamage(BattleUnit attacker, BattleUnit defender)
         {
-            float atk = attacker.GetEffectiveAtk() + attacker.GetHpBonusDamage();
+            float atk = attacker.GetEffectiveAtk();
             float def = defender.GetEffectiveDef();
             float k = BattleDataTable.Data.Damage.DefenseConstant;
             float raw = atk * (k / (k + def));
