@@ -24,10 +24,10 @@ namespace CatCatGo.Tests.Meta
         }
 
         [Test]
-        public void FirstActionIsDragonNestDungeon()
+        public void FirstActionIsBeehiveDungeon()
         {
             var routine = _scheduler.GetFullRoutine();
-            Assert.AreEqual(RoutineAction.DAILY_DUNGEON_DRAGON, routine[0].Action);
+            Assert.AreEqual(RoutineAction.DAILY_DUNGEON_BEEHIVE, routine[0].Action);
         }
 
         [Test]
@@ -35,20 +35,20 @@ namespace CatCatGo.Tests.Meta
         {
             var statuses = _scheduler.GetAvailableActions(new RoutineContext
             {
-                DungeonDragonRemaining = 3,
-                DungeonCelestialRemaining = 0,
-                DungeonSkyRemaining = 3,
+                DungeonBeehiveRemaining = 3,
+                DungeonAncientTreeRemaining = 0,
+                DungeonTigerCliffRemaining = 3,
                 ChallengeTokens = 5,
                 ArenaTickets = 3,
                 Stamina = 50,
                 Pickaxes = 10,
             });
 
-            var dragon = statuses.FirstOrDefault(s => s.Action == RoutineAction.DAILY_DUNGEON_DRAGON);
-            Assert.IsTrue(dragon.Available);
+            var beehive = statuses.FirstOrDefault(s => s.Action == RoutineAction.DAILY_DUNGEON_BEEHIVE);
+            Assert.IsTrue(beehive.Available);
 
-            var celestial = statuses.FirstOrDefault(s => s.Action == RoutineAction.DAILY_DUNGEON_CELESTIAL);
-            Assert.IsFalse(celestial.Available);
+            var ancientTree = statuses.FirstOrDefault(s => s.Action == RoutineAction.DAILY_DUNGEON_ANCIENT);
+            Assert.IsFalse(ancientTree.Available);
         }
 
         [Test]
@@ -56,9 +56,9 @@ namespace CatCatGo.Tests.Meta
         {
             var next = _scheduler.GetNextAction(new RoutineContext
             {
-                DungeonDragonRemaining = 0,
-                DungeonCelestialRemaining = 0,
-                DungeonSkyRemaining = 0,
+                DungeonBeehiveRemaining = 0,
+                DungeonAncientTreeRemaining = 0,
+                DungeonTigerCliffRemaining = 0,
                 ChallengeTokens = 5,
                 ArenaTickets = 0,
                 Stamina = 50,
@@ -73,9 +73,9 @@ namespace CatCatGo.Tests.Meta
         {
             var next = _scheduler.GetNextAction(new RoutineContext
             {
-                DungeonDragonRemaining = 0,
-                DungeonCelestialRemaining = 0,
-                DungeonSkyRemaining = 0,
+                DungeonBeehiveRemaining = 0,
+                DungeonAncientTreeRemaining = 0,
+                DungeonTigerCliffRemaining = 0,
                 ChallengeTokens = 0,
                 ArenaTickets = 0,
                 Stamina = 0,

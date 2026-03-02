@@ -1,7 +1,7 @@
 {
   "dailyLimit": 3,
   "dungeons": {
-    "DRAGON_NEST": {
+    "GIANT_BEEHIVE": {
       "enemyId": "dungeon_queen_bee",
       "baseRewards": [
         { "type": "STAMINA", "amount": 20 },
@@ -9,7 +9,7 @@
       ],
       "rewardScaling": 0.15
     },
-    "CELESTIAL_TREE": {
+    "ANCIENT_TREE": {
       "enemyId": "dungeon_old_tree",
       "baseRewards": [
         { "type": "PET_EGG", "amount": 1 },
@@ -17,7 +17,7 @@
       ],
       "rewardScaling": 0.15
     },
-    "SKY_ISLAND": {
+    "TIGER_CLIFF": {
       "enemyId": "dungeon_tiger",
       "baseRewards": [
         { "type": "EQUIPMENT_STONE", "amount": 5 },

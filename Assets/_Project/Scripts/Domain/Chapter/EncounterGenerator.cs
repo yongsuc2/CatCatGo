@@ -108,30 +108,7 @@ namespace CatCatGo.Domain.Chapter
 
         private Encounter CreateCombatEncounter()
         {
-            var d = EncounterDataTable.Combat;
-            var options = new List<EncounterOption>
-            {
-                new EncounterOption
-                {
-                    Label = d.FightLabel,
-                    Description = d.FightDescription,
-                    HpCostPercent = 0,
-                    GoldCost = 0,
-                    SuccessRate = 1.0f,
-                    Reward = EmptyReward(),
-                },
-                new EncounterOption
-                {
-                    Label = d.AvoidLabel,
-                    Description = d.AvoidDescription,
-                    HpCostPercent = 0,
-                    GoldCost = 0,
-                    SuccessRate = 1.0f,
-                    Reward = EmptyReward(),
-                },
-            };
-
-            return new Encounter(EncounterType.COMBAT, options);
+            return new Encounter(EncounterType.COMBAT, new List<EncounterOption>());
         }
 
         private Encounter CreateChanceEncounter(List<SessionSkillWrapper> ownedSkills, int chapterId)
@@ -370,7 +347,7 @@ namespace CatCatGo.Domain.Chapter
             return new Encounter(EncounterType.DAEBAK_ROULETTE, options);
         }
 
-        private static List<SessionSkillWrapper> BuildSkillPool(List<SessionSkillWrapper> ownedSkills)
+        public static List<SessionSkillWrapper> BuildSkillPool(List<SessionSkillWrapper> ownedSkills)
         {
             var ownedMap = new Dictionary<string, int>();
             foreach (var s in ownedSkills)

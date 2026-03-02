@@ -539,3 +539,11 @@
     - `TalentTable` 미사용 public 메서드 6개: GetGradeOrder, GetGradeIndex, GetGradeStartLevel, GetMainTransitions, GetMilestonesInRange, GetLevelsPerTier
   - 마일스톤 키 `$"LV_{level}"` 하드코딩 6곳 → `GetMilestoneKey()` 호출로 중앙화 (Talent.cs, Player.cs, TalentScreen.cs)
   - TalentScreen 보상 수령 중복 로직(OnClaimAll/ClaimMilestone) → `ProcessSingleClaim()` 추출
+- **스테이지/던전 시스템 기획서 불일치 수정** (Y-75)
+  - COMBAT 인카운터 죽은 코드 삭제: encounter.data.json `combat` 섹션, EncounterDataTable CombatConfig, EncounterGenerator 회피 선택지
+  - 일일 던전 enum 이름 기획서 일치: DRAGON_NEST→GIANT_BEEHIVE, CELESTIAL_TREE→ANCIENT_TREE, SKY_ISLAND→TIGER_CLIFF (6파일+2테스트)
+  - 타워 보상 수정: 매 단계 골드→5/10단계에서만 보상(골드+파워스톤+장비석)
+  - 30일/5일 챕터 삭제: ChapterType enum, encounter.data.json weights, Chapter.GetDaysForType, 테스트 코드 (60일만 유지)
+  - 엘리트/보스 금상자 보상: T3 신화 전용 풀→BuildSkillPool (우연 상자와 동일한 스킬 풀)
+  - chapterBossAssignment 죽은 데이터 삭제: encounter.data.json, EncounterDataTable 클래스/필드/메서드
+  - Chapter.ResolveEncounter COMBAT choiceIndex 죽은 분기 삭제

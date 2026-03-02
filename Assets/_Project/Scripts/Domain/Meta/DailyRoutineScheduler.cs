@@ -21,9 +21,9 @@ namespace CatCatGo.Domain.Meta
 
     public class RoutineContext
     {
-        public int DungeonDragonRemaining;
-        public int DungeonCelestialRemaining;
-        public int DungeonSkyRemaining;
+        public int DungeonBeehiveRemaining;
+        public int DungeonAncientTreeRemaining;
+        public int DungeonTigerCliffRemaining;
         public int ChallengeTokens;
         public int ArenaTickets;
         public int Stamina;
@@ -34,9 +34,9 @@ namespace CatCatGo.Domain.Meta
     {
         private static readonly RoutineStep[] DailyRoutine =
         {
-            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_DRAGON, Priority = 1, Description = "Dragon Nest dungeon", RequiredResource = null },
-            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_CELESTIAL, Priority = 2, Description = "Celestial Tree dungeon", RequiredResource = null },
-            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_SKY, Priority = 3, Description = "Sky Island dungeon", RequiredResource = null },
+            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_BEEHIVE, Priority = 1, Description = "Giant Beehive dungeon", RequiredResource = null },
+            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_ANCIENT, Priority = 2, Description = "Ancient Tree dungeon", RequiredResource = null },
+            new RoutineStep { Action = RoutineAction.DAILY_DUNGEON_TIGER, Priority = 3, Description = "Tiger Cliff dungeon", RequiredResource = null },
             new RoutineStep { Action = RoutineAction.TOWER_CHALLENGE, Priority = 4, Description = "Tower challenge", RequiredResource = ResourceType.CHALLENGE_TOKEN },
             new RoutineStep { Action = RoutineAction.CATACOMB_RUN, Priority = 5, Description = "Catacomb dungeon run", RequiredResource = null },
             new RoutineStep { Action = RoutineAction.ARENA_FIGHT, Priority = 6, Description = "Arena PvP", RequiredResource = ResourceType.ARENA_TICKET },
@@ -59,16 +59,16 @@ namespace CatCatGo.Domain.Meta
 
                 switch (step.Action)
                 {
-                    case RoutineAction.DAILY_DUNGEON_DRAGON:
-                        available = context.DungeonDragonRemaining > 0;
+                    case RoutineAction.DAILY_DUNGEON_BEEHIVE:
+                        available = context.DungeonBeehiveRemaining > 0;
                         reason = available ? "Ready" : "Daily limit reached";
                         break;
-                    case RoutineAction.DAILY_DUNGEON_CELESTIAL:
-                        available = context.DungeonCelestialRemaining > 0;
+                    case RoutineAction.DAILY_DUNGEON_ANCIENT:
+                        available = context.DungeonAncientTreeRemaining > 0;
                         reason = available ? "Ready" : "Daily limit reached";
                         break;
-                    case RoutineAction.DAILY_DUNGEON_SKY:
-                        available = context.DungeonSkyRemaining > 0;
+                    case RoutineAction.DAILY_DUNGEON_TIGER:
+                        available = context.DungeonTigerCliffRemaining > 0;
                         reason = available ? "Ready" : "Daily limit reached";
                         break;
                     case RoutineAction.TOWER_CHALLENGE:

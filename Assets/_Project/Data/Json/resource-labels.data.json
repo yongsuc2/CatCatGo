@@ -38,8 +38,8 @@
     "POWER_STONE": "#ff7043"
   },
   "dungeonLabels": {
-    "DRAGON_NEST": "거대 벌집",
-    "CELESTIAL_TREE": "수천년 고목",
-    "SKY_ISLAND": "호랑이 절벽"
+    "GIANT_BEEHIVE": "거대 벌집",
+    "ANCIENT_TREE": "수천년 고목",
+    "TIGER_CLIFF": "호랑이 절벽"
   }
 }

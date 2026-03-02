@@ -62,13 +62,14 @@ namespace CatCatGo.Domain.Content
 
         public Reward GetReward(int floor, int stage)
         {
+            if (stage != 5 && stage != 10)
+                return Reward.Empty();
+
             var rewards = new List<ResourceReward>
             {
-                new ResourceReward(ResourceType.GOLD, 50 * floor),
+                new ResourceReward(ResourceType.GOLD, (stage == 10 ? 500 : 250) * floor),
+                new ResourceReward(ResourceType.POWER_STONE, 1),
             };
-
-            if (stage == 5 || stage == 10)
-                rewards.Add(new ResourceReward(ResourceType.POWER_STONE, 1));
 
             if (stage == 10)
                 rewards.Add(new ResourceReward(ResourceType.EQUIPMENT_STONE, 3));

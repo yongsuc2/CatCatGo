@@ -333,12 +333,12 @@ namespace CatCatGo.Presentation.Screens
             int remaining = Game.DungeonManager.GetRemainingCount();
             CreateInfoRow(_subContent, $"\ub0a8\uc740 \uc785\uc7a5: {remaining}/{Game.DungeonManager.DailyLimit}");
 
-            var dungeonTypes = new[] { DungeonType.DRAGON_NEST, DungeonType.CELESTIAL_TREE, DungeonType.SKY_ISLAND };
+            var dungeonTypes = new[] { DungeonType.GIANT_BEEHIVE, DungeonType.ANCIENT_TREE, DungeonType.TIGER_CLIFF };
             var dungeonNames = new Dictionary<DungeonType, string>
             {
-                { DungeonType.DRAGON_NEST, "\uac70\ub300 \ubc8c\uc9d1" },
-                { DungeonType.CELESTIAL_TREE, "\uc218\ucc9c\ub144 \uace0\ubaa9" },
-                { DungeonType.SKY_ISLAND, "\ud638\ub791\uc774 \uc808\ubcbd" },
+                { DungeonType.GIANT_BEEHIVE, "\uac70\ub300 \ubc8c\uc9d1" },
+                { DungeonType.ANCIENT_TREE, "\uc218\ucc9c\ub144 \uace0\ubaa9" },
+                { DungeonType.TIGER_CLIFF, "\ud638\ub791\uc774 \uc808\ubcbd" },
             };
 
             foreach (var type in dungeonTypes)

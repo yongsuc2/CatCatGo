@@ -105,9 +105,9 @@ namespace CatCatGo.Domain.Content
             DailyLimit = DungeonDataTable.DailyLimit;
             Dungeons = new Dictionary<DungeonType, DailyDungeon>
             {
-                { DungeonType.DRAGON_NEST, new DailyDungeon(DungeonType.DRAGON_NEST) },
-                { DungeonType.CELESTIAL_TREE, new DailyDungeon(DungeonType.CELESTIAL_TREE) },
-                { DungeonType.SKY_ISLAND, new DailyDungeon(DungeonType.SKY_ISLAND) },
+                { DungeonType.GIANT_BEEHIVE, new DailyDungeon(DungeonType.GIANT_BEEHIVE) },
+                { DungeonType.ANCIENT_TREE, new DailyDungeon(DungeonType.ANCIENT_TREE) },
+                { DungeonType.TIGER_CLIFF, new DailyDungeon(DungeonType.TIGER_CLIFF) },
             };
         }
 
