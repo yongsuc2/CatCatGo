@@ -1,5 +1,6 @@
 using System;
 using CatCatGo.Domain.Entities;
+using CatCatGo.Domain.Content;
 
 namespace CatCatGo.Domain.Economy
 {
