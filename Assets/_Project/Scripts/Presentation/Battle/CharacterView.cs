@@ -416,10 +416,7 @@ namespace CatCatGo.Presentation.Battle
         private void BuildUI(bool isBoss, Color placeholderColor)
         {
             _rectTransform = gameObject.GetComponent<RectTransform>();
-            if (_rectTransform == null)
-                _rectTransform = gameObject.GetComponent<RectTransform>();
-
-                if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
+            if (_rectTransform == null) _rectTransform = gameObject.AddComponent<RectTransform>();
 
             float charSize = isBoss ? 150f : 108f;
             _rectTransform.sizeDelta = new Vector2(charSize, charSize + 50f);
@@ -453,19 +450,28 @@ namespace CatCatGo.Presentation.Battle
             nameGo.SetActive(false);
 
             float barY = -charSize / 2f - 4f;
+            float hpBarHeight = 12f;
+            float rageBarHeight = 5f;
+            float statusHeight = 54f;
+            float gap = 4f;
 
-            _hpBar = CreateBar("HpBar", barY, new Vector2(charSize + 20f, 36f), ColorPalette.Hp);
+            float hpBarY = barY;
+            float rageBarY = hpBarY - hpBarHeight / 2f - gap - rageBarHeight / 2f;
+            float statusY = rageBarY - rageBarHeight / 2f - gap - statusHeight / 2f;
+
+            _hpBar = CreateBar("HpBar", hpBarY, new Vector2(charSize + 20f, hpBarHeight), ColorPalette.Hp);
             _hpFill = _hpBar.fillRect.GetComponent<Image>();
 
             var hpTextGo = new GameObject("HpText");
             hpTextGo.transform.SetParent(_hpBar.transform, false);
             var hpTextRt = hpTextGo.GetComponent<RectTransform>();
-
             if (hpTextRt == null) hpTextRt = hpTextGo.AddComponent<RectTransform>();
-            hpTextRt.anchorMin = Vector2.zero;
-            hpTextRt.anchorMax = Vector2.one;
+            hpTextRt.anchorMin = new Vector2(0f, 0.5f);
+            hpTextRt.anchorMax = new Vector2(1f, 0.5f);
+            hpTextRt.pivot = new Vector2(0.5f, 0.5f);
             hpTextRt.offsetMin = Vector2.zero;
             hpTextRt.offsetMax = Vector2.zero;
+            hpTextRt.sizeDelta = new Vector2(0f, 30f);
             _hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
             _hpText.fontSize = 27f;
             _hpText.color = Color.white;
@@ -477,17 +483,16 @@ namespace CatCatGo.Presentation.Battle
             _shieldOverlay = CreateOverlay("Shield", _hpBar.transform, new Color(0.3f, 0.6f, 1f, 0.5f));
             _shieldOverlay.gameObject.SetActive(false);
 
-            _rageBar = CreateBar("RageBar", barY - 10f, new Vector2(charSize + 10f, 5f), ColorPalette.Rage);
+            _rageBar = CreateBar("RageBar", rageBarY, new Vector2(charSize + 10f, rageBarHeight), ColorPalette.Rage);
             _rageFill = _rageBar.fillRect.GetComponent<Image>();
             _rageBar.gameObject.SetActive(false);
 
             var statusGo = new GameObject("StatusContainer");
             statusGo.transform.SetParent(transform, false);
             _statusContainer = statusGo.GetComponent<RectTransform>();
-
             if (_statusContainer == null) _statusContainer = statusGo.AddComponent<RectTransform>();
-            _statusContainer.anchoredPosition = new Vector2(0f, barY - 30f);
-            _statusContainer.sizeDelta = new Vector2(200f, 54f);
+            _statusContainer.anchoredPosition = new Vector2(0f, statusY);
+            _statusContainer.sizeDelta = new Vector2(200f, statusHeight);
             var layout = statusGo.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 4f;
             layout.childAlignment = TextAnchor.UpperCenter;
