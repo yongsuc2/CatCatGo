@@ -20,7 +20,7 @@ namespace CatCatGo.Tests.Meta
         public void ReturnsFullRoutineOf9Steps()
         {
             var routine = _scheduler.GetFullRoutine();
-            Assert.AreEqual(9, routine.Count);
+            Assert.AreEqual(7, routine.Count);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace CatCatGo.Tests.Meta
                 DungeonAncientTreeRemaining = 0,
                 DungeonTigerCliffRemaining = 3,
                 ChallengeTokens = 5,
-                ArenaTickets = 3,
+
                 Stamina = 50,
                 Pickaxes = 10,
             });
@@ -60,7 +60,7 @@ namespace CatCatGo.Tests.Meta
                 DungeonAncientTreeRemaining = 0,
                 DungeonTigerCliffRemaining = 0,
                 ChallengeTokens = 5,
-                ArenaTickets = 0,
+
                 Stamina = 50,
                 Pickaxes = 10,
             });
@@ -77,7 +77,7 @@ namespace CatCatGo.Tests.Meta
                 DungeonAncientTreeRemaining = 0,
                 DungeonTigerCliffRemaining = 0,
                 ChallengeTokens = 0,
-                ArenaTickets = 0,
+
                 Stamina = 0,
                 Pickaxes = 0,
             });
