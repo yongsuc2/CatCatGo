@@ -6,7 +6,6 @@ namespace CatCatGo.Domain.Enums
         ATK,
         DEF,
         CRIT,
-        RAGE_POWER,
         MAGIC_COEFFICIENT,
     }
 
@@ -34,15 +33,6 @@ namespace CatCatGo.Domain.Enums
         LEGENDARY,
         MYTHIC,
         IMMORTAL,
-    }
-
-    public enum SkillCategory
-    {
-        ATTACK,
-        MASTERY,
-        SURVIVAL,
-        DEBUFF,
-        BUFF,
     }
 
     public enum EquipmentGrade
@@ -127,35 +117,6 @@ namespace CatCatGo.Domain.Enums
         EQUIPMENT,
         PET,
         GEM,
-    }
-
-    public enum EffectType
-    {
-        DAMAGE,
-        HEAL,
-        BUFF,
-        DEBUFF,
-        DOT,
-        HOT,
-        REVIVE,
-        LIFESTEAL,
-        COUNTER,
-        MULTI_HIT,
-        RAGE_POWER,
-        RAGE_BOOST,
-        SHIELD,
-        AOE_DAMAGE,
-        MAGIC_BOOST,
-    }
-
-    public enum TriggerCondition
-    {
-        TURN_START,
-        ON_ATTACK,
-        ON_HIT,
-        PASSIVE,
-        ON_DEATH,
-        ON_RAGE,
     }
 
     public enum StatusEffectType

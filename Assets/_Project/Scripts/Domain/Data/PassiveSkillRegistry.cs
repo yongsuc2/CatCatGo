@@ -141,7 +141,7 @@ namespace CatCatGo.Domain.Data
                     Id = "magic_mastery", Name = "\ub9c8\ubc95 \ub9c8\uc2a4\ud130\ub9ac", Icon = "\ud83d\udd2e",
                     Tags = new[] { SkillTag.MAGIC }, HeritageSynergy = new[] { HeritageRoute.GHOST },
                     Traits = new[] { "\ubaa8\ub4e0 \ub9c8\ubc95 \uacf5\uaca9 \uac15\ud654", "\ub9c8\ubc95 \ube4c\ub4dc \ud575\uc2ec" },
-                    BuildEffect = t => new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Value = V(Td("magic_mastery", t), "value"), IsPercentage = false },
+                    BuildEffect = t => new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Stat = StatType.MAGIC_COEFFICIENT, Value = V(Td("magic_mastery", t), "value"), IsPercentage = false },
                     BuildDescription = t => $"\ub9c8\ubc95 \uacc4\uc218 +{Pct(V(Td("magic_mastery", t), "value"))}",
                 },
                 new PassiveSkillFamilyDef

@@ -185,7 +185,18 @@ namespace CatCatGo.Domain.Battle
 
                             if (effect.Duration > 0)
                             {
-                                int dotDamage = (int)(source.GetEffectiveAtk() * effect.Coefficient);
+                                int dotDamage;
+                                if (effect.AttackType == AttackType.MAGIC)
+                                {
+                                    int dotAtk = source.GetEffectiveAtk();
+                                    int dotDef = t.GetEffectiveDef();
+                                    float mk = BattleDataTable.Data.Damage.MagicDefenseConstant;
+                                    dotDamage = Math.Max(1, (int)(dotAtk * source.MagicCoefficient * effect.Coefficient * (mk / (mk + dotDef))));
+                                }
+                                else
+                                {
+                                    dotDamage = (int)(source.GetEffectiveAtk() * effect.Coefficient);
+                                }
                                 var dotType = effect.AttackType == AttackType.MAGIC
                                     ? StatusEffectType.BURN : StatusEffectType.POISON;
                                 t.AddStatusEffect(new StatusEffect(dotType, effect.Duration, dotDamage, skill.Id));
