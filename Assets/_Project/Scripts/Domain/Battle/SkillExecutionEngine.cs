@@ -185,10 +185,10 @@ namespace CatCatGo.Domain.Battle
 
                             if (effect.Duration > 0)
                             {
-                                int dotDamage = CalculateRawDamage(source, t, effect.AttackType, effect.Coefficient);
+                                int dotDamage = calcResult.Damage;
                                 var dotType = effect.AttackType == AttackType.MAGIC
                                     ? StatusEffectType.BURN : StatusEffectType.POISON;
-                                t.AddStatusEffect(new StatusEffect(dotType, effect.Duration, dotDamage, skill.Id));
+                                t.AddStatusEffect(new StatusEffect(dotType, effect.Duration, dotDamage, skill.Id, effect.AttackType));
                             }
                         }
                         break;
