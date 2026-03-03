@@ -179,10 +179,11 @@ namespace CatCatGo.Presentation.Battle
 
             if (SpriteManager.Instance != null)
             {
+                var idleFrames = SpriteManager.Instance.GetPlayerIdleFrames();
                 var walkFrames = SpriteManager.Instance.GetPlayerWalkFrames();
                 var attackFrames = SpriteManager.Instance.GetPlayerAttackFrames();
-                if (walkFrames.Length > 0)
-                    _playerView.SetFrames(walkFrames, attackFrames);
+                if (idleFrames.Length > 0)
+                    _playerView.SetFrames(idleFrames, walkFrames, attackFrames);
             }
 
             _playerView.SetOriginalPosition(new Vector2(-180f, 0f));
@@ -206,10 +207,11 @@ namespace CatCatGo.Presentation.Battle
 
                     if (SpriteManager.Instance != null && !string.IsNullOrEmpty(enemy.TemplateId))
                     {
+                        var ei = SpriteManager.Instance.GetIdleFrames(enemy.TemplateId);
                         var ew = SpriteManager.Instance.GetWalkFrames(enemy.TemplateId);
                         var ea = SpriteManager.Instance.GetAttackFrames(enemy.TemplateId);
-                        if (ew.Length > 0)
-                            _enemyViews[i].SetFrames(ew, ea);
+                        if (ei.Length > 0)
+                            _enemyViews[i].SetFrames(ei, ew, ea);
                     }
 
                     _enemyViews[i].SetOriginalPosition(new Vector2(enemyStartX + i * enemySpacing, 0f));

@@ -30,6 +30,7 @@ namespace CatCatGo.Presentation.Battle
         private Coroutine _idleCoroutine;
         private RectTransform _spriteRt;
 
+        private Sprite[] _idleFrames;
         private Sprite[] _walkFrames;
         private Sprite[] _attackFrames;
         private bool _useFrames;
@@ -57,6 +58,7 @@ namespace CatCatGo.Presentation.Battle
             _hasRage = maxRage > 0;
 
             StopFrameAnimation();
+            _idleFrames = null;
             _walkFrames = null;
             _attackFrames = null;
             _useFrames = false;
@@ -97,16 +99,17 @@ namespace CatCatGo.Presentation.Battle
             StartIdleAnimation();
         }
 
-        public void SetFrames(Sprite[] walkFrames, Sprite[] attackFrames)
+        public void SetFrames(Sprite[] idleFrames, Sprite[] walkFrames, Sprite[] attackFrames)
         {
+            _idleFrames = idleFrames;
             _walkFrames = walkFrames;
             _attackFrames = attackFrames;
-            _useFrames = walkFrames != null && walkFrames.Length > 0;
+            _useFrames = idleFrames != null && idleFrames.Length > 0;
 
             if (!_useFrames || _spriteImage == null) return;
 
             _spriteImage.preserveAspect = true;
-            _spriteImage.sprite = walkFrames[0];
+            _spriteImage.sprite = idleFrames[0];
 
             _spriteRt = _spriteImage.GetComponent<RectTransform>();
             _spriteRt.sizeDelta = new Vector2(135f, 270f);
@@ -114,7 +117,7 @@ namespace CatCatGo.Presentation.Battle
 
             _rectTransform.sizeDelta = new Vector2(135f, 340f);
 
-            StartFrameAnimation(_walkFrames);
+            StartFrameAnimation(_idleFrames);
             StartIdleAnimation();
         }
 
@@ -190,8 +193,10 @@ namespace CatCatGo.Presentation.Battle
             {
                 if (phase == AttackPhase.Hit)
                     StartFrameAnimation(_attackFrames);
-                else
+                else if (phase == AttackPhase.Approach || phase == AttackPhase.Retreat)
                     StartFrameAnimation(_walkFrames);
+                else
+                    StartFrameAnimation(_idleFrames);
             }
 
             switch (phase)
@@ -230,8 +235,8 @@ namespace CatCatGo.Presentation.Battle
             }
             StopFrameAnimation();
             StopIdleAnimation();
-            if (_useFrames && _walkFrames != null && _walkFrames.Length > 0)
-                _spriteImage.sprite = _walkFrames[0];
+            if (_useFrames && _idleFrames != null && _idleFrames.Length > 0)
+                _spriteImage.sprite = _idleFrames[0];
             if (_rectTransform != null)
                 _rectTransform.anchoredPosition = _originalPosition;
             ResetSpriteTransform();

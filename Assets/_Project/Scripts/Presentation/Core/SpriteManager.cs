@@ -20,6 +20,7 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<string, Sprite> _equipIconByKey;
         private Dictionary<string, Sprite> _skillIconByKey;
 
+        private Dictionary<string, Sprite[]> _idleFramesCache;
         private Dictionary<string, Sprite[]> _walkFramesCache;
         private Dictionary<string, Sprite[]> _attackFramesCache;
 
@@ -131,14 +132,19 @@ namespace CatCatGo.Presentation.Core
             }
         }
 
-        public Sprite[] GetPlayerWalkFrames()
-        {
-            return GetWalkFrames("player");
-        }
+        public Sprite[] GetPlayerIdleFrames() => GetIdleFrames("player");
+        public Sprite[] GetPlayerWalkFrames() => GetWalkFrames("player");
+        public Sprite[] GetPlayerAttackFrames() => GetAttackFrames("player");
 
-        public Sprite[] GetPlayerAttackFrames()
+        public Sprite[] GetIdleFrames(string id)
         {
-            return GetAttackFrames("player");
+            if (_idleFramesCache == null)
+                _idleFramesCache = new Dictionary<string, Sprite[]>();
+
+            if (!_idleFramesCache.ContainsKey(id))
+                LoadSpriteSheet(id);
+
+            return _idleFramesCache[id];
         }
 
         public Sprite[] GetWalkFrames(string id)
@@ -165,6 +171,8 @@ namespace CatCatGo.Presentation.Core
 
         private void LoadSpriteSheet(string id)
         {
+            if (_idleFramesCache == null)
+                _idleFramesCache = new Dictionary<string, Sprite[]>();
             if (_walkFramesCache == null)
                 _walkFramesCache = new Dictionary<string, Sprite[]>();
             if (_attackFramesCache == null)
@@ -176,6 +184,7 @@ namespace CatCatGo.Presentation.Core
             var tex = Resources.Load<Texture2D>($"Chars/{id}");
             if (tex == null)
             {
+                _idleFramesCache[id] = new Sprite[0];
                 _walkFramesCache[id] = new Sprite[0];
                 _attackFramesCache[id] = new Sprite[0];
                 return;
@@ -186,26 +195,35 @@ namespace CatCatGo.Presentation.Core
             int frameW = tex.width / cols;
             int frameH = tex.height / rows;
 
+            var idleFrames = new Sprite[cols];
             var walkFrames = new Sprite[cols];
             var attackFrames = new Sprite[cols];
 
             for (int i = 0; i < cols; i++)
             {
-                walkFrames[i] = Sprite.Create(
+                idleFrames[i] = Sprite.Create(
                     tex,
                     new Rect(i * frameW, frameH * 2, frameW, frameH),
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+                idleFrames[i].name = $"{id}_idle_{i}";
+
+                walkFrames[i] = Sprite.Create(
+                    tex,
+                    new Rect(i * frameW, frameH, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
                 walkFrames[i].name = $"{id}_walk_{i}";
 
                 attackFrames[i] = Sprite.Create(
                     tex,
-                    new Rect(i * frameW, frameH, frameW, frameH),
+                    new Rect(i * frameW, 0, frameW, frameH),
                     new Vector2(0.5f, 0.5f),
                     100f);
                 attackFrames[i].name = $"{id}_attack_{i}";
             }
 
+            _idleFramesCache[id] = idleFrames;
             _walkFramesCache[id] = walkFrames;
             _attackFramesCache[id] = attackFrames;
         }
@@ -216,6 +234,7 @@ namespace CatCatGo.Presentation.Core
             if (first == null) return false;
 
             const int frameCount = 4;
+            var idleFrames = new Sprite[frameCount];
             var walkFrames = new Sprite[frameCount];
             var attackFrames = new Sprite[frameCount];
 
@@ -224,9 +243,20 @@ namespace CatCatGo.Presentation.Core
                 var idleTex = Resources.Load<Texture2D>($"Chars/{id}/idle_{i}");
                 if (idleTex != null)
                 {
-                    walkFrames[i] = Sprite.Create(
+                    idleFrames[i] = Sprite.Create(
                         idleTex,
                         new Rect(0, 0, idleTex.width, idleTex.height),
+                        new Vector2(0.5f, 0f),
+                        100f);
+                    idleFrames[i].name = $"{id}_idle_{i}";
+                }
+
+                var walkTex = Resources.Load<Texture2D>($"Chars/{id}/walk_{i}");
+                if (walkTex != null)
+                {
+                    walkFrames[i] = Sprite.Create(
+                        walkTex,
+                        new Rect(0, 0, walkTex.width, walkTex.height),
                         new Vector2(0.5f, 0f),
                         100f);
                     walkFrames[i].name = $"{id}_walk_{i}";
@@ -244,8 +274,9 @@ namespace CatCatGo.Presentation.Core
                 }
             }
 
-            if (walkFrames[0] == null)
+            if (idleFrames[0] == null)
             {
+                _idleFramesCache[id] = new Sprite[0];
                 _walkFramesCache[id] = new Sprite[0];
                 _attackFramesCache[id] = new Sprite[0];
                 return true;
@@ -253,10 +284,12 @@ namespace CatCatGo.Presentation.Core
 
             for (int i = 0; i < frameCount; i++)
             {
-                if (walkFrames[i] == null) walkFrames[i] = walkFrames[0];
-                if (attackFrames[i] == null) attackFrames[i] = attackFrames[0] != null ? attackFrames[0] : walkFrames[0];
+                if (idleFrames[i] == null) idleFrames[i] = idleFrames[0];
+                if (walkFrames[i] == null) walkFrames[i] = walkFrames[0] != null ? walkFrames[0] : idleFrames[i];
+                if (attackFrames[i] == null) attackFrames[i] = attackFrames[0] != null ? attackFrames[0] : idleFrames[i];
             }
 
+            _idleFramesCache[id] = idleFrames;
             _walkFramesCache[id] = walkFrames;
             _attackFramesCache[id] = attackFrames;
             return true;
