@@ -3,8 +3,6 @@
     "defenseConstant": 100,
     "magicDefenseConstant": 150,
     "baseMagicCoefficient": 0.5,
-    "varianceMin": 0.9,
-    "varianceMax": 1.1,
     "critMultiplier": 1.5,
     "counterCoefficient": 1.0
   },

@@ -23,6 +23,7 @@ namespace CatCatGo.Domain.Data
         public string Id;
         public string Name;
         public PetTier Tier;
+        public PetGrade MaxGrade;
         public Stats BasePassiveBonus;
         public float Weight;
         public PetAbilityDef Ability;
@@ -34,6 +35,7 @@ namespace CatCatGo.Domain.Data
         private static Dictionary<PetGrade, float> _gradeMultipliers;
         private static Dictionary<PassiveType, string> _abilityLabels;
         private static Dictionary<StatType, string> _statLabels;
+        private static float _inactiveBonusRate;
 
         private static void EnsureLoaded()
         {
@@ -56,11 +58,17 @@ namespace CatCatGo.Domain.Data
                 if (ability["stat"] != null && ability["stat"].Type != JTokenType.Null)
                     abilityDef.Stat = (StatType)Enum.Parse(typeof(StatType), ability["stat"].ToString());
 
+                var maxGradeStr = t["maxGrade"]?.ToString();
+                var maxGrade = string.IsNullOrEmpty(maxGradeStr)
+                    ? PetGrade.IMMORTAL
+                    : (PetGrade)Enum.Parse(typeof(PetGrade), maxGradeStr);
+
                 _templates.Add(new PetTemplateData
                 {
                     Id = t["id"].ToString(),
                     Name = t["name"].ToString(),
                     Tier = (PetTier)Enum.Parse(typeof(PetTier), t["tier"].ToString()),
+                    MaxGrade = maxGrade,
                     BasePassiveBonus = Stats.Create(
                         atk: t["atk"].Value<int>(),
                         maxHp: t["maxHp"].Value<int>(),
@@ -89,6 +97,13 @@ namespace CatCatGo.Domain.Data
                 if (Enum.TryParse<StatType>(kv.Key, out var st))
                     _statLabels[st] = kv.Value.ToString();
             }
+
+            _inactiveBonusRate = data["inactiveBonusRate"]?.Value<float>() ?? 0.1f;
+        }
+
+        public static float InactiveBonusRate
+        {
+            get { EnsureLoaded(); return _inactiveBonusRate; }
         }
 
         public static PetTemplateData GetTemplate(string id)

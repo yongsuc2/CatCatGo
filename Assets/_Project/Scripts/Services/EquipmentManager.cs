@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Entities;
+using CatCatGo.Domain.Data;
 using CatCatGo.Domain.ValueObjects;
 
 namespace CatCatGo.Services
@@ -75,15 +76,10 @@ namespace CatCatGo.Services
                     var eq = slot.Equipped[i];
                     if (eq != null && !eq.NeedsPromote())
                     {
-                        float baseScore = slotType == SlotType.WEAPON ? 7
-                            : slotType == SlotType.RING ? 6
-                            : slotType == SlotType.GLOVES ? 5
-                            : slotType == SlotType.ARMOR ? 4
-                            : slotType == SlotType.NECKLACE ? 3
-                            : slotType == SlotType.SHOES ? 2
-                            : 1;
-                        float gradeBonus = eq.IsS ? 2 : 0;
-                        priorities.Add((slotType, i, baseScore + gradeBonus - eq.Level * 0.01f));
+                        float baseScore = EquipmentTable.GetUpgradePrioritySlotScore(slotType);
+                        float gradeBonus = eq.IsS ? EquipmentTable.GetUpgradePrioritySGradeBonus() : 0;
+                        float levelDecay = EquipmentTable.GetUpgradePriorityLevelDecay();
+                        priorities.Add((slotType, i, baseScore + gradeBonus - eq.Level * levelDecay));
                     }
                 }
             }

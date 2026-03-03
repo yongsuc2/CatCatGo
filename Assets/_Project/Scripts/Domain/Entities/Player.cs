@@ -100,9 +100,10 @@ namespace CatCatGo.Domain.Entities
                 if (pet != ActivePet)
                 {
                     var bonus = pet.GetGlobalBonus();
+                    float rate = PetTable.InactiveBonusRate;
                     var passiveOnly = Stats.Create(
-                        atk: Mathf.FloorToInt(bonus.Atk * 0.1f),
-                        maxHp: Mathf.FloorToInt(bonus.MaxHp * 0.1f)
+                        atk: Mathf.FloorToInt(bonus.Atk * rate),
+                        maxHp: Mathf.FloorToInt(bonus.MaxHp * rate)
                     );
                     stats = stats.Add(passiveOnly);
                 }

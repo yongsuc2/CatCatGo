@@ -21,6 +21,9 @@ namespace CatCatGo.Domain.Data
         private static int _upgradeCostBase;
         private static int _mergeEnhanceMax;
         private static List<(int upToLevel, float rate)> _upgradeCostTiers;
+        private static Dictionary<SlotType, float> _upgradePrioritySlotScores;
+        private static float _upgradePrioritySGradeBonus;
+        private static float _upgradePriorityLevelDecay;
 
         private static void EnsureLoaded()
         {
@@ -64,6 +67,16 @@ namespace CatCatGo.Domain.Data
             _upgradeCostTiers = new List<(int, float)>();
             foreach (var t in constants["upgradeCostTiers"])
                 _upgradeCostTiers.Add((t["upToLevel"].Value<int>(), t["rate"].Value<float>()));
+
+            _upgradePrioritySlotScores = new Dictionary<SlotType, float>();
+            var priority = constants["upgradePriority"];
+            if (priority != null)
+            {
+                foreach (var kv in (JObject)priority["slotScores"])
+                    _upgradePrioritySlotScores[(SlotType)Enum.Parse(typeof(SlotType), kv.Key)] = kv.Value.Value<float>();
+                _upgradePrioritySGradeBonus = priority["sGradeBonus"].Value<float>();
+                _upgradePriorityLevelDecay = priority["levelDecay"].Value<float>();
+            }
         }
 
         public static Stats GetBaseStats(SlotType slot, EquipmentGrade grade)
@@ -140,6 +153,24 @@ namespace CatCatGo.Domain.Data
                 cost = Mathf.CeilToInt(cost * tier.rate);
             }
             return cost;
+        }
+
+        public static float GetUpgradePrioritySlotScore(SlotType slot)
+        {
+            EnsureLoaded();
+            return _upgradePrioritySlotScores.TryGetValue(slot, out var v) ? v : 1f;
+        }
+
+        public static float GetUpgradePrioritySGradeBonus()
+        {
+            EnsureLoaded();
+            return _upgradePrioritySGradeBonus;
+        }
+
+        public static float GetUpgradePriorityLevelDecay()
+        {
+            EnsureLoaded();
+            return _upgradePriorityLevelDecay;
         }
 
         public static int GetTotalUpgradeCost(int level)

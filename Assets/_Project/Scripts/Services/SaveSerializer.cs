@@ -510,8 +510,12 @@ namespace CatCatGo.Services
 
         private static Pet DeserializePet(PetData data)
         {
+            var template = PetTable.GetAllTemplates()
+                .FirstOrDefault(t => t.Name == data.Name);
+            var maxGrade = template?.MaxGrade ?? PetGrade.IMMORTAL;
+
             return new Pet(
-                data.Id, data.Name, data.Tier, data.Grade, data.Level,
+                data.Id, data.Name, data.Tier, data.Grade, maxGrade, data.Level,
                 Stats.Create(
                     hp: data.BasePassiveBonus.Hp,
                     maxHp: data.BasePassiveBonus.MaxHp,

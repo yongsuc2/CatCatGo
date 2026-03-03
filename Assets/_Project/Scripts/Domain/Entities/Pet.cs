@@ -21,16 +21,18 @@ namespace CatCatGo.Domain.Entities
         public string Id { get; }
         public string Name { get; }
         public PetTier Tier { get; }
+        public PetGrade MaxGrade { get; }
         public PetGrade Grade { get; set; }
         public int Level { get; set; }
         public Stats BasePassiveBonus { get; }
         public int Exp { get; set; }
 
-        public Pet(string id, string name, PetTier tier, PetGrade grade, int level = 1, Stats basePassiveBonus = default, int exp = 0)
+        public Pet(string id, string name, PetTier tier, PetGrade grade, PetGrade maxGrade = PetGrade.IMMORTAL, int level = 1, Stats basePassiveBonus = default, int exp = 0)
         {
             Id = id;
             Name = name;
             Tier = tier;
+            MaxGrade = maxGrade;
             Grade = grade;
             Level = level;
             BasePassiveBonus = basePassiveBonus;
@@ -63,6 +65,11 @@ namespace CatCatGo.Domain.Entities
 
         public Result<UpgradeGradeResult> UpgradeGrade()
         {
+            if (Grade >= MaxGrade)
+            {
+                return Result.Fail<UpgradeGradeResult>("Already at max grade");
+            }
+
             int idx = System.Array.IndexOf(PET_GRADE_ORDER, Grade);
             if (idx >= PET_GRADE_ORDER.Length - 1)
             {
@@ -89,7 +96,7 @@ namespace CatCatGo.Domain.Entities
 
         public bool IsMaxGrade()
         {
-            return Grade == PetGrade.IMMORTAL;
+            return Grade >= MaxGrade;
         }
     }
 

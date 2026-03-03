@@ -230,6 +230,7 @@ namespace CatCatGo.Services
                     template.Name,
                     template.Tier,
                     rewardDef.PetGrade ?? PetGrade.EPIC,
+                    template.MaxGrade,
                     1,
                     template.BasePassiveBonus);
                 Player.OwnedPets.Add(pet);

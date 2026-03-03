@@ -8,8 +8,6 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("defenseConstant")] public float DefenseConstant;
         [JsonProperty("magicDefenseConstant")] public float MagicDefenseConstant;
         [JsonProperty("baseMagicCoefficient")] public float BaseMagicCoefficient;
-        [JsonProperty("varianceMin")] public float VarianceMin;
-        [JsonProperty("varianceMax")] public float VarianceMax;
         [JsonProperty("critMultiplier")] public float CritMultiplier;
         [JsonProperty("counterCoefficient")] public float CounterCoefficient;
     }

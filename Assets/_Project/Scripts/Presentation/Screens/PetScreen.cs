@@ -401,6 +401,7 @@ namespace CatCatGo.Presentation.Screens
                 template.Name,
                 template.Tier,
                 PetGrade.COMMON,
+                template.MaxGrade,
                 1,
                 template.BasePassiveBonus);
             Game.Player.AddPet(pet);

@@ -23,5 +23,18 @@
   "promoteLevels": [10, 20, 30],
   "slotMaxCount": {
     "RING": 2
+  },
+  "upgradePriority": {
+    "slotScores": {
+      "WEAPON": 7,
+      "RING": 6,
+      "GLOVES": 5,
+      "ARMOR": 4,
+      "NECKLACE": 3,
+      "SHOES": 2,
+      "HAT": 1
+    },
+    "sGradeBonus": 2,
+    "levelDecay": 0.01
   }
 }

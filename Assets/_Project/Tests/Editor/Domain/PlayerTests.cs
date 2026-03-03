@@ -53,7 +53,7 @@ namespace CatCatGo.Tests.Domain
             var player = new Player();
             var baseStat = player.ComputeStats();
 
-            var pet = new Pet("p1", "Elsa", PetTier.S, PetGrade.LEGENDARY, 5, Stats.Create(atk: 10, maxHp: 50));
+            var pet = new Pet("p1", "Elsa", PetTier.S, PetGrade.LEGENDARY, PetGrade.IMMORTAL, 5, Stats.Create(atk: 10, maxHp: 50));
             player.AddPet(pet);
             player.SetActivePet(pet);
 
@@ -67,8 +67,8 @@ namespace CatCatGo.Tests.Domain
         {
             var player = new Player();
 
-            var activePet = new Pet("p1", "Active", PetTier.S, PetGrade.LEGENDARY, 5, Stats.Create(atk: 10));
-            var inactivePet = new Pet("p2", "Inactive", PetTier.A, PetGrade.EPIC, 5, Stats.Create(atk: 10));
+            var activePet = new Pet("p1", "Active", PetTier.S, PetGrade.LEGENDARY, PetGrade.IMMORTAL, 5, Stats.Create(atk: 10));
+            var inactivePet = new Pet("p2", "Inactive", PetTier.A, PetGrade.EPIC, PetGrade.LEGENDARY, 5, Stats.Create(atk: 10));
 
             player.AddPet(activePet);
             player.AddPet(inactivePet);

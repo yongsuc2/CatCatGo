@@ -391,9 +391,7 @@ namespace CatCatGo.Domain.Battle
             float atk = attacker.GetEffectiveAtk();
             float def = defender.GetEffectiveDef();
             float k = BattleDataTable.Data.Damage.DefenseConstant;
-            float raw = atk * (k / (k + def));
-            float variance = _rng.NextFloat(BattleDataTable.Data.Damage.VarianceMin, BattleDataTable.Data.Damage.VarianceMax);
-            return raw * variance;
+            return atk * (k / (k + def));
         }
 
         private bool CheckDeath()
