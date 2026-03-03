@@ -70,7 +70,7 @@ namespace CatCatGo.Domain.Chapter
             var scaledStats = EnemyTable.GetScaledStats(BaseStats, chapterLevel);
             if (dayProgress > 0)
             {
-                float dayBonus = 1 + dayProgress * BattleDataTable.Data.Enemy.DayProgressMaxBonus;
+                float dayBonus = 1 + dayProgress;
                 scaledStats = scaledStats.Multiply(dayBonus);
             }
             if (statMultiplier != 1.0f)

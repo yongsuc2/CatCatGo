@@ -25,7 +25,6 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("dualStatMultiplier")] public float DualStatMultiplier;
         [JsonProperty("scalingPerChapter")] public float ScalingPerChapter;
         [JsonProperty("scalingPerTowerFloor")] public float ScalingPerTowerFloor;
-        [JsonProperty("dayProgressMaxBonus")] public float DayProgressMaxBonus;
     }
 
     public class CombatGoldRewardConfig
@@ -35,6 +34,13 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("perDay")] public float PerDay;
     }
 
+    public class PlayerBaseStatsConfig
+    {
+        [JsonProperty("hp")] public int Hp;
+        [JsonProperty("atk")] public int Atk;
+        [JsonProperty("def")] public int Def;
+    }
+
     public class BattleData
     {
         [JsonProperty("damage")] public DamageConfig Damage;
@@ -42,6 +48,7 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("enemy")] public EnemyScalingConfig Enemy;
         [JsonProperty("combatGoldReward")] public CombatGoldRewardConfig CombatGoldReward;
         [JsonProperty("maxTurns")] public int MaxTurns;
+        [JsonProperty("playerBaseStats")] public PlayerBaseStatsConfig PlayerBaseStats;
     }
 
     public static class BattleDataTable

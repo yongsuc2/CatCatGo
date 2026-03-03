@@ -76,7 +76,7 @@ namespace CatCatGo.Domain.Data
                     BuildTrigger = _ => TriggerFactory.Trigger(TriggerFactory.EveryNTurns(1), TriggerFactory.Prob(1.0f), TriggerFactory.RageFull()),
                     BuildEffects = t => new[]
                     {
-                        new ActiveSkillEffect { Type = SkillEffectType.CONSUME_RAGE, Amount = 100 },
+                        new ActiveSkillEffect { Type = SkillEffectType.CONSUME_RAGE, Amount = BattleDataTable.Data.Rage.MaxRage },
                         new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.PHYSICAL, Coefficient = V(Td("bunno_attack", t), "coefficient") },
                     },
                     BuildDescription = t =>

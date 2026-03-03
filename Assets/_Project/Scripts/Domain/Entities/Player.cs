@@ -29,17 +29,15 @@ namespace CatCatGo.Domain.Entities
 
     public class Player
     {
-        public static readonly Stats BaseStats = Stats.Create(hp: 100, maxHp: 100, atk: 10, def: 5, crit: 0f);
-
-        private static readonly Dictionary<EquipmentGrade, int> SellPrices = new Dictionary<EquipmentGrade, int>
+        public static Stats BaseStats
         {
-            { EquipmentGrade.COMMON, 10 },
-            { EquipmentGrade.UNCOMMON, 30 },
-            { EquipmentGrade.RARE, 100 },
-            { EquipmentGrade.EPIC, 300 },
-            { EquipmentGrade.LEGENDARY, 1000 },
-            { EquipmentGrade.MYTHIC, 3000 },
-        };
+            get
+            {
+                var cfg = BattleDataTable.Data.PlayerBaseStats;
+                return Stats.Create(hp: cfg.Hp, maxHp: cfg.Hp, atk: cfg.Atk, def: cfg.Def, crit: 0f);
+            }
+        }
+
 
         public Talent Talent;
         public Heritage Heritage;
@@ -221,7 +219,7 @@ namespace CatCatGo.Domain.Entities
         {
             var eq = Inventory.Find(e => e.Id == id);
             if (eq == null || eq.IsS) return 0;
-            int price = SellPrices[eq.Grade];
+            int price = EquipmentDataTable.GetSellPrice(eq.Grade);
             RemoveFromInventory(id);
             Resources.Add(ResourceType.GOLD, price);
             return price;
