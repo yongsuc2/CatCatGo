@@ -264,14 +264,14 @@ namespace CatCatGo.Domain.Chapter
                 var template2 = EnemyTemplate.FromId(remaining[idx2]);
                 if (template2 != null)
                 {
-                    var e1 = template1.CreateInstance(Id, BattleDataTable.Data.Enemy.DualStatMultiplier, dayProgress, useNormalScaling: true);
-                    var e2 = template2.CreateInstance(Id, BattleDataTable.Data.Enemy.DualStatMultiplier, dayProgress, useNormalScaling: true);
+                    var e1 = template1.CreateInstance(Id, BattleDataTable.Data.Enemy.DualStatMultiplier, dayProgress);
+                    var e2 = template2.CreateInstance(Id, BattleDataTable.Data.Enemy.DualStatMultiplier, dayProgress);
                     CurrentBattle = new BattleInstance(playerUnit, new[] { e1, e2 }, _rng.NextInt(0, 999999));
                     return CurrentBattle;
                 }
             }
 
-            var enemy = template1.CreateInstance(Id, 1.0f, dayProgress, useNormalScaling: true);
+            var enemy = template1.CreateInstance(Id, 1.0f, dayProgress);
             CurrentBattle = new BattleInstance(playerUnit, enemy, _rng.NextInt(0, 999999));
             return CurrentBattle;
         }

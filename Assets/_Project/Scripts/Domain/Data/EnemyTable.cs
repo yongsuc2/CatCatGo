@@ -139,16 +139,6 @@ namespace CatCatGo.Domain.Data
             return baseStats.Multiply(factor);
         }
 
-        public static Stats GetNormalScaledStats(Stats baseStats, int chapterLevel)
-        {
-            EnsureLoaded();
-            float baseFactor = Mathf.Pow(BattleDataTable.Data.Enemy.ScalingPerChapter, chapterLevel - 1);
-            var enemy = BattleDataTable.Data.Enemy;
-            float bonus = 1f + enemy.NormalBonusPerChapter * (chapterLevel - 1);
-            float maxBonus = enemy.NormalBonusMax > 0 ? enemy.NormalBonusMax : float.MaxValue;
-            float factor = baseFactor * Mathf.Min(bonus, maxBonus);
-            return baseStats.Multiply(factor);
-        }
 
         public static Stats GetTowerScaledStats(Stats baseStats, int floor)
         {

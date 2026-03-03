@@ -24,8 +24,6 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("dualSpawnChance")] public float DualSpawnChance;
         [JsonProperty("dualStatMultiplier")] public float DualStatMultiplier;
         [JsonProperty("scalingPerChapter")] public float ScalingPerChapter;
-        [JsonProperty("normalBonusPerChapter")] public float NormalBonusPerChapter;
-        [JsonProperty("normalBonusMax")] public float NormalBonusMax;
         [JsonProperty("scalingPerTowerFloor")] public float ScalingPerTowerFloor;
         [JsonProperty("dayProgressMaxBonus")] public float DayProgressMaxBonus;
     }
