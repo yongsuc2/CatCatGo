@@ -20,9 +20,7 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<string, Sprite> _equipIconByKey;
         private Dictionary<string, Sprite> _skillIconByKey;
 
-        private Dictionary<string, Sprite[]> _idleFramesCache;
-        private Dictionary<string, Sprite[]> _walkFramesCache;
-        private Dictionary<string, Sprite[]> _attackFramesCache;
+        private Dictionary<string, Sprite> _battleSpriteCache;
 
         private void Awake()
         {
@@ -132,167 +130,40 @@ namespace CatCatGo.Presentation.Core
             }
         }
 
-        public Sprite[] GetPlayerIdleFrames() => GetIdleFrames("player");
-        public Sprite[] GetPlayerWalkFrames() => GetWalkFrames("player");
-        public Sprite[] GetPlayerAttackFrames() => GetAttackFrames("player");
+        public Sprite GetPlayerSprite() => GetBattleSprite("player");
 
-        public Sprite[] GetIdleFrames(string id)
+        public Sprite GetBattleSprite(string id)
         {
-            if (_idleFramesCache == null)
-                _idleFramesCache = new Dictionary<string, Sprite[]>();
+            if (_battleSpriteCache == null)
+                _battleSpriteCache = new Dictionary<string, Sprite>();
 
-            if (!_idleFramesCache.ContainsKey(id))
-                LoadSpriteSheet(id);
+            if (_battleSpriteCache.TryGetValue(id, out var cached))
+                return cached;
 
-            return _idleFramesCache[id];
+            var sprite = LoadBattleSprite(id);
+            _battleSpriteCache[id] = sprite;
+            return sprite;
         }
 
-        public Sprite[] GetWalkFrames(string id)
+        private Sprite LoadBattleSprite(string id)
         {
-            if (_walkFramesCache == null)
-                _walkFramesCache = new Dictionary<string, Sprite[]>();
+            var tex = Resources.Load<Texture2D>($"Chars/{id}/sprite");
+            if (tex != null)
+                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0f), 100f);
 
-            if (!_walkFramesCache.ContainsKey(id))
-                LoadSpriteSheet(id);
+            var legacyIndividual = Resources.Load<Texture2D>($"Chars/{id}/idle_0");
+            if (legacyIndividual != null)
+                return Sprite.Create(legacyIndividual, new Rect(0, 0, legacyIndividual.width, legacyIndividual.height), new Vector2(0.5f, 0f), 100f);
 
-            return _walkFramesCache[id];
-        }
-
-        public Sprite[] GetAttackFrames(string id)
-        {
-            if (_attackFramesCache == null)
-                _attackFramesCache = new Dictionary<string, Sprite[]>();
-
-            if (!_attackFramesCache.ContainsKey(id))
-                LoadSpriteSheet(id);
-
-            return _attackFramesCache[id];
-        }
-
-        private void LoadSpriteSheet(string id)
-        {
-            if (_idleFramesCache == null)
-                _idleFramesCache = new Dictionary<string, Sprite[]>();
-            if (_walkFramesCache == null)
-                _walkFramesCache = new Dictionary<string, Sprite[]>();
-            if (_attackFramesCache == null)
-                _attackFramesCache = new Dictionary<string, Sprite[]>();
-
-            if (TryLoadIndividualFrames(id))
-                return;
-
-            var tex = Resources.Load<Texture2D>($"Chars/{id}");
-            if (tex == null)
+            var legacySheet = Resources.Load<Texture2D>($"Chars/{id}");
+            if (legacySheet != null)
             {
-                _idleFramesCache[id] = new Sprite[0];
-                _walkFramesCache[id] = new Sprite[0];
-                _attackFramesCache[id] = new Sprite[0];
-                return;
+                int frameW = legacySheet.width / 4;
+                int frameH = legacySheet.height / 3;
+                return Sprite.Create(legacySheet, new Rect(0, frameH * 2, frameW, frameH), new Vector2(0.5f, 0f), 100f);
             }
 
-            int cols = 4;
-            int rows = 3;
-            int frameW = tex.width / cols;
-            int frameH = tex.height / rows;
-
-            var idleFrames = new Sprite[cols];
-            var walkFrames = new Sprite[cols];
-            var attackFrames = new Sprite[cols];
-
-            for (int i = 0; i < cols; i++)
-            {
-                idleFrames[i] = Sprite.Create(
-                    tex,
-                    new Rect(i * frameW, frameH * 2, frameW, frameH),
-                    new Vector2(0.5f, 0.5f),
-                    100f);
-                idleFrames[i].name = $"{id}_idle_{i}";
-
-                walkFrames[i] = Sprite.Create(
-                    tex,
-                    new Rect(i * frameW, frameH, frameW, frameH),
-                    new Vector2(0.5f, 0.5f),
-                    100f);
-                walkFrames[i].name = $"{id}_walk_{i}";
-
-                attackFrames[i] = Sprite.Create(
-                    tex,
-                    new Rect(i * frameW, 0, frameW, frameH),
-                    new Vector2(0.5f, 0.5f),
-                    100f);
-                attackFrames[i].name = $"{id}_attack_{i}";
-            }
-
-            _idleFramesCache[id] = idleFrames;
-            _walkFramesCache[id] = walkFrames;
-            _attackFramesCache[id] = attackFrames;
-        }
-
-        private bool TryLoadIndividualFrames(string id)
-        {
-            var first = Resources.Load<Texture2D>($"Chars/{id}/idle_0");
-            if (first == null) return false;
-
-            const int frameCount = 4;
-            var idleFrames = new Sprite[frameCount];
-            var walkFrames = new Sprite[frameCount];
-            var attackFrames = new Sprite[frameCount];
-
-            for (int i = 0; i < frameCount; i++)
-            {
-                var idleTex = Resources.Load<Texture2D>($"Chars/{id}/idle_{i}");
-                if (idleTex != null)
-                {
-                    idleFrames[i] = Sprite.Create(
-                        idleTex,
-                        new Rect(0, 0, idleTex.width, idleTex.height),
-                        new Vector2(0.5f, 0f),
-                        100f);
-                    idleFrames[i].name = $"{id}_idle_{i}";
-                }
-
-                var walkTex = Resources.Load<Texture2D>($"Chars/{id}/walk_{i}");
-                if (walkTex != null)
-                {
-                    walkFrames[i] = Sprite.Create(
-                        walkTex,
-                        new Rect(0, 0, walkTex.width, walkTex.height),
-                        new Vector2(0.5f, 0f),
-                        100f);
-                    walkFrames[i].name = $"{id}_walk_{i}";
-                }
-
-                var atkTex = Resources.Load<Texture2D>($"Chars/{id}/attack_{i}");
-                if (atkTex != null)
-                {
-                    attackFrames[i] = Sprite.Create(
-                        atkTex,
-                        new Rect(0, 0, atkTex.width, atkTex.height),
-                        new Vector2(0.5f, 0f),
-                        100f);
-                    attackFrames[i].name = $"{id}_attack_{i}";
-                }
-            }
-
-            if (idleFrames[0] == null)
-            {
-                _idleFramesCache[id] = new Sprite[0];
-                _walkFramesCache[id] = new Sprite[0];
-                _attackFramesCache[id] = new Sprite[0];
-                return true;
-            }
-
-            for (int i = 0; i < frameCount; i++)
-            {
-                if (idleFrames[i] == null) idleFrames[i] = idleFrames[0];
-                if (walkFrames[i] == null) walkFrames[i] = walkFrames[0] != null ? walkFrames[0] : idleFrames[i];
-                if (attackFrames[i] == null) attackFrames[i] = attackFrames[0] != null ? attackFrames[0] : idleFrames[i];
-            }
-
-            _idleFramesCache[id] = idleFrames;
-            _walkFramesCache[id] = walkFrames;
-            _attackFramesCache[id] = attackFrames;
-            return true;
+            return null;
         }
 
         public Sprite GetIcon(string iconId)

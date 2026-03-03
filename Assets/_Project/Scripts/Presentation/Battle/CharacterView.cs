@@ -26,15 +26,11 @@ namespace CatCatGo.Presentation.Battle
 
         private Vector2 _originalPosition;
         private Coroutine _phaseCoroutine;
-        private Coroutine _animCoroutine;
         private Coroutine _idleCoroutine;
         private RectTransform _spriteRt;
 
-        private Sprite[] _idleFrames;
-        private Sprite[] _walkFrames;
-        private Sprite[] _attackFrames;
-        private bool _useFrames;
-        private const float FRAME_INTERVAL = 0.15f;
+        private Sprite _characterSprite;
+        private bool _hasSprite;
 
         private const float BOB_AMPLITUDE = 4f;
         private const float BOB_SPEED = 2.5f;
@@ -57,11 +53,8 @@ namespace CatCatGo.Presentation.Battle
             _maxHp = maxHp;
             _hasRage = maxRage > 0;
 
-            StopFrameAnimation();
-            _idleFrames = null;
-            _walkFrames = null;
-            _attackFrames = null;
-            _useFrames = false;
+            _characterSprite = null;
+            _hasSprite = false;
 
             if (_rectTransform == null)
                 BuildUI(isBoss, placeholderColor);
@@ -99,17 +92,15 @@ namespace CatCatGo.Presentation.Battle
             StartIdleAnimation();
         }
 
-        public void SetFrames(Sprite[] idleFrames, Sprite[] walkFrames, Sprite[] attackFrames)
+        public void SetSprite(Sprite sprite)
         {
-            _idleFrames = idleFrames;
-            _walkFrames = walkFrames;
-            _attackFrames = attackFrames;
-            _useFrames = idleFrames != null && idleFrames.Length > 0;
+            _characterSprite = sprite;
+            _hasSprite = sprite != null;
 
-            if (!_useFrames || _spriteImage == null) return;
+            if (!_hasSprite || _spriteImage == null) return;
 
             _spriteImage.preserveAspect = true;
-            _spriteImage.sprite = idleFrames[0];
+            _spriteImage.sprite = sprite;
 
             _spriteRt = _spriteImage.GetComponent<RectTransform>();
             _spriteRt.sizeDelta = new Vector2(135f, 270f);
@@ -117,7 +108,6 @@ namespace CatCatGo.Presentation.Battle
 
             _rectTransform.sizeDelta = new Vector2(135f, 340f);
 
-            StartFrameAnimation(_idleFrames);
             StartIdleAnimation();
         }
 
@@ -189,16 +179,6 @@ namespace CatCatGo.Presentation.Battle
             if (_phaseCoroutine != null)
                 StopCoroutine(_phaseCoroutine);
 
-            if (_useFrames)
-            {
-                if (phase == AttackPhase.Hit)
-                    StartFrameAnimation(_attackFrames);
-                else if (phase == AttackPhase.Approach || phase == AttackPhase.Retreat)
-                    StartFrameAnimation(_walkFrames);
-                else
-                    StartFrameAnimation(_idleFrames);
-            }
-
             switch (phase)
             {
                 case AttackPhase.Approach:
@@ -233,10 +213,9 @@ namespace CatCatGo.Presentation.Battle
                 StopCoroutine(_phaseCoroutine);
                 _phaseCoroutine = null;
             }
-            StopFrameAnimation();
             StopIdleAnimation();
-            if (_useFrames && _idleFrames != null && _idleFrames.Length > 0)
-                _spriteImage.sprite = _idleFrames[0];
+            if (_hasSprite && _characterSprite != null)
+                _spriteImage.sprite = _characterSprite;
             if (_rectTransform != null)
                 _rectTransform.anchoredPosition = _originalPosition;
             ResetSpriteTransform();
@@ -373,33 +352,6 @@ namespace CatCatGo.Presentation.Battle
         {
             if (_spriteRt == null) return;
             _spriteRt.localScale = Vector3.one;
-        }
-
-        private void StartFrameAnimation(Sprite[] frames)
-        {
-            StopFrameAnimation();
-            if (frames != null && frames.Length > 0)
-                _animCoroutine = StartCoroutine(AnimateFrames(frames));
-        }
-
-        private void StopFrameAnimation()
-        {
-            if (_animCoroutine != null)
-            {
-                StopCoroutine(_animCoroutine);
-                _animCoroutine = null;
-            }
-        }
-
-        private IEnumerator AnimateFrames(Sprite[] frames)
-        {
-            int index = 0;
-            while (true)
-            {
-                _spriteImage.sprite = frames[index];
-                index = (index + 1) % frames.Length;
-                yield return new WaitForSeconds(FRAME_INTERVAL);
-            }
         }
 
         private void ClearStatusEffects()
@@ -581,7 +533,6 @@ namespace CatCatGo.Presentation.Battle
 
         private void OnDestroy()
         {
-            StopFrameAnimation();
             StopIdleAnimation();
             ClearStatusEffects();
         }
