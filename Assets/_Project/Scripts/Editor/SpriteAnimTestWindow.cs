@@ -18,6 +18,7 @@ namespace CatCatGo.Editor
         private SpriteFormat _format;
         private Texture2D _sheetTexture;
         private Texture2D[] _idleFrames;
+        private Texture2D[] _walkFrames;
         private Texture2D[] _attackFrames;
 
         private int _currentFrame;
@@ -79,6 +80,7 @@ namespace CatCatGo.Editor
             _format = SpriteFormat.None;
             _sheetTexture = null;
             _idleFrames = null;
+            _walkFrames = null;
             _attackFrames = null;
             _currentFrame = 0;
         }
@@ -98,12 +100,15 @@ namespace CatCatGo.Editor
             {
                 _format = SpriteFormat.Individual;
                 _idleFrames = new Texture2D[FRAME_COUNT];
+                _walkFrames = new Texture2D[FRAME_COUNT];
                 _attackFrames = new Texture2D[FRAME_COUNT];
 
                 for (int i = 0; i < FRAME_COUNT; i++)
                 {
                     _idleFrames[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         $"{individualDir}/idle_{i}.png");
+                    _walkFrames[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        $"{individualDir}/walk_{i}.png");
                     _attackFrames[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         $"{individualDir}/attack_{i}.png");
                 }
@@ -112,6 +117,8 @@ namespace CatCatGo.Editor
                 {
                     if (_idleFrames[i] == null && _idleFrames[0] != null)
                         _idleFrames[i] = _idleFrames[0];
+                    if (_walkFrames[i] == null)
+                        _walkFrames[i] = _walkFrames[0] != null ? _walkFrames[0] : _idleFrames[i];
                     if (_attackFrames[i] == null)
                         _attackFrames[i] = _attackFrames[0] != null ? _attackFrames[0] : _idleFrames[i];
                 }
@@ -215,14 +222,15 @@ namespace CatCatGo.Editor
             {
                 var tex = _idleFrames[0];
                 string size = tex != null ? $"{tex.width}x{tex.height}" : "?";
-                int idleCount = 0, atkCount = 0;
+                int idleCount = 0, walkCount = 0, atkCount = 0;
                 for (int i = 0; i < FRAME_COUNT; i++)
                 {
                     if (_idleFrames[i] != null) idleCount++;
+                    if (_walkFrames[i] != null) walkCount++;
                     if (_attackFrames[i] != null) atkCount++;
                 }
                 EditorGUILayout.LabelField(
-                    $"[Individual] {size}  |  idle: {idleCount}  attack: {atkCount}");
+                    $"[Individual] {size}  |  idle: {idleCount}  walk: {walkCount}  attack: {atkCount}");
             }
         }
 
@@ -239,9 +247,15 @@ namespace CatCatGo.Editor
                 _currentFrame = 0;
             }
             GUI.backgroundColor = _animRow == 1 ? Color.cyan : Color.white;
-            if (GUILayout.Button("Attack", GUILayout.Height(28)))
+            if (GUILayout.Button("Walk", GUILayout.Height(28)))
             {
                 _animRow = 1;
+                _currentFrame = 0;
+            }
+            GUI.backgroundColor = _animRow == 2 ? Color.cyan : Color.white;
+            if (GUILayout.Button("Attack", GUILayout.Height(28)))
+            {
+                _animRow = 2;
                 _currentFrame = 0;
             }
             GUI.backgroundColor = Color.white;
@@ -296,6 +310,11 @@ namespace CatCatGo.Editor
                 {
                     motionBobY = Mathf.Sin(time * 2.5f) * 4f * _zoom;
                     motionScale = Mathf.Lerp(0.97f, 1.03f, (Mathf.Sin(time * 2f) + 1f) * 0.5f);
+                }
+                else if (_animRow == 1)
+                {
+                    motionBobY = Mathf.Sin(time * 4f) * 3f * _zoom;
+                    motionScale = 1f;
                 }
                 else
                 {
@@ -375,9 +394,9 @@ namespace CatCatGo.Editor
 
         private void DrawAllFrames()
         {
-            string[] rowNames = { "Idle", "Attack" };
+            string[] rowNames = { "Idle", "Walk", "Attack" };
 
-            for (int row = 0; row < 2; row++)
+            for (int row = 0; row < 3; row++)
             {
                 EditorGUILayout.LabelField(rowNames[row], EditorStyles.miniLabel);
                 EditorGUILayout.BeginHorizontal();
@@ -461,7 +480,7 @@ namespace CatCatGo.Editor
             float selY = sheetRect.y + _animRow * cellH;
             DrawRectOutline(new Rect(selX, selY, cellW, cellH), Color.green, 2f);
 
-            string[] rowNames = { "Idle", "Attack", "Empty" };
+            string[] rowNames = { "Idle", "Walk", "Attack" };
             for (int r = 0; r < 3; r++)
             {
                 var labelRect = new Rect(sheetRect.x + 4, sheetRect.y + r * cellH + 2, 80, 16);
@@ -478,7 +497,11 @@ namespace CatCatGo.Editor
         {
             if (_format == SpriteFormat.Individual)
             {
-                var frames = row == 0 ? _idleFrames : _attackFrames;
+                Texture2D[] frames;
+                if (row == 0) frames = _idleFrames;
+                else if (row == 1) frames = _walkFrames;
+                else frames = _attackFrames;
+
                 if (frames != null && col < frames.Length)
                     return frames[col];
                 return null;
