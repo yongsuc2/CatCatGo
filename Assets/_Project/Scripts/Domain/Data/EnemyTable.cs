@@ -139,6 +139,15 @@ namespace CatCatGo.Domain.Data
             return baseStats.Multiply(factor);
         }
 
+        public static Stats GetNormalScaledStats(Stats baseStats, int chapterLevel)
+        {
+            EnsureLoaded();
+            float scaling = BattleDataTable.Data.Enemy.NormalScalingPerChapter;
+            if (scaling <= 0) scaling = BattleDataTable.Data.Enemy.ScalingPerChapter;
+            float factor = Mathf.Pow(scaling, chapterLevel - 1);
+            return baseStats.Multiply(factor);
+        }
+
         public static Stats GetTowerScaledStats(Stats baseStats, int floor)
         {
             EnsureLoaded();

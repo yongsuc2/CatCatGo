@@ -585,3 +585,18 @@
   - encounter.data.json Resources 복사본 고아 필드 삭제 (combat, chapterBossAssignment)
   - enemy.data.json Resources 복사본 포맷 동기화 (pretty-print→minified)
   - 죽은 코드 삭제: BattleLogType.BUFF_APPLIED enum, BattleUnit.GetUpperSkills(), EnemyTemplate.BuildEnemySkills() 래퍼, Chapter.GetDaysForType() 래퍼
+
+---
+
+## 2026-03-03 (Day 19)
+
+### 완료 작업
+- **일반 적 챕터 스케일링 강화** (Y-84)
+  - 문제: 모든 적 타입이 동일한 scalingPerChapter(1.25)을 사용하여, 기본 스탯이 낮은 일반 적의 챕터 간 강해짐이 체감되지 않음 (엘리트/보스는 높은 기본 스탯으로 체감됨)
+  - 해결: 일반 적 전용 `normalScalingPerChapter = 1.28` 추가
+  - battle.data.json에 normalScalingPerChapter 필드 추가 (Data/Json + Resources 양쪽)
+  - BattleDataTable.EnemyScalingConfig에 NormalScalingPerChapter 필드 추가
+  - EnemyTable.GetNormalScaledStats() 메서드 추가 (normalScalingPerChapter 사용, 미설정 시 기존 값 폴백)
+  - EnemyTemplate.CreateInstance()에 useNormalScaling 파라미터 추가
+  - Chapter.CreateCombatBattle()에서 일반 전투(단일/듀얼 스폰) 시 useNormalScaling: true 전달
+  - 엘리트/보스 전투(CreateEliteBattle/CreateMidBossBattle/CreateBossBattle)는 기존 scalingPerChapter(1.25) 유지

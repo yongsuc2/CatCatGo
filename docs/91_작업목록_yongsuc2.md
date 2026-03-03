@@ -93,6 +93,7 @@
 | Y-81 | Claude 스킬 프로젝트 내 이전 | 하 | 완료 | 전역 플러그인 3개→.claude/skills/ 이전, .gitignore 스킬 추적 설정 |
 | Y-82 | 전투 UI 바/아이콘 레이아웃 개선 | 중 | 완료 | StatusEffectIconView 재구성(Icon 36x36+Label 18px), HP 바 축소(36→12), 분노 바 HP 바와 동일 크기 통일, 세로 배치 겹침 제거, 모험화면_기획서 업데이트 |
 | Y-83 | 종합 버그 감사 수정 (8건) | 중 | 완료 | MainScreen flexibleHeight=0+HP포맷팅, StatsDetailPopup Mask→RectMask2D, encounter/enemy JSON 동기화, 죽은 코드 삭제(BUFF_APPLIED/GetUpperSkills/BuildEnemySkills/GetDaysForType) |
+| Y-84 | 일반 적 챕터 스케일링 강화 | 하 | 완료 | 일반 적 전용 normalScalingPerChapter(1.28) 추가, 엘리트/보스는 기존 scalingPerChapter(1.25) 유지, EnemyTable.GetNormalScaledStats 메서드, Chapter.CreateCombatBattle에서 적용 |
 
 ---
 

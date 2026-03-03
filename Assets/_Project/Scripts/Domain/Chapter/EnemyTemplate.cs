@@ -65,9 +65,11 @@ namespace CatCatGo.Domain.Chapter
             return FromData(data);
         }
 
-        public BattleUnit CreateInstance(int chapterLevel, float statMultiplier = 1.0f, float dayProgress = 0f)
+        public BattleUnit CreateInstance(int chapterLevel, float statMultiplier = 1.0f, float dayProgress = 0f, bool useNormalScaling = false)
         {
-            var scaledStats = EnemyTable.GetScaledStats(BaseStats, chapterLevel);
+            var scaledStats = useNormalScaling
+                ? EnemyTable.GetNormalScaledStats(BaseStats, chapterLevel)
+                : EnemyTable.GetScaledStats(BaseStats, chapterLevel);
             if (dayProgress > 0)
             {
                 float dayBonus = 1 + dayProgress * BattleDataTable.Data.Enemy.DayProgressMaxBonus;
