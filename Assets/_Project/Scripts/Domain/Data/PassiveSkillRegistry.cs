@@ -203,7 +203,12 @@ namespace CatCatGo.Domain.Data
                         float val = d.ContainsKey("value") ? d["value"] : V(Td("angel_power", 4), "value");
                         return new PassiveEffect { Type = PassiveType.STAT_MODIFIER, Stat = StatType.ATK, Value = val, IsPercentage = true };
                     },
-                    BuildDescription = _ => "\uacf5\uaca9\ub825 +30%",
+                    BuildDescription = t =>
+                    {
+                        var d = Td("angel_power", t);
+                        float val = d.ContainsKey("value") ? d["value"] : V(Td("angel_power", 4), "value");
+                        return $"\uacf5\uaca9\ub825 +{Pct(val)}";
+                    },
                 },
             };
         }

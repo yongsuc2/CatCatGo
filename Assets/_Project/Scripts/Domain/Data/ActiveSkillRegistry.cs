@@ -576,7 +576,12 @@ namespace CatCatGo.Domain.Data
                             new ActiveSkillEffect { Type = SkillEffectType.ATTACK, AttackType = AttackType.MAGIC, Coefficient = coeff },
                         };
                     },
-                    BuildDescription = _ => "\uc77c\ubc18 \uacf5\uaca9 \uc2dc \ub9c8\ubc95 \ucd94\uac00 \uacf5\uaca9",
+                    BuildDescription = t =>
+                    {
+                        var d = Td("demon_power", t);
+                        float coeff = d.ContainsKey("coefficient") ? d["coefficient"] : V(Td("demon_power", 4), "coefficient");
+                        return $"\uc77c\ubc18 \uacf5\uaca9 \uc2dc \ub9c8\ubc95 \ucd94\uac00 \uacf5\uaca9 ({Pct(coeff)})";
+                    },
                 },
             };
         }

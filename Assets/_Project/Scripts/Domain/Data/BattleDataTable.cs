@@ -39,6 +39,12 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("def")] public int Def;
     }
 
+    public class DailyResetConfig
+    {
+        [JsonProperty("challengeToken")] public int ChallengeToken;
+        [JsonProperty("pickaxe")] public int Pickaxe;
+    }
+
     public class BattleData
     {
         [JsonProperty("damage")] public DamageConfig Damage;
@@ -47,6 +53,7 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("combatGoldReward")] public CombatGoldRewardConfig CombatGoldReward;
         [JsonProperty("maxTurns")] public int MaxTurns;
         [JsonProperty("playerBaseStats")] public PlayerBaseStatsConfig PlayerBaseStats;
+        [JsonProperty("dailyReset")] public DailyResetConfig DailyReset;
     }
 
     public static class BattleDataTable

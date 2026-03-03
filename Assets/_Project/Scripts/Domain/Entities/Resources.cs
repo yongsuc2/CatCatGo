@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CatCatGo.Domain.Data;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 
@@ -108,8 +109,9 @@ namespace CatCatGo.Domain.Entities
 
         public void DailyReset()
         {
-            _amounts[ResourceType.CHALLENGE_TOKEN] = 5;
-            _amounts[ResourceType.PICKAXE] = 10;
+            var cfg = BattleDataTable.Data.DailyReset;
+            _amounts[ResourceType.CHALLENGE_TOKEN] = cfg.ChallengeToken;
+            _amounts[ResourceType.PICKAXE] = cfg.Pickaxe;
         }
 
         public void SetAmount(ResourceType type, float amount)

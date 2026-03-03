@@ -25,5 +25,9 @@
     "hp": 100,
     "atk": 10,
     "def": 5
+  },
+  "dailyReset": {
+    "challengeToken": 5,
+    "pickaxe": 10
   }
 }
