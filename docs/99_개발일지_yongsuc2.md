@@ -593,7 +593,9 @@
 ### 완료 작업
 - **일반 적 챕터 스케일링 강화** (Y-84)
   - 문제: 모든 적 타입이 동일한 scalingPerChapter(1.25)을 사용하여, 기본 스탯이 낮은 일반 적의 챕터 간 강해짐이 체감되지 않음 (엘리트/보스는 높은 기본 스탯으로 체감됨)
-  - 해결: 일반 적 전용 `normalScalingPerChapter = 1.265` 추가 (1.28은 후반 챕터에서 일반>엘리트 역전 발생하여 하향)
+  - 1차 시도: 별도 지수(normalScalingPerChapter) → 후반 챕터에서 지수 차이가 복리로 누적되어 일반>엘리트 역전 불가피
+  - 최종 해결: 동일 지수(scalingPerChapter) + 선형 보너스(normalBonusPerChapter) + 상한 캡(normalBonusMax)
+  - 선형 보너스는 지수 대비 성장이 느려 기본 스탯 비율(일반 < 엘리트)이 절대 역전되지 않음
   - battle.data.json에 normalScalingPerChapter 필드 추가 (Data/Json + Resources 양쪽)
   - BattleDataTable.EnemyScalingConfig에 NormalScalingPerChapter 필드 추가
   - EnemyTable.GetNormalScaledStats() 메서드 추가 (normalScalingPerChapter 사용, 미설정 시 기존 값 폴백)

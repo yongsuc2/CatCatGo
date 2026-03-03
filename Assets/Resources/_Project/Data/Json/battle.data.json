@@ -15,7 +15,8 @@
     "dualSpawnChance": 0.5,
     "dualStatMultiplier": 0.7,
     "scalingPerChapter": 1.25,
-    "normalScalingPerChapter": 1.265,
+    "normalBonusPerChapter": 0.02,
+    "normalBonusMax": 2.0,
     "scalingPerTowerFloor": 1.08,
     "dayProgressMaxBonus": 0.3
   },
