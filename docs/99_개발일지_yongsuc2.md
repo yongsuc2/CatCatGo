@@ -603,3 +603,7 @@
   - EnemyTemplate.CreateInstance()에 useNormalScaling 파라미터 추가
   - Chapter.CreateCombatBattle()에서 일반 전투(단일/듀얼 스폰) 시 useNormalScaling: true 전달
   - 엘리트/보스 전투(CreateEliteBattle/CreateMidBossBattle/CreateBossBattle)는 기존 scalingPerChapter(1.25) 유지
+- **재능 강화 비용 증가율 통일** (Y-85)
+  - costGrowth를 전 등급 1.10으로 통일 (기존: 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02)
+  - baseCost는 변경 없음 — 등급 전환 시 비용 점프는 baseCost가 담당
+  - 서브 등급 올라갈 때마다 10% 비용 증가 체감 가능
