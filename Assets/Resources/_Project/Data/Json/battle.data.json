@@ -14,7 +14,7 @@
   "enemy": {
     "dualSpawnChance": 0.5,
     "dualStatMultiplier": 0.7,
-    "scalingPerChapter": 1.25,
+    "scalingPerChapter": 1.3,
     "scalingPerTowerFloor": 1.08,
     "dayProgressMaxBonus": 0.3
   },

@@ -139,6 +139,7 @@ namespace CatCatGo.Domain.Data
             return baseStats.Multiply(factor);
         }
 
+
         public static Stats GetTowerScaledStats(Stats baseStats, int floor)
         {
             EnsureLoaded();

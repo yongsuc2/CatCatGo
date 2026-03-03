@@ -585,3 +585,25 @@
   - encounter.data.json Resources 복사본 고아 필드 삭제 (combat, chapterBossAssignment)
   - enemy.data.json Resources 복사본 포맷 동기화 (pretty-print→minified)
   - 죽은 코드 삭제: BattleLogType.BUFF_APPLIED enum, BattleUnit.GetUpperSkills(), EnemyTemplate.BuildEnemySkills() 래퍼, Chapter.GetDaysForType() 래퍼
+
+---
+
+## 2026-03-03 (Day 19)
+
+### 완료 작업
+- **일반 적 챕터 스케일링 강화** (Y-84)
+  - 문제: 모든 적 타입이 동일한 scalingPerChapter(1.25)을 사용하여, 기본 스탯이 낮은 일반 적의 챕터 간 강해짐이 체감되지 않음 (엘리트/보스는 높은 기본 스탯으로 체감됨)
+  - 최종 해결: 별도 스케일링 메카닉 불필요 — 근본 원인은 일반 적 기본 스탯이 엘리트 대비 ~32%로 너무 낮았음
+  - 전 테마 일반 적 기본 스탯을 엘리트 대비 ~45%로 상향 (HP/ATK/DEF 각 스탯 평균)
+  - scalingPerChapter 1.25 → 1.3으로 상향 (모든 적 타입 동일 적용)
+  - 별도 스케일링 코드(GetNormalScaledStats, useNormalScaling) 전량 삭제
+  - battle.data.json에 normalScalingPerChapter 필드 추가 (Data/Json + Resources 양쪽)
+  - BattleDataTable.EnemyScalingConfig에 NormalScalingPerChapter 필드 추가
+  - EnemyTable.GetNormalScaledStats() 메서드 추가 (normalScalingPerChapter 사용, 미설정 시 기존 값 폴백)
+  - EnemyTemplate.CreateInstance()에 useNormalScaling 파라미터 추가
+  - Chapter.CreateCombatBattle()에서 일반 전투(단일/듀얼 스폰) 시 useNormalScaling: true 전달
+  - 엘리트/보스 전투(CreateEliteBattle/CreateMidBossBattle/CreateBossBattle)는 기존 scalingPerChapter(1.25) 유지
+- **재능 강화 비용 증가율 통일** (Y-85)
+  - costGrowth를 전 등급 1.10으로 통일 (기존: 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02)
+  - baseCost는 변경 없음 — 등급 전환 시 비용 점프는 baseCost가 담당
+  - 서브 등급 올라갈 때마다 10% 비용 증가 체감 가능

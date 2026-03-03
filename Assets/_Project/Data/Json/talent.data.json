@@ -10,10 +10,10 @@
   "levelsPerStat": 10,
   "gradeConfig": [
     { "grade": "DISCIPLE", "tiers": 2, "baseCost": 80, "costGrowth": 1.10, "tierBonusBase": 10, "tierBonusGrowth": 0 },
-    { "grade": "ADVENTURER", "tiers": 5, "baseCost": 130, "costGrowth": 1.08, "tierBonusBase": 10, "tierBonusGrowth": 2 },
-    { "grade": "ELITE", "tiers": 10, "baseCost": 420, "costGrowth": 1.06, "tierBonusBase": 15, "tierBonusGrowth": 2 },
-    { "grade": "MASTER", "tiers": 17, "baseCost": 2600, "costGrowth": 1.04, "tierBonusBase": 25, "tierBonusGrowth": 2 },
-    { "grade": "WARRIOR", "tiers": 33, "baseCost": 19000, "costGrowth": 1.02, "tierBonusBase": 40, "tierBonusGrowth": 2 }
+    { "grade": "ADVENTURER", "tiers": 5, "baseCost": 130, "costGrowth": 1.10, "tierBonusBase": 10, "tierBonusGrowth": 2 },
+    { "grade": "ELITE", "tiers": 10, "baseCost": 420, "costGrowth": 1.10, "tierBonusBase": 15, "tierBonusGrowth": 2 },
+    { "grade": "MASTER", "tiers": 17, "baseCost": 2600, "costGrowth": 1.10, "tierBonusBase": 25, "tierBonusGrowth": 2 },
+    { "grade": "WARRIOR", "tiers": 33, "baseCost": 19000, "costGrowth": 1.10, "tierBonusBase": 40, "tierBonusGrowth": 2 }
   ],
   "mainGradeBonuses": [
     { "grade": "ADVENTURER", "stat": "ATK", "amount": 30 },
