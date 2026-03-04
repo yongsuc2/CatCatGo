@@ -32,6 +32,12 @@ namespace CatCatGo.Presentation.Battle
         private Sprite _characterSprite;
         private bool _hasSprite;
 
+        private Sprite[] _idleFrames;
+        private Sprite[] _attackFrames;
+        private Coroutine _frameAnimCoroutine;
+        private const float IDLE_FRAME_FPS = 8f;
+        private const float ATTACK_FRAME_FPS = 12f;
+
         private const float BOB_AMPLITUDE = 4f;
         private const float BOB_SPEED = 2.5f;
         private const float BREATHE_MIN = 0.97f;
@@ -111,6 +117,28 @@ namespace CatCatGo.Presentation.Battle
             StartIdleAnimation();
         }
 
+        public void SetAnimationFrames(Sprite[] idle, Sprite[] attack)
+        {
+            _idleFrames = idle;
+            _attackFrames = attack;
+            if (_idleFrames != null && _idleFrames.Length > 0)
+            {
+                _characterSprite = _idleFrames[0];
+                _spriteImage.sprite = _characterSprite;
+                _spriteImage.preserveAspect = true;
+
+                var frameRect = _idleFrames[0].rect;
+                float aspect = frameRect.width / frameRect.height;
+                float displayWidth = 135f;
+                float displayHeight = displayWidth / aspect;
+                _spriteRt.sizeDelta = new Vector2(displayWidth, displayHeight);
+                _spriteRt.anchoredPosition = new Vector2(0f, 80f);
+                _rectTransform.sizeDelta = new Vector2(displayWidth, displayHeight + 70f);
+
+                StartIdleAnimation();
+            }
+        }
+
         public void UpdateHp(int current, int max)
         {
             _maxHp = max;
@@ -183,15 +211,18 @@ namespace CatCatGo.Presentation.Battle
             {
                 case AttackPhase.Approach:
                     StopIdleAnimation();
+                    StartAttackFrameAnimation();
                     _phaseCoroutine = StartCoroutine(ApproachTo(targetPosition, duration));
                     break;
                 case AttackPhase.Hit:
                     _phaseCoroutine = StartCoroutine(HitImpact(duration));
                     break;
                 case AttackPhase.Retreat:
+                    StopAttackFrameAnimation();
                     _phaseCoroutine = StartCoroutine(RetreatTo(_originalPosition, duration));
                     break;
                 case AttackPhase.Idle:
+                    StopAttackFrameAnimation();
                     _rectTransform.anchoredPosition = _originalPosition;
                     ResetSpriteTransform();
                     StartIdleAnimation();
@@ -214,7 +245,10 @@ namespace CatCatGo.Presentation.Battle
                 _phaseCoroutine = null;
             }
             StopIdleAnimation();
-            if (_hasSprite && _characterSprite != null)
+            StopAttackFrameAnimation();
+            if (_idleFrames != null && _idleFrames.Length > 0)
+                _spriteImage.sprite = _idleFrames[0];
+            else if (_hasSprite && _characterSprite != null)
                 _spriteImage.sprite = _characterSprite;
             if (_rectTransform != null)
                 _rectTransform.anchoredPosition = _originalPosition;
@@ -315,11 +349,25 @@ namespace CatCatGo.Presentation.Battle
             float time = Random.Range(0f, Mathf.PI * 2f);
             Vector2 baseSpritePos = _spriteRt != null ? _spriteRt.anchoredPosition : Vector2.zero;
 
+            bool hasFrames = _idleFrames != null && _idleFrames.Length > 0;
+            int frameIndex = 0;
+            float frameTimer = 0f;
+
             while (true)
             {
                 time += Time.deltaTime;
 
-                if (_spriteRt != null)
+                if (hasFrames)
+                {
+                    frameTimer += Time.deltaTime;
+                    if (frameTimer >= 1f / IDLE_FRAME_FPS)
+                    {
+                        frameTimer -= 1f / IDLE_FRAME_FPS;
+                        frameIndex = (frameIndex + 1) % _idleFrames.Length;
+                        _spriteImage.sprite = _idleFrames[frameIndex];
+                    }
+                }
+                else if (_spriteRt != null)
                 {
                     float bobY = Mathf.Sin(time * BOB_SPEED) * BOB_AMPLITUDE;
                     _spriteRt.anchoredPosition = baseSpritePos + new Vector2(0f, bobY);
@@ -531,9 +579,41 @@ namespace CatCatGo.Presentation.Battle
             return rt;
         }
 
+        private void StartAttackFrameAnimation()
+        {
+            if (_attackFrames == null || _attackFrames.Length == 0) return;
+            StopAttackFrameAnimation();
+            _frameAnimCoroutine = StartCoroutine(PlayAttackFrames());
+        }
+
+        private void StopAttackFrameAnimation()
+        {
+            if (_frameAnimCoroutine != null)
+            {
+                StopCoroutine(_frameAnimCoroutine);
+                _frameAnimCoroutine = null;
+            }
+            if (_idleFrames != null && _idleFrames.Length > 0)
+                _spriteImage.sprite = _idleFrames[0];
+            else if (_characterSprite != null)
+                _spriteImage.sprite = _characterSprite;
+        }
+
+        private IEnumerator PlayAttackFrames()
+        {
+            float interval = 1f / ATTACK_FRAME_FPS;
+            for (int i = 0; i < _attackFrames.Length; i++)
+            {
+                _spriteImage.sprite = _attackFrames[i];
+                yield return new WaitForSeconds(interval);
+            }
+            _frameAnimCoroutine = null;
+        }
+
         private void OnDestroy()
         {
             StopIdleAnimation();
+            StopAttackFrameAnimation();
             ClearStatusEffects();
         }
     }

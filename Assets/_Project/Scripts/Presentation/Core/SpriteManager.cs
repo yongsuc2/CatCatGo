@@ -21,6 +21,7 @@ namespace CatCatGo.Presentation.Core
         private Dictionary<string, Sprite> _skillIconByKey;
 
         private Dictionary<string, Sprite> _battleSpriteCache;
+        private Dictionary<string, Sprite[]> _animFrameCache;
 
         private void Awake()
         {
@@ -143,6 +144,32 @@ namespace CatCatGo.Presentation.Core
             var sprite = LoadBattleSprite(id);
             _battleSpriteCache[id] = sprite;
             return sprite;
+        }
+
+        public Sprite[] GetAnimationFrames(string id, string animType)
+        {
+            if (_animFrameCache == null)
+                _animFrameCache = new Dictionary<string, Sprite[]>();
+
+            string key = $"{id}/{animType}";
+            if (_animFrameCache.TryGetValue(key, out var cached))
+                return cached;
+
+            var frames = LoadAnimationFrames(id, animType);
+            _animFrameCache[key] = frames;
+            return frames;
+        }
+
+        private Sprite[] LoadAnimationFrames(string id, string animType)
+        {
+            var list = new List<Sprite>();
+            for (int i = 1; i <= 100; i++)
+            {
+                var tex = Resources.Load<Texture2D>($"Chars/{id}/{animType}/frame_{i:D4}");
+                if (tex == null) break;
+                list.Add(Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0f), 100f));
+            }
+            return list.Count > 0 ? list.ToArray() : null;
         }
 
         private Sprite LoadBattleSprite(string id)
