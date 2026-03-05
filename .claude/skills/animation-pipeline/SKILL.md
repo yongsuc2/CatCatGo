@@ -179,7 +179,23 @@ Maintain the solid bright green background throughout. Side view maintained. No 
 | API 타임아웃 | 동영상 생성 지연 | 폴링 간격/최대 대기시간 늘리기 |
 | ffmpeg/magick 미설치 | PATH 미등록 | ffmpeg, ImageMagick 설치 + PATH 등록 |
 
+## 플레이어 캐릭터
+
+플레이어는 적과 다른 고품질 스펙을 사용한다 (24프레임, 6초 동영상, 4fps 추출).
+전용 스크립트와 스펙 문서를 참조:
+
+- 스펙 문서: `docs/리소스_제작_요청서/플레이어_애니메이션.md`
+- 전용 스크립트: `scripts/generate_player_animation.py`
+
+```bash
+python scripts/generate_player_animation.py                    # 전체 파이프라인
+python scripts/generate_player_animation.py --step video       # 동영상만
+python scripts/generate_player_animation.py --step frames      # 프레임 추출만
+python scripts/generate_player_animation.py --status           # 상태 확인
+```
+
 ## 아트 스타일 참조
 
 상세 스타일 가이드: `docs/리소스_제작_요청서/공통_스타일_가이드.md`
 캐릭터별 상세: `docs/리소스_제작_요청서/몬스터_스프라이트.md`
+플레이어 전용: `docs/리소스_제작_요청서/플레이어_애니메이션.md`
