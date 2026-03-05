@@ -95,6 +95,15 @@
 | Y-83 | 종합 버그 감사 수정 (8건) | 중 | 완료 | MainScreen flexibleHeight=0+HP포맷팅, StatsDetailPopup Mask→RectMask2D, encounter/enemy JSON 동기화, 죽은 코드 삭제(BUFF_APPLIED/GetUpperSkills/BuildEnemySkills/GetDaysForType) |
 | Y-84 | 일반 적 챕터 스케일링 강화 | 하 | 완료 | 일반 적 전용 normalScalingPerChapter(1.265) 추가, 엘리트/보스는 기존 scalingPerChapter(1.25) 유지, EnemyTable.GetNormalScaledStats 메서드, Chapter.CreateCombatBattle에서 적용 |
 | Y-85 | 재능 강화 비용 증가율 통일 | 하 | 완료 | costGrowth 전 등급 1.10으로 통일 (기존: 수련생 1.10, 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02) |
+| Y-86 | [Server] 게임 서버 아키텍처 설계 | 상 | 완료 | ASP.NET Core 8.0 서버 설계 — 계정/인증(JWT), 세이브 동기화, 결제(IAP 영수증 검증), 상품 관리, 치트 검증(시드 기반 전투 재현), 아레나, 가챠 서버사이드 |
+| Y-87 | [Server] 서버 프로젝트 초기 구조 | 상 | 완료 | Server/ 디렉토리 — Api/Core/Infrastructure/Shared 4-프로젝트 솔루션, 6개 컨트롤러, 6개 서비스, 7개 리포지토리 인터페이스+구현, PostgreSQL+Redis, Docker Compose |
+| Y-88 | [Server] 인증 시스템 구현 | 중 | 대기 | 게스트 로그인(DeviceId), 소셜 연동(Google/Apple), Refresh Token 갱신, 계정 복구 |
+| Y-89 | [Server] 세이브 동기화 구현 | 중 | 대기 | 클라이언트 SaveManager → NetworkManager 연동, 타임스탬프 기반 충돌 해소, 오프라인 큐 |
+| Y-90 | [Server] 결제 영수증 검증 | 상 | 대기 | Google Play / App Store 서버 API 연동, 영수증 검증 → 보상 지급, 중복 방지 |
+| Y-91 | [Server] 전투 재현 검증 엔진 | 상 | 대기 | Domain 어셈블리 서버 참조, SeededRandom 기반 전투 독립 재현, 결과 비교 |
+| Y-92 | [Server] 아레나 백엔드 | 중 | 대기 | 매칭/ELO/시즌 관리, 스냅샷 저장, 비동기 PvP 활성화 |
+| Y-93 | [Server] 가챠 서버사이드 전환 | 중 | 대기 | TreasureChest 서버 실행, 천장 카운터 서버 관리, 확률 조작 방지 |
+| Y-94 | [Server] Unity 클라이언트 NetworkManager | 상 | 대기 | HTTP 클라이언트, JWT 토큰 관리, 오프라인 폴백, 서버 연동 |
 
 ---
 
@@ -104,3 +113,7 @@
 - Y-3는 Y-1 완료 후 진행 (방치 보상 계산 후 저장 필요)
 - Y-4, Y-5는 독립적으로 진행 가능
 - Y-6, Y-7, Y-8은 독립적으로 진행 가능
+- Y-88~Y-94는 Y-86, Y-87 완료 후 순차/병렬 진행
+- Y-90은 스토어 개발자 계정 필요 (Google Play Console, App Store Connect)
+- Y-91은 Domain 어셈블리를 서버에서 참조할 수 있도록 프로젝트 구성 필요
+- Y-94는 Y-88 완료 후 진행 (인증이 클라이언트 연동의 전제)

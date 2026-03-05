@@ -607,3 +607,27 @@
   - costGrowth를 전 등급 1.10으로 통일 (기존: 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02)
   - baseCost는 변경 없음 — 등급 전환 시 비용 점프는 baseCost가 담당
   - 서브 등급 올라갈 때마다 10% 비용 증가 체감 가능
+
+---
+
+## 2026-03-05 (Day 20)
+
+### 완료 작업
+- **게임 서버 아키텍처 설계** (Y-86)
+  - `docs/14_서버아키텍처.md` 작성 — 전체 서버 설계 문서
+  - 기술 스택 결정: ASP.NET Core 8.0 + PostgreSQL + Redis + JWT
+  - 핵심 결정: Domain/Infrastructure 어셈블리를 서버에서 그대로 재사용 (전투 재현 검증)
+  - 서버 권위 모델 정의: 재화/결제/세이브/가챠는 서버 권위, 전투는 클라이언트 주도+서버 검증
+  - API 설계: Auth(5), Save(3), Shop(4), Battle(2), Arena(4), Gacha(3) 총 21개 엔드포인트
+  - DB 스키마 설계: accounts, save_data, products, purchases, arena_rankings, cheat_flags 6개 테이블
+  - 치트 검증 상세 설계: 시드 기반 전투 재현, 속도핵 탐지, 영수증 중복 차단
+  - 구현 우선순위 8단계 정의
+- **서버 프로젝트 초기 구조 생성** (Y-87)
+  - `Server/` 디렉토리에 ASP.NET Core 프로젝트 스캐폴딩
+  - 4-프로젝트 솔루션: Server.Api / Server.Core / Server.Infrastructure / Shared
+  - **API 레이어**: AuthController, SaveController, ShopController, BattleController, ArenaController, GachaController
+  - **Core 레이어**: AuthService, SaveService, ShopService, ArenaService, BattleVerifier + 7개 모델 + 7개 리포지토리 인터페이스
+  - **Infrastructure 레이어**: EF Core AppDbContext(6 엔티티 매핑), 6개 Repository 구현, RedisSessionStore, GooglePlayVerifier/AppStoreVerifier 스텁
+  - **Shared 레이어**: 클라이언트-서버 공유 DTO (Request 4개, Response 4개)
+  - Docker Compose: api + postgres:16 + redis:7, Dockerfile (multi-stage build)
+  - 설정: appsettings.json, JWT 인증 미들웨어, Swagger UI
