@@ -1248,6 +1248,8 @@ namespace CatCatGo.Presentation.Screens
         {
             _selectedEquipment = null;
             _detailPanel.gameObject.SetActive(false);
+            OnTabChanged(0);
+            OnFilterChanged(0);
             base.OnScreenEnter();
         }
     }

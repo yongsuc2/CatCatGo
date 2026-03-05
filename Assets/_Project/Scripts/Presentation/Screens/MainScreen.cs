@@ -5,6 +5,7 @@ using CatCatGo.Services;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Data;
 using CatCatGo.Presentation.Core;
+using CatCatGo.Presentation.Popups;
 using CatCatGo.Presentation.Utils;
 
 namespace CatCatGo.Presentation.Screens
@@ -89,12 +90,46 @@ namespace CatCatGo.Presentation.Screens
             var headerLe = headerGo.AddComponent<LayoutElement>();
             headerLe.preferredHeight = 60;
 
-            var headerText = headerGo.AddComponent<TextMeshProUGUI>();
+            var headerLayout = headerGo.AddComponent<HorizontalLayoutGroup>();
+            headerLayout.childForceExpandWidth = false;
+            headerLayout.childForceExpandHeight = true;
+            headerLayout.childAlignment = TextAnchor.MiddleCenter;
+
+            var menuBtnGo = new GameObject("MenuButton");
+            menuBtnGo.transform.SetParent(headerGo.transform, false);
+            var menuBtnLe = menuBtnGo.AddComponent<LayoutElement>();
+            menuBtnLe.preferredWidth = 56;
+            menuBtnLe.preferredHeight = 56;
+            var menuBtnImage = menuBtnGo.AddComponent<Image>();
+            menuBtnImage.color = ColorPalette.ButtonSecondary;
+            var menuBtn = menuBtnGo.AddComponent<Button>();
+            menuBtn.targetGraphic = menuBtnImage;
+            menuBtn.onClick.AddListener(() => UI.ShowPopupFromType<MenuListPopup>());
+            var menuIconGo = new GameObject("Icon");
+            menuIconGo.transform.SetParent(menuBtnGo.transform, false);
+            var menuIcon = menuIconGo.AddComponent<TextMeshProUGUI>();
+            menuIcon.text = "\u2630";
+            menuIcon.fontSize = 36f;
+            menuIcon.color = ColorPalette.Text;
+            menuIcon.alignment = TextAlignmentOptions.Center;
+            menuIcon.raycastTarget = false;
+            UIManager.StretchFull(menuIcon.rectTransform);
+
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(headerGo.transform, false);
+            var titleLe = titleGo.AddComponent<LayoutElement>();
+            titleLe.flexibleWidth = 1;
+            var headerText = titleGo.AddComponent<TextMeshProUGUI>();
             headerText.text = "카피바라 고!";
             headerText.fontSize = 42f;
             headerText.color = ColorPalette.Gold;
             headerText.alignment = TextAlignmentOptions.Center;
             headerText.raycastTarget = false;
+
+            var spacerGo = new GameObject("Spacer");
+            spacerGo.transform.SetParent(headerGo.transform, false);
+            var spacerLe = spacerGo.AddComponent<LayoutElement>();
+            spacerLe.preferredWidth = 56;
         }
 
         private void BuildPlayerStatsCard(Transform parent)

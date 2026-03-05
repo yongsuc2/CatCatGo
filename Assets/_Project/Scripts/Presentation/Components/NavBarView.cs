@@ -29,9 +29,8 @@ namespace CatCatGo.Presentation.Components
         {
             new NavEntry { Label = "\uD3AB", Screen = ScreenType.Pet },
             new NavEntry { Label = "\uAC00\uCC28", Screen = ScreenType.Gacha },
-            new NavEntry { Label = "\uD038\uC2A4\uD2B8", Screen = ScreenType.Quest },
-            new NavEntry { Label = "\uC774\uBCA4\uD2B8", Screen = ScreenType.Event },
-            new NavEntry { Label = "\uC124\uC815", Screen = ScreenType.Settings },
+            new NavEntry { Label = "\uD018\uC2A4\uD2B8", Screen = ScreenType.Quest },
+            new NavEntry { Label = "7\uC77C \uCD9C\uC11D\uCCB4\uD06C", Screen = ScreenType.Event },
         };
 
         private ScreenType _activeScreen = ScreenType.Main;

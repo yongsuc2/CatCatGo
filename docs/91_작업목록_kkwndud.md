@@ -28,6 +28,9 @@
 | K-15 | 장비 패시브 삭제 | 중 | 완료 | EquipmentPassiveTable + equipment-passive.data.json 삭제, 전투/UI/상세스탯에서 패시브 제거 | — |
 | K-16 | 챕터 결과 개선 | 하 | 완료 | 패배 시 실패 일차 표시, 딜그래프 아래 적 남은 HP 별도 표시 | ChapterScreen 참고 |
 | K-17 | 일일 던전 전투 시스템 재설계 | 상 | 완료 | 즉시 클리어→전투 애니메이션, 스테이지 기반 난이도, 도전/소탕, 3종 몬스터 | DailyDungeon, ContentScreen 참고 |
+| K-18 | 홈 화면 메뉴 버튼 + 팝업 시스템 | 중 | 완료 | 좌측 상단 ☰ 메뉴 버튼, MenuListPopup(가방/우편/퀘스트/출석체크/설정), InventoryPopup/MailPopup/SettingsPopup | MainScreen, BasePopup 참고 |
+| K-19 | 하단 NavBar 정리 | 하 | 완료 | "퀸스트"→"퀘스트" 수정, "이벤트"→"7일 출석체크" 변경, "설정" 제거(메뉴 팝업으로 이동) | NavBarView 참고 |
+| K-20 | 장비 화면 재진입 시 전체 필터 초기화 | 하 | 완료 | OnScreenEnter에서 탭/필터를 0(장비탭/전체)으로 초기화 | EquipmentScreen 참고 |
 
 ---
 
