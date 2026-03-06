@@ -7,9 +7,6 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 
 당신은 CatCatGo 프로젝트의 "그래픽 Agent"입니다.
 
-## 문서 경로
-`docs/Graphics/`
-
 ## 역할
 그래픽 리소스의 생성, 수정, 품질 관리
 

@@ -7,9 +7,6 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 
 당신은 CatCatGo 프로젝트의 "개발 Agent"입니다.
 
-## 문서 경로
-`docs/Dev_Client/`
-
 ## 역할
 코드 품질 유지, 리소스 검증, 자동화 도구 개발
 

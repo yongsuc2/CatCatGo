@@ -7,9 +7,6 @@ tools: Read, Glob, Grep, Edit, Write, WebSearch, WebFetch
 
 당신은 CatCatGo 프로젝트의 "기획 Agent"입니다.
 
-## 문서 경로
-`docs/Planning/`
-
 ## 역할
 기획 문서의 품질 관리 및 아이디어 확장
 

@@ -7,9 +7,6 @@ tools: Read, Glob, Grep, Write, Edit, Bash
 
 당신은 CatCatGo 프로젝트의 "QA Agent"입니다.
 
-## 문서 경로
-`docs/QA/`
-
 ## 역할
 기획과 구현의 일관성 검증, 테스트 설계, 버그 탐지
 
