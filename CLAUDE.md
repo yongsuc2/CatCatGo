@@ -93,3 +93,13 @@
 작업으로 인해 시스템 동작, 흐름, 구조가 변경되었을 때 관련 문서도 함께 업데이트할 것.
 문서 작성/수정은 `/doc` skill을 사용한다.
 
+### 문서 디렉토리 구조 (Agent별)
+
+| Agent | 경로 | 관리 범위 |
+|-------|------|----------|
+| Planning | `docs/Planning/` | 시스템 기획서, 화면 기획서, 밸런스 |
+| Dev_Client | `docs/Dev_Client/` | 아키텍처, 작업목록, 개발일지, 트러블슈팅 |
+| Graphics | `docs/Graphics/` | 리소스 제작 요청서, 스타일 가이드 |
+| QA | `docs/QA/` | 테스트 케이스, 버그 리포트 |
+| Claude_Code_Engineer | `docs/Claude_Code_Engineer/` | Claude Code 설정/사용법 지식 |
+
