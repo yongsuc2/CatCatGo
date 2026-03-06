@@ -12,8 +12,9 @@ namespace CatCatGo.Domain.Content
         public int HighestFloor;
         public int CurrentRunFloor;
         public int CurrentBattleIndex;
-        public readonly int BattlesPerFloor = 5;
         public bool IsRunning;
+
+        private static CatacombConfig Config => DungeonDataTable.Catacomb;
 
         public CatacombDungeon(int highestFloor = 1)
         {
@@ -22,6 +23,8 @@ namespace CatCatGo.Domain.Content
             CurrentBattleIndex = 0;
             IsRunning = false;
         }
+
+        public int BattlesPerFloor => Config.BattlesPerFloor;
 
         public void StartRun()
         {
@@ -76,8 +79,8 @@ namespace CatCatGo.Domain.Content
         {
             int floorsCleared = CurrentRunFloor - HighestFloor + 1;
             return Reward.FromResources(
-                new ResourceReward(ResourceType.GOLD, Math.Max(0, floorsCleared) * 100),
-                new ResourceReward(ResourceType.EQUIPMENT_STONE, Math.Max(1, floorsCleared)));
+                new ResourceReward(ResourceType.GOLD, Math.Max(0, floorsCleared) * Config.GoldPerFloor),
+                new ResourceReward(ResourceType.EQUIPMENT_STONE, Math.Max(Config.BaseEquipmentStone, floorsCleared)));
         }
     }
 

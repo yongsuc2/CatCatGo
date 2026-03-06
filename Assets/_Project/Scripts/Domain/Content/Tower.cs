@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Battle;
 using CatCatGo.Domain.ValueObjects;
@@ -12,14 +13,17 @@ namespace CatCatGo.Domain.Content
     {
         public int CurrentFloor;
         public int CurrentStage;
-        public readonly int MaxFloor = 100;
-        public readonly int StagesPerFloor = 10;
+
+        private static TowerConfig Config => DungeonDataTable.Tower;
 
         public Tower(int currentFloor = 1, int currentStage = 1)
         {
             CurrentFloor = currentFloor;
             CurrentStage = currentStage;
         }
+
+        public int MaxFloor => Config.MaxFloor;
+        public int StagesPerFloor => Config.StagesPerFloor;
 
         public Result<TowerChallengeResult> Challenge(BattleUnit playerUnit, int challengeTokens)
         {
@@ -62,17 +66,23 @@ namespace CatCatGo.Domain.Content
 
         public Reward GetReward(int floor, int stage)
         {
-            if (stage != 5 && stage != 10)
+            if (!Config.RewardStages.Contains(stage))
                 return Reward.Empty();
 
-            var rewards = new List<ResourceReward>
-            {
-                new ResourceReward(ResourceType.GOLD, (stage == 10 ? 500 : 250) * floor),
-                new ResourceReward(ResourceType.POWER_STONE, 1),
-            };
+            string stageKey = $"stage{stage}";
+            var rewards = new List<ResourceReward>();
 
-            if (stage == 10)
-                rewards.Add(new ResourceReward(ResourceType.EQUIPMENT_STONE, 3));
+            if (Config.GoldPerFloor.TryGetValue(stageKey, out int goldPerFloor))
+                rewards.Add(new ResourceReward(ResourceType.GOLD, goldPerFloor * floor));
+
+            if (Config.RewardPerStage.TryGetValue(stageKey, out var stageRewards))
+            {
+                foreach (var r in stageRewards)
+                {
+                    if (System.Enum.TryParse<ResourceType>(r.Type, out var resType))
+                        rewards.Add(new ResourceReward(resType, r.Amount));
+                }
+            }
 
             return Reward.FromResources(rewards.ToArray());
         }

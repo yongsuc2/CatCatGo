@@ -115,15 +115,5 @@
         { "elite": "elite_lion", "midBoss": "boss_elephant", "boss": "boss_mammoth" }
       ]
     }
-  ],
-  "pools": {
-    "enemy": ["amoeba", "bacteria", "paramecium", "virus", "mold"],
-    "elite": ["elite_tardigrade", "elite_bacteriophage"],
-    "boss": ["boss_giant_amoeba", "boss_super_bacteria", "boss_fungus_king"]
-  },
-  "baseStats": {
-    "enemy": { "hp": 106, "atk": 13, "def": 4, "crit": 0 },
-    "elite": { "hp": 260, "atk": 24, "def": 9, "crit": 0 },
-    "boss": { "hp": 600, "atk": 32, "def": 14, "crit": 0 }
-  }
+  ]
 }

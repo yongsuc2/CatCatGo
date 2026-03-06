@@ -38,11 +38,8 @@ namespace CatCatGo.Domain.Data
     public static class EnemyTable
     {
         private static List<EnemyTemplateData> _templates;
-        private static string[] _enemyPool;
-        private static string[] _elitePool;
-        private static string[] _bossPool;
-        private static Stats _baseEnemyStats;
-        private static Stats _baseBossStats;
+        private static string[] _allEnemyIds;
+        private static string[] _allBossIds;
         private static List<ChapterTheme> _chapterThemes;
 
         private static void EnsureLoaded()
@@ -72,23 +69,8 @@ namespace CatCatGo.Domain.Data
                 });
             }
 
-            _enemyPool = data["pools"]["enemy"].Select(s => s.ToString()).ToArray();
-            _elitePool = data["pools"]["elite"].Select(s => s.ToString()).ToArray();
-            _bossPool = data["pools"]["boss"].Select(s => s.ToString()).ToArray();
-
-            var bs = data["baseStats"];
-            var e = bs["enemy"];
-            _baseEnemyStats = Stats.Create(
-                hp: e["hp"].Value<int>(), maxHp: e["hp"].Value<int>(),
-                atk: e["atk"].Value<int>(), def: e["def"].Value<int>(),
-                crit: e["crit"]?.Value<float>() ?? 0f
-            );
-            var b = bs["boss"];
-            _baseBossStats = Stats.Create(
-                hp: b["hp"].Value<int>(), maxHp: b["hp"].Value<int>(),
-                atk: b["atk"].Value<int>(), def: b["def"].Value<int>(),
-                crit: b["crit"]?.Value<float>() ?? 0f
-            );
+            _allEnemyIds = _templates.Where(t => !t.IsBoss && !t.Id.StartsWith("dungeon_")).Select(t => t.Id).ToArray();
+            _allBossIds = _templates.Where(t => t.IsBoss && !t.Id.StartsWith("dungeon_")).Select(t => t.Id).ToArray();
 
             _chapterThemes = new List<ChapterTheme>();
             var themesToken = data["chapterThemes"];
@@ -139,7 +121,6 @@ namespace CatCatGo.Domain.Data
             return baseStats.Multiply(factor);
         }
 
-
         public static Stats GetTowerScaledStats(Stats baseStats, int floor)
         {
             EnsureLoaded();
@@ -152,7 +133,7 @@ namespace CatCatGo.Domain.Data
             var theme = GetThemeForChapter(chapterId);
             if (theme != null) return theme.Enemy;
             EnsureLoaded();
-            return _enemyPool;
+            return _allEnemyIds;
         }
 
         public static string[] GetElitePoolForChapter(int chapterId)
@@ -160,7 +141,7 @@ namespace CatCatGo.Domain.Data
             var theme = GetThemeForChapter(chapterId);
             if (theme != null) return theme.Elite;
             EnsureLoaded();
-            return _elitePool;
+            return _allEnemyIds;
         }
 
         public static string[] GetBossPoolForChapter(int chapterId)
@@ -168,7 +149,7 @@ namespace CatCatGo.Domain.Data
             var theme = GetThemeForChapter(chapterId);
             if (theme != null) return theme.Boss;
             EnsureLoaded();
-            return _bossPool;
+            return _allBossIds;
         }
 
         public static BossRotationEntry GetBossAssignmentForChapter(int chapterId)
@@ -186,52 +167,22 @@ namespace CatCatGo.Domain.Data
             }
             return new BossRotationEntry
             {
-                Elite = _elitePool[0],
-                MidBoss = _bossPool[0],
-                Boss = _bossPool[0],
+                Elite = _allEnemyIds[0],
+                MidBoss = _allBossIds[0],
+                Boss = _allBossIds[0],
             };
         }
 
         public static string GetRandomEnemyId()
         {
             EnsureLoaded();
-            return _enemyPool[UnityEngine.Random.Range(0, _enemyPool.Length)];
-        }
-
-        public static string GetRandomEliteId()
-        {
-            EnsureLoaded();
-            return _elitePool[UnityEngine.Random.Range(0, _elitePool.Length)];
+            return _allEnemyIds[UnityEngine.Random.Range(0, _allEnemyIds.Length)];
         }
 
         public static string GetRandomBossId()
         {
             EnsureLoaded();
-            return _bossPool[UnityEngine.Random.Range(0, _bossPool.Length)];
-        }
-
-        public static string[] GetChapterEnemyPool()
-        {
-            EnsureLoaded();
-            return _enemyPool;
-        }
-
-        public static string[] GetChapterBossPool()
-        {
-            EnsureLoaded();
-            return _bossPool;
-        }
-
-        public static Stats GetBaseEnemyStats()
-        {
-            EnsureLoaded();
-            return _baseEnemyStats;
-        }
-
-        public static Stats GetBaseBossStats()
-        {
-            EnsureLoaded();
-            return _baseBossStats;
+            return _allBossIds[UnityEngine.Random.Range(0, _allBossIds.Length)];
         }
     }
 }

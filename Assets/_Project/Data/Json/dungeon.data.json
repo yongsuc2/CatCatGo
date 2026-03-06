@@ -29,5 +29,25 @@
   "stageScaling": {
     "statMultiplierBase": 1.0,
     "statMultiplierPerStage": 0.12
+  },
+  "tower": {
+    "maxFloor": 100,
+    "stagesPerFloor": 10,
+    "rewardStages": [5, 10],
+    "goldPerFloor": { "stage5": 250, "stage10": 500 },
+    "rewardPerStage": {
+      "stage5": [
+        { "type": "POWER_STONE", "amount": 1 }
+      ],
+      "stage10": [
+        { "type": "POWER_STONE", "amount": 1 },
+        { "type": "EQUIPMENT_STONE", "amount": 3 }
+      ]
+    }
+  },
+  "catacomb": {
+    "battlesPerFloor": 5,
+    "goldPerFloor": 100,
+    "baseEquipmentStone": 1
   }
 }
