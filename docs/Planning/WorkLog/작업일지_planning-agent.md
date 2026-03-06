@@ -1,5 +1,32 @@
 # Planning Agent 작업일지
 
+## 2026-03-07 기획 문서 버그 3건 수정 (BUG-005, BUG-006, BUG-007)
+
+### 작업 내용
+QA에서 보고된 기획 문서 관련 버그 3건을 수정했다.
+
+### BUG-007: 기획서 수치 제거 (dayProgressMaxBonus)
+- **파일**: `docs/Planning/SystemDesign/12_모험시스템.md`
+- **문제**: 일수 기반 몬스터 스케일링 섹션에 `dayProgressMaxBonus` 공식과 구체적 수치가 하드코딩되어 있었음. 코드에는 해당 파라미터가 존재하지 않으며, 현재 코드(`1 + dayProgress`)가 의도된 동작임
+- **수정**: 구체적 수치/공식(`1 + (currentDay / totalDays) * dayProgressMaxBonus`)을 제거하고, 동작 의도만 서술하도록 재작성. 스케일링 세부 수치는 `BattleDataTable`, `EnemyTemplate.cs` 코드 참조로 전환
+
+### BUG-005: 일일 퀘스트 미구현 표기
+- **파일**: `docs/Planning/SystemDesign/07_재화시스템.md`
+- **문제**: 일일 퀘스트 5개 중 "아레나 1회 전투", "여행 5회"가 `quest.data.json`에 미구현 상태이나 기획서에 표기 없음
+- **수정**: 해당 2개 퀘스트 항목에 **(미구현)** 표기 추가
+
+### BUG-006: 재화 타입 미구현 표기
+- **파일**: `docs/Planning/SystemDesign/07_재화시스템.md`
+- **문제**: 입장권(ARENA_TOKEN), 행운 코인(LUCKY_COIN), 보물상자 키(CHEST_KEY) 3종이 `GameEnums.cs` ResourceType에 미등록 상태이나 기획서에 표기 없음
+- **수정**: 재화 상세 섹션의 입장권, 행운 코인 제목에 **(미구현 -- XXX 미등록)** 표기 추가. 재화 전체 맵 및 재화 흐름도에도 미구현 표기 반영
+
+### 버그 문서 상태 변경
+- `docs/QA/Bugs/BUG-005_daily-quest-missing.md` -- Open -> Closed
+- `docs/QA/Bugs/BUG-006_resource-type-missing.md` -- Open -> Closed
+- `docs/QA/Bugs/BUG-007_dayProgressMaxBonus-not-applied.md` -- Open -> Closed, 심각도 Critical -> Minor (기획서 오류), 권장 수정 방안을 해결 방법으로 변경
+
+---
+
 ## 2026-03-07 기획 문서 정합성 검토 2차 (BUG-004 해결 + 용어 정리 + 장비 패시브 현행화)
 
 ### 작업 내용
