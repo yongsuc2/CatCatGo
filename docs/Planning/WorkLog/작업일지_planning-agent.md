@@ -1,5 +1,74 @@
 # Planning Agent 작업일지
 
+## 2026-03-07 밸런스 수치 하드코딩 제거 (데이터 테이블 참조 교체)
+
+### 작업 배경
+기획 문서에 밸런스 관련 구체적 수치(데미지, 보상량, 확률, 배율, 스탯, 비용 등)가 직접 표기되어 있으면 데이터 테이블과의 이중 관리로 인한 불일치 위험이 발생한다. 모든 수치를 데이터 테이블 참조로 교체하여 단일 정보원(Single Source of Truth) 원칙을 확립한다.
+
+### 수정 파일 및 교체 내용
+
+#### 1. `docs/Planning/SystemDesign/00_게임개요.md`
+- 탐방 배율 "3배 ~ 50배" -> 데이터 테이블 참조
+- 챕터 진입 "스태미나 5개" -> "스태미나 소모 (소모량은 게임 설정 참조)"
+
+#### 2. `docs/Planning/SystemDesign/02_캐릭터성장시스템.md`
+- 등급 구조 수치 테이블(서브등급 수, 총 레벨, 시작/종료 레벨) -> `talent.data.json`의 `gradeConfig` 참조
+
+#### 3. `docs/Planning/SystemDesign/03_장비시스템.md`
+- 강화 비용 구간별 배율 테이블(1.15/1.25/1.35/1.45/1.55/1.65) -> `equipment-constants.data.json`의 `upgradeCostTiers` 참조
+- 장비 판매가 테이블(10/30/100/300/1000/3000) -> `equipment-labels.data.json`의 `sellPrices` 참조
+
+#### 4. `docs/Planning/SystemDesign/04_스킬시스템.md`
+- 티어 스케일링 비율 "1 : 2.3 : 4 : 6" -> 데이터 테이블 참조로 변경
+
+#### 5. `docs/Planning/SystemDesign/05_스테이지던전시스템.md`
+- 챕터 진입 "스태미나 5개" -> 게임 설정 참조
+- 타워 규모 "100층, 각 층 10단계" -> 타워 데이터 참조
+- 던전 일일 제한 "3회" -> `dungeon.data.json` 참조
+- 고블린 광부 목표 "광석 30개" -> 게임 설정 참조
+
+#### 6. `docs/Planning/SystemDesign/07_재화시스템.md`
+- 스태미나 용도 "메인 챕터 진입(5개)" -> "메인 챕터 진입"
+- 퀘스트 보상 테이블(수치 포함 5행+4행) -> `quest.data.json` 참조
+- 7일 출석 보상 테이블(7행) -> `attendance.data.json` 참조
+- 탐방 "50배속" -> "최대 배속"
+
+#### 7. `docs/Planning/SystemDesign/10_이벤트시스템.md`
+- 한정 가챠 "180회 천장" -> `gacha.data.json`의 `pityThreshold` 참조
+
+#### 8. `docs/Planning/SystemDesign/11_과금시스템.md`
+- "탐방 50배속" (3곳) -> "탐방 최대 배속"
+
+#### 9. `docs/Planning/SystemDesign/12_모험시스템.md`
+- 챕터 진입 "스태미나 5개" -> 게임 설정 참조
+- 악마 HP 대가 "20%" -> `encounter.data.json`의 `demon.hpCostPercent` 참조
+- 치유의 샘 회복 "15%" -> `encounter.data.json`의 `chance.springHealPercent` 참조
+- 인카운터 가중치 "전투 40%, 악마 7%, 우연 53%" -> `encounter.data.json`의 `weights` 참조
+- 전투 골드 보상 공식 수치 -> `battle.data.json`의 `combatGoldReward` 참조
+- 챕터 클리어 보상 공식 수치 -> `encounter.data.json`의 `chapterClearReward` 참조
+- 챕터 보물상자 보상 테이블(4행) -> `chapter-treasure.data.json` 참조
+- 탐방 골드 공식/배율 옵션 수치 -> 게임 설정 데이터 참조
+
+#### 10. `docs/Planning/SystemDesign/13_밸런스데이터시트.md` (전면 재작성)
+- 기존: 모든 섹션에 구체적 수치가 직접 표기 (전투 계수, 적 스탯, 인카운터 가중치, 장비 스탯, 가챠 확률, 스킬 티어별 수치, 펫 스탯, 재능/전승 수치, 보물상자 보상, 출석 보상)
+- 수정: 수치를 모두 제거하고 데이터 테이블 경로만 안내하는 색인 문서로 변환
+- 장비 패시브 삭제 관련 밸런스 영향 분석 메모는 유지
+
+#### 11. `docs/Planning/SystemDesign/화면기획/장비화면_기획서.md`
+- 판매 가격표(6행) -> `equipment-labels.data.json`의 `sellPrices` 참조
+
+### 수정하지 않은 항목 (판단 근거)
+- **연출 타이밍** (350ms, 300ms, 600ms 등): 밸런스가 아닌 UI 연출 수치
+- **색상 코드** (#ff5252 등): UI 스타일 수치
+- **UI 와이어프레임 예시 수치** (282K, 53.4K 등): 레이아웃 설명용 더미 값
+- **시스템 규칙** (100% 반환, 확률 캡 100%, HP 50% 이하 발동): 밸런스 조정 대상이 아닌 시스템 메카닉 규칙
+- **구조 설명** (도전권 1장, 각 층 5전투, 서브등급당 30레벨): 시스템 구조 정의
+
+### 검증 방법
+모든 데이터 테이블 참조는 `Assets/_Project/Data/Json/` 하위에 실제 파일이 존재하고, 해당 필드가 존재함을 확인했다.
+
+---
+
 ## 2026-03-07 기획 문서 버그 3건 수정 (BUG-005, BUG-006, BUG-007)
 
 ### 작업 내용
