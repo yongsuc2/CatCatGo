@@ -46,6 +46,10 @@ crashlytics-build.properties
 *.VC.db
 *.slnx
 
+# Server project (ASP.NET Core) — Unity gitignore 예외
+!Server/**/*.csproj
+!Server/**/*.sln
+
 # JetBrains Rider
 .idea/
 *.sln.iml

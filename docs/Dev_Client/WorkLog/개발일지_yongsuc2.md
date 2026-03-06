@@ -607,3 +607,65 @@
   - costGrowth를 전 등급 1.10으로 통일 (기존: 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02)
   - baseCost는 변경 없음 — 등급 전환 시 비용 점프는 baseCost가 담당
   - 서브 등급 올라갈 때마다 10% 비용 증가 체감 가능
+
+---
+
+## 2026-03-05 (Day 20)
+
+### 완료 작업
+- **게임 서버 아키텍처 설계** (Y-86)
+  - `docs/14_서버아키텍처.md` 작성 — 전체 서버 설계 문서
+  - 기술 스택 결정: ASP.NET Core 8.0 + PostgreSQL + Redis + JWT
+  - 핵심 결정: Domain/Infrastructure 어셈블리를 서버에서 그대로 재사용 (전투 재현 검증)
+  - 서버 권위 모델 정의: 재화/결제/세이브/가챠는 서버 권위, 전투는 클라이언트 주도+서버 검증
+  - API 설계: Auth(5), Save(3), Shop(4), Battle(2), Arena(4), Gacha(3) 총 21개 엔드포인트
+  - DB 스키마 설계: accounts, save_data, products, purchases, arena_rankings, cheat_flags 6개 테이블
+  - 치트 검증 상세 설계: 시드 기반 전투 재현, 속도핵 탐지, 영수증 중복 차단
+  - 구현 우선순위 8단계 정의
+- **서버 프로젝트 초기 구조 생성** (Y-87)
+  - `Server/` 디렉토리에 ASP.NET Core 프로젝트 스캐폴딩
+  - 4-프로젝트 솔루션: Server.Api / Server.Core / Server.Infrastructure / Shared
+  - **API 레이어**: AuthController, SaveController, ShopController, BattleController, ArenaController, GachaController
+  - **Core 레이어**: AuthService, SaveService, ShopService, ArenaService, BattleVerifier + 7개 모델 + 7개 리포지토리 인터페이스
+  - **Infrastructure 레이어**: EF Core AppDbContext(6 엔티티 매핑), 6개 Repository 구현, RedisSessionStore, GooglePlayVerifier/AppStoreVerifier 스텁
+  - **Shared 레이어**: 클라이언트-서버 공유 DTO (Request 4개, Response 4개)
+  - Docker Compose: api + postgres:16 + redis:7, Dockerfile (multi-stage build)
+  - 설정: appsettings.json, JWT 인증 미들웨어, Swagger UI
+- **치트 검증 목록 + 서버 구현 항목 상세** (Y-86 연장)
+  - `docs/15_치트검증목록.md` 작성 — 전체 치트 검증 목록 + 서버 구현 항목
+  - 14개 도메인별 치트 벡터 분석: 재화(13종), 재능, 장비, 전투, 챕터, 가챠, 펫, 유산, 결제, 아레나, 일일 시스템, 컨텐츠(5종), 세이브, 클라이언트 환경
+  - 권위 모델 분류: S(서버 권위) / V(서버 검증) / M(모니터링) / C(클라이언트 전용)
+  - API 엔드포인트 48개 설계 (기존 21개 → 48개로 확장)
+  - 서버 서비스 14개 정의 (기존 6개 → 14개)
+  - DB 테이블 8개 추가 (기존 6개 + 신규 8개 = 14개)
+- **클라이언트 서버 연동 설계** (Y-86 연장)
+  - `docs/16_클라이언트_서버연동_설계.md` 작성 — 클라이언트 측 서버 연동 상세 설계
+  - 현재 오프라인 아키텍처 분석, 목표 서버 권위 모델 정의
+  - 네트워크 레이어(ApiClient/ApiEndpoints/ApiResponse/NetworkMode) 설계
+  - GameState 클래스 분리, StateDelta 기반 상태 갱신
+  - GameManager API 메서드 13개 변환 목록, Screen 직접 변경 7개 변환 목록
+  - EventBus 기반 UI 자동 갱신, 로딩 상태/이중 요청 방지
+  - 오프라인/온라인 모드 전환 설계
+  - 4-Phase 구현 순서 정의
+- **서버 테스트 프로젝트 구성 + 35개 단위 테스트 작성**
+  - `docs/17_서버테스트설계.md` 테스트 기획 문서 작성
+  - 서버 솔루션 파일(.sln) + 5개 프로젝트 .csproj 생성
+  - xUnit + NSubstitute 기반 Mock 단위 테스트 5개 파일:
+    - AuthServiceTests (8): 회원가입/로그인/차단계정/JWT구조/DisplayName기본값/RefreshToken
+    - SaveServiceTests (6): 신규저장/클라이언트최신/서버최신/로드/체크섬SHA256
+    - ShopServiceTests (7): 카탈로그필터/이벤트상품기간/구매성공/중복영수증/비활성상품/검증실패
+    - BattleVerifierTests (7): 전투시작/정상보고/잘못된ID/계정불일치/중복완료/시드불일치치트/속도핵
+    - ArenaServiceTests (7): 신규매칭/기존매칭/자기제외/1~4등포인트변동/0미만방지
+
+---
+
+## 2026-03-06 (Day 21)
+
+### 완료 작업
+- **서버 코드 문서 정합성 분석 + 작업 목록 재정비** (Y-88~Y-98)
+  - `claude/setup-vm-test-environment-OeYAv` 브랜치 fast-forward 머지 (서버 테스트 35개 + VM 환경 설정)
+  - 서버 코드 vs `docs/16_클라이언트_서버연동_설계.md` 정합성 분석 수행
+  - 분석 결과: 30개 엔드포인트 중 구현 3개(10%), StateDelta/ApiResponse 전무, BattleController 설계 불일치
+  - 기존 작업 목록(Y-88~Y-94)을 16번 문서 기준으로 전면 재정비
+  - 신규 작업 추가: Y-96(테스트 재정비), Y-97(클라이언트 NetworkManager), Y-98(Screen 리팩토링+EventBus)
+  - 구현 순서 의존성 재정의: Y-88(폐기/수정) → Y-89(기반) → Y-90~Y-94(API) → Y-96(테스트) → Y-97(클라이언트) → Y-98(Screen)

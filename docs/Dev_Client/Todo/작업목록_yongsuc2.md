@@ -95,6 +95,19 @@
 | Y-83 | 종합 버그 감사 수정 (8건) | 중 | 완료 | MainScreen flexibleHeight=0+HP포맷팅, StatsDetailPopup Mask→RectMask2D, encounter/enemy JSON 동기화, 죽은 코드 삭제(BUFF_APPLIED/GetUpperSkills/BuildEnemySkills/GetDaysForType) |
 | Y-84 | 일반 적 챕터 스케일링 강화 | 하 | 완료 | 일반 적 전용 normalScalingPerChapter(1.265) 추가, 엘리트/보스는 기존 scalingPerChapter(1.25) 유지, EnemyTable.GetNormalScaledStats 메서드, Chapter.CreateCombatBattle에서 적용 |
 | Y-85 | 재능 강화 비용 증가율 통일 | 하 | 완료 | costGrowth 전 등급 1.10으로 통일 (기존: 수련생 1.10, 모험가 1.08, 정예 1.06, 달인 1.04, 전사 1.02) |
+| Y-86 | [Server] 게임 서버 아키텍처 설계 | 상 | 완료 | ASP.NET Core 8.0 서버 설계 — 계정/인증(JWT), 세이브 동기화, 결제(IAP 영수증 검증), 상품 관리, 치트 검증(시드 기반 전투 재현), 아레나, 가챠 서버사이드 |
+| Y-87 | [Server] 서버 프로젝트 초기 구조 | 상 | 완료 | Server/ 디렉토리 — Api/Core/Infrastructure/Shared 4-프로젝트 솔루션, 6개 컨트롤러, 6개 서비스, 7개 리포지토리 인터페이스+구현, PostgreSQL+Redis, Docker Compose |
+| Y-88 | [Server] 서버 코드 문서 정합성 수정 | 중 | 대기 | BattleController/BattleVerifier 폐기 (독립 전투 세션→챕터 세션 내 검증으로 재설계), SaveController 라우트 수정 (/api/save→/api/sync), SaveSyncRequest/Response DTO 문서 일치, BattleReport/BattleStartRequest/Response 폐기, 관련 테스트(BattleVerifierTests) 삭제 |
+| Y-89 | [Server] StateDelta + ApiResponse 기반 구축 | 상 | 대기 | StateDelta + 13개 하위 Delta 타입 정의 (Shared 프로젝트), ApiResponse\<T\> 공통 응답 래퍼, 기존 컨트롤러를 ApiResponse\<T\> 래퍼로 전환 |
+| Y-90 | [Server] 인증 완성 + 동기화 수정 | 중 | 대기 | AuthService.RefreshAsync 실제 구현 (현재 stub), POST /api/auth/link 엔드포인트 추가, SaveController 라우트/DTO를 문서(GET /api/sync/full, POST /api/sync/push)에 맞게 수정 |
+| Y-91 | [Server] 재능/장비/펫 API | 상 | 대기 | TalentController+Service (upgrade, claim-milestone, claim-all-milestones 3개), EquipmentController+Service (upgrade, equip, unequip, sell, forge, bulk-forge 6개), PetController+Service (hatch, feed, deploy 3개) — 총 12개 엔드포인트 |
+| Y-92 | [Server] 가챠/유산/보물 API | 중 | 대기 | GachaService 실제 구현 (pull, pull10 — 현재 stub 교체), HeritageController+Service (upgrade 1개), TreasureController+Service (claim 1개) — 총 4개 엔드포인트 |
+| Y-93 | [Server] 챕터 세션 API | 상 | 대기 | ChapterController+ChapterSessionService (start, advance-day, resolve-encounter, reroll, select-skill, battle-result, abandon 7개), Redis 세션 관리, 전투 시드 검증 통합, Domain 어셈블리 서버 참조 |
+| Y-94 | [Server] 컨텐츠/일일 API | 중 | 대기 | ContentController+Service (tower/challenge, dungeon/challenge, dungeon/sweep, goblin/mine, goblin/cart, catacomb/start, catacomb/battle, catacomb/end 8개), DailyController+Service (attendance/claim, quest/claim, quest/claim-all 3개) — 총 11개 엔드포인트 |
+| Y-95 | [Server] 서버 테스트 프로젝트 + 35개 단위 테스트 | 중 | 완료 | xUnit+NSubstitute Mock 테스트, Auth/Save/Shop/Battle/Arena 5개 서비스 커버 |
+| Y-96 | [Server] 테스트 재정비 | 중 | 대기 | BattleVerifierTests 삭제 후 ChapterSessionService 테스트로 교체, 신규 서비스(Talent/Equipment/Pet/Gacha/Content/Daily) 단위 테스트 추가, SaveServiceTests를 수정된 DTO에 맞게 업데이트 |
+| Y-97 | [Server] Unity 클라이언트 NetworkManager | 상 | 대기 | ApiClient.cs(UnityWebRequest+JWT+재시도), ApiEndpoints.cs, NetworkMode.cs, GameEvents.cs, GameState.cs(ApplyDelta+EventBus), GameManager 듀얼 모드 분기 |
+| Y-98 | [Server] Screen 리팩토링 + EventBus 와이어링 | 상 | 대기 | 각 Screen의 직접 상태 변경→GameManager async 메서드 호출로 전환, async 패턴+이중 요청 방지, EventBus 구독 와이어링 (문서 섹션 9~10) |
 
 ---
 
@@ -104,3 +117,10 @@
 - Y-3는 Y-1 완료 후 진행 (방치 보상 계산 후 저장 필요)
 - Y-4, Y-5는 독립적으로 진행 가능
 - Y-6, Y-7, Y-8은 독립적으로 진행 가능
+- Y-88 → Y-89 (폐기/수정 먼저, 그 위에 StateDelta 기반 구축)
+- Y-89 → Y-90~Y-94 (StateDelta/ApiResponse가 모든 API의 기반)
+- Y-91, Y-92, Y-93, Y-94는 Y-89 완료 후 병렬 가능
+- Y-93은 Domain 어셈블리를 서버에서 참조할 수 있도록 프로젝트 구성 필요 (가장 복잡)
+- Y-95(완료) → Y-96 (기존 테스트 정비 + 신규 테스트)
+- Y-97은 Y-89 완료 후 진행 (StateDelta가 클라이언트 연동의 전제)
+- Y-97 → Y-98 (NetworkManager가 Screen 리팩토링의 전제)
