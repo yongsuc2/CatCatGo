@@ -43,3 +43,25 @@
 
 **Output**
 - docs/QA/TestCases/consistency-report-v2.md
+
+### 버그 추적 문서 일괄 등록
+
+consistency-report-v1, v2에서 인라인으로 기록된 BUG-001 ~ BUG-007을 `docs/QA/Bugs/` 디렉토리에 개별 문서로 등록.
+
+**등록 시 코드/데이터 검증 결과:**
+- BUG-001 (pools 하드코딩): 커밋 9eae6bac에서 제거됨 -> Closed
+- BUG-002 (baseStats 불명확): 커밋 9eae6bac에서 제거됨 -> Closed
+- BUG-003 (챕터 타입 미구현 미표기): 00_게임개요.md에 "미구현" 표기 완료 (커밋 68cb2a7b) -> Closed
+- BUG-004 (가챠 문서 파일 참조 오류): 커밋 68cb2a7b에서 수정됨 -> Closed
+- BUG-005 (일일 퀘스트 2개 누락): quest.data.json에 여전히 3개만 존재 -> Open
+- BUG-006 (재화 타입 3종 미등록): GameEnums.cs에 여전히 없음 -> Open
+- BUG-007 (dayProgressMaxBonus 미적용): EnemyTemplate.cs:73에서 여전히 `1 + dayProgress` -> Open (Critical)
+
+**Output**
+- docs/QA/Bugs/BUG-001_enemy-pools-hardcoded.md
+- docs/QA/Bugs/BUG-002_enemy-baseStats-unclear.md
+- docs/QA/Bugs/BUG-003_chapter-type-mismatch.md
+- docs/QA/Bugs/BUG-004_gacha-doc-file-reference.md
+- docs/QA/Bugs/BUG-005_daily-quest-missing.md
+- docs/QA/Bugs/BUG-006_resource-type-missing.md
+- docs/QA/Bugs/BUG-007_dayProgressMaxBonus-not-applied.md
