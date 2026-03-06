@@ -68,3 +68,4 @@ TestResults.xml
 # Claude
 .claude/*
 !.claude/skills/
+!.claude/agents/

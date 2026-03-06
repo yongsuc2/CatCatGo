@@ -1,6 +1,8 @@
 ---
 name: animation-pipeline
 description: Use this skill when creating frame-based animations (idle/walk/attack) for CatCatGo characters. Triggered when user asks to animate a character, generate animation frames, create side-view sprites, extract video frames, or deploy animation resources. Covers the full Grok SDK automated pipeline from image generation through frame extraction and deployment.
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # CatCatGo Animation Pipeline

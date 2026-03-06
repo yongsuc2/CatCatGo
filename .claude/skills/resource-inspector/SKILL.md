@@ -1,6 +1,8 @@
 ---
 name: resource-inspector
 description: Use this skill when inspecting, auditing, or validating CatCatGo character sprite resources for quality issues. Triggered when user asks to check resources, find broken sprites, audit character art quality, or verify sprite consistency. Covers visual inspection criteria and automated checks.
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # CatCatGo Resource Inspector

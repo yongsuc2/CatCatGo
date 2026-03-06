@@ -1,6 +1,8 @@
 ---
 name: sprite-generator
 description: Use this skill when generating or regenerating character/monster sprites for CatCatGo. Triggered when user asks to create characters, remake sprites, fix sprite quality, or generate new monster art. Covers the full ComfyUI-based generation pipeline.
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # CatCatGo Sprite Generator
