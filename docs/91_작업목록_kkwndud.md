@@ -31,6 +31,9 @@
 | K-18 | 홈 화면 메뉴 버튼 + 팝업 시스템 | 중 | 완료 | 좌측 상단 ☰ 메뉴 버튼, MenuListPopup(가방/우편/퀘스트/출석체크/설정), InventoryPopup/MailPopup/SettingsPopup | MainScreen, BasePopup 참고 |
 | K-19 | 하단 NavBar 정리 | 하 | 완료 | "퀸스트"→"퀘스트" 수정, "이벤트"→"7일 출석체크" 변경, "설정" 제거(메뉴 팝업으로 이동) | NavBarView 참고 |
 | K-20 | 장비 화면 재진입 시 전체 필터 초기화 | 하 | 완료 | OnScreenEnter에서 탭/필터를 0(장비탭/전체)으로 초기화 | EquipmentScreen 참고 |
+| K-21 | 가차→상점 화면 전환 + 4탭 구조 | 중 | 완료 | 가차→상점 리네이밍, 장비상점/펫상점/패키지상점/충전 4탭, 스크롤 상품카드 UI | ShopScreen 참고 |
+| K-22 | 합성 탭 UI 재설계 | 중 | 완료 | 별/재료 슬롯 + 결과 미리보기 + 인벤토리 그리드 방식으로 전면 재설계, 보관함 헤더에 합성 아이콘 추가 | EquipmentScreen 참고 |
+| K-23 | 설정 팝업 디버그 접근 | 하 | 완료 | SettingsPopup에 디버그 화면 버튼 추가 | SettingsPopup 참고 |
 
 ---
 

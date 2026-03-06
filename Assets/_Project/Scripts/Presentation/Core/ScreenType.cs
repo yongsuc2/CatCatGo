@@ -8,7 +8,7 @@ namespace CatCatGo.Presentation.Core
         Equipment,
         Pet,
         Content,
-        Gacha,
+        Shop,
         Quest,
         Event,
         Settings,

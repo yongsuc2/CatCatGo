@@ -166,7 +166,7 @@ namespace CatCatGo.Presentation.Core
             RegisterScreen<EquipmentScreen>(ScreenType.Equipment, "EquipmentScreen");
             RegisterScreen<PetScreen>(ScreenType.Pet, "PetScreen");
             RegisterScreen<ContentScreen>(ScreenType.Content, "ContentScreen");
-            RegisterScreen<GachaScreen>(ScreenType.Gacha, "GachaScreen");
+            RegisterScreen<ShopScreen>(ScreenType.Shop, "ShopScreen");
             RegisterScreen<QuestScreen>(ScreenType.Quest, "QuestScreen");
             RegisterScreen<EventScreen>(ScreenType.Event, "EventScreen");
             RegisterScreen<SettingsScreen>(ScreenType.Settings, "SettingsScreen");

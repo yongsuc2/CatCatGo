@@ -58,7 +58,7 @@ namespace CatCatGo.Editor
                 ("Equipment", ScreenType.Equipment),
                 ("Pet", ScreenType.Pet),
                 ("Content", ScreenType.Content),
-                ("Gacha", ScreenType.Gacha),
+                ("Shop", ScreenType.Shop),
                 ("Quest", ScreenType.Quest),
                 ("Event", ScreenType.Event),
                 ("Settings", ScreenType.Settings),

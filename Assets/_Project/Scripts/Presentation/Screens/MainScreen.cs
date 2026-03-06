@@ -24,7 +24,7 @@ namespace CatCatGo.Presentation.Screens
         private TextMeshProUGUI _adventureInfo;
         private TextMeshProUGUI _contentInfo;
         private TextMeshProUGUI _growthInfo;
-        private TextMeshProUGUI _gachaInfo;
+        private TextMeshProUGUI _shopInfo;
 
         private void Awake()
         {
@@ -295,7 +295,7 @@ namespace CatCatGo.Presentation.Screens
             _adventureInfo = CreateMenuCard(gridGo.transform, "모험", ScreenType.Chapter);
             _contentInfo = CreateMenuCard(gridGo.transform, "콘텐츠", ScreenType.Content);
             _growthInfo = CreateMenuCard(gridGo.transform, "성장", ScreenType.Talent);
-            _gachaInfo = CreateMenuCard(gridGo.transform, "뽑기", ScreenType.Gacha);
+            _shopInfo = CreateMenuCard(gridGo.transform, "\uC0C1\uC810", ScreenType.Shop);
         }
 
         private TextMeshProUGUI CreateMenuCard(Transform parent, string title, ScreenType targetScreen)
@@ -364,7 +364,7 @@ namespace CatCatGo.Presentation.Screens
             _adventureInfo.text = $"스태미나: {(int)player.Resources.Stamina}/{player.Resources.GetStaminaMax()}";
             _contentInfo.text = "탑/던전";
             _growthInfo.text = "재능/유산";
-            _gachaInfo.text = $"보석: {NumberFormatter.Format(player.Resources.Gems)}";
+            _shopInfo.text = $"보석: {NumberFormatter.Format(player.Resources.Gems)}";
         }
 
         private void OnStatsDetailClicked()

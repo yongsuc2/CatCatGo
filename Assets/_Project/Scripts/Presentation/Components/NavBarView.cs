@@ -28,7 +28,7 @@ namespace CatCatGo.Presentation.Components
         private readonly List<NavEntry> _secondaryEntries = new List<NavEntry>
         {
             new NavEntry { Label = "\uD3AB", Screen = ScreenType.Pet },
-            new NavEntry { Label = "\uAC00\uCC28", Screen = ScreenType.Gacha },
+            new NavEntry { Label = "\uC0C1\uC810", Screen = ScreenType.Shop },
             new NavEntry { Label = "\uD018\uC2A4\uD2B8", Screen = ScreenType.Quest },
             new NavEntry { Label = "7\uC77C \uCD9C\uC11D\uCCB4\uD06C", Screen = ScreenType.Event },
         };

@@ -36,6 +36,29 @@ namespace CatCatGo.Presentation.Popups
 
             _bgmStatusText = CreateToggleRow(transform, "\uBC30\uACBD\uC74C", IsBgmOn(), OnBgmToggle);
             _sfxStatusText = CreateToggleRow(transform, "\uD6A8\uACFC\uC74C", IsSfxOn(), OnSfxToggle);
+
+            var debugBtnGo = new GameObject("DebugBtn");
+            debugBtnGo.transform.SetParent(transform, false);
+            var debugBtnLe = debugBtnGo.AddComponent<LayoutElement>();
+            debugBtnLe.preferredHeight = 48;
+            var debugBtnBg = debugBtnGo.AddComponent<Image>();
+            debugBtnBg.color = ColorPalette.ButtonSecondary;
+            var debugBtn = debugBtnGo.AddComponent<Button>();
+            debugBtn.targetGraphic = debugBtnBg;
+            debugBtn.onClick.AddListener(() =>
+            {
+                UIManager.Instance.ClosePopup();
+                UIManager.Instance.ShowScreen(ScreenType.Debug);
+            });
+            var debugTextGo = new GameObject("Text");
+            debugTextGo.transform.SetParent(debugBtnGo.transform, false);
+            var debugText = debugTextGo.AddComponent<TextMeshProUGUI>();
+            debugText.text = "\uB514\uBC84\uADF8 \uD654\uBA74";
+            debugText.fontSize = 26;
+            debugText.color = Color.white;
+            debugText.alignment = TextAlignmentOptions.Center;
+            debugText.raycastTarget = false;
+            UIManager.StretchFull(debugTextGo.GetComponent<RectTransform>());
         }
 
         private void BuildHeader(Transform parent)

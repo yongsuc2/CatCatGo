@@ -68,12 +68,27 @@ namespace CatCatGo.Presentation.Screens
         private RectTransform _inventoryGrid;
         private List<GameObject> _inventoryItems = new List<GameObject>();
 
-        private Button _bulkMergeButton;
-        private TextMeshProUGUI _bulkMergeText;
-        private RectTransform _mergePreviewArea;
-        private TextMeshProUGUI _mergePreviewText;
         private RectTransform _forgeGridContent;
         private List<GameObject> _forgeEntries = new List<GameObject>();
+
+        private Equipment _forgeSelectedEquipment;
+        private Image _forgeResultIcon;
+        private Image _forgeResultIconSprite;
+        private TextMeshProUGUI _forgeResultNameText;
+        private TextMeshProUGUI _forgeResultStatsText;
+        private GameObject _forgeResultArea;
+        private Image _forgeStarIcon;
+        private Image _forgeStarSprite;
+        private GameObject[] _forgeMaterialSlots;
+        private Image[] _forgeMaterialBgs;
+        private Image[] _forgeMaterialSprites;
+        private TextMeshProUGUI[] _forgeMaterialTexts;
+        private Button _forgeMergeButton;
+        private TextMeshProUGUI _forgeMergeButtonText;
+        private Button _forgeBulkMergeButton;
+        private TextMeshProUGUI _forgeBulkMergeText;
+        private RectTransform _forgeInventoryGrid;
+        private List<GameObject> _forgeInventoryItems = new List<GameObject>();
 
         private void Awake()
         {
@@ -525,6 +540,26 @@ namespace CatCatGo.Presentation.Screens
             _stonesHeaderText.color = ColorPalette.Gold;
             _stonesHeaderText.alignment = TextAlignmentOptions.Right;
             _stonesHeaderText.raycastTarget = false;
+
+            var forgeBtnGo = new GameObject("ForgeBtn");
+            forgeBtnGo.transform.SetParent(headerGo.transform, false);
+            var forgeBtnLe = forgeBtnGo.AddComponent<LayoutElement>();
+            forgeBtnLe.preferredWidth = 50;
+            var forgeBtnBg = forgeBtnGo.AddComponent<Image>();
+            forgeBtnBg.color = ColorPalette.GradeEpic;
+            var forgeBtn = forgeBtnGo.AddComponent<Button>();
+            forgeBtn.targetGraphic = forgeBtnBg;
+            forgeBtn.onClick.AddListener(() => OnTabChanged(1));
+            var forgeBtnTextGo = new GameObject("Text");
+            forgeBtnTextGo.transform.SetParent(forgeBtnGo.transform, false);
+            var forgeBtnText = forgeBtnTextGo.AddComponent<TextMeshProUGUI>();
+            forgeBtnText.text = "\uD569\uC131";
+            forgeBtnText.fontSize = 18;
+            forgeBtnText.color = Color.white;
+            forgeBtnText.fontStyle = FontStyles.Bold;
+            forgeBtnText.alignment = TextAlignmentOptions.Center;
+            forgeBtnText.raycastTarget = false;
+            UIManager.StretchFull(forgeBtnTextGo.GetComponent<RectTransform>());
         }
 
         private void BuildFilterBar(Transform parent)
@@ -640,61 +675,276 @@ namespace CatCatGo.Presentation.Screens
             scrollRect.content = _forgeGridContent;
             scrollRect.viewport = viewportRt;
 
-            BuildBulkMergeButton(contentGo.transform);
-            BuildMergePreview(contentGo.transform);
+            BuildForgeResultPreview(contentGo.transform);
+            BuildForgeMaterialRow(contentGo.transform);
+            BuildForgeMergeButtons(contentGo.transform);
+            BuildForgeInventoryGrid(contentGo.transform);
         }
 
-        private void BuildBulkMergeButton(Transform parent)
+        private void BuildForgeResultPreview(Transform parent)
         {
-            var btnGo = new GameObject("BulkMerge");
-            btnGo.transform.SetParent(parent, false);
-            var btnLe = btnGo.AddComponent<LayoutElement>();
-            btnLe.preferredHeight = 44;
+            _forgeResultArea = new GameObject("ResultPreview");
+            _forgeResultArea.transform.SetParent(parent, false);
+            var resultLe = _forgeResultArea.AddComponent<LayoutElement>();
+            resultLe.preferredHeight = 120;
+            _forgeResultArea.AddComponent<Image>().color = ColorPalette.Card;
 
-            var bg = btnGo.AddComponent<Image>();
-            bg.color = ColorPalette.ButtonPrimary;
-            _bulkMergeButton = btnGo.AddComponent<Button>();
-            _bulkMergeButton.targetGraphic = bg;
-            _bulkMergeButton.onClick.AddListener(OnBulkMergeClicked);
+            var resultLayout = _forgeResultArea.AddComponent<HorizontalLayoutGroup>();
+            resultLayout.spacing = 12;
+            resultLayout.padding = new RectOffset(16, 16, 12, 12);
+            resultLayout.childForceExpandWidth = false;
+            resultLayout.childForceExpandHeight = true;
+            resultLayout.childAlignment = TextAnchor.MiddleCenter;
 
-            var textGo = new GameObject("Text");
-            textGo.transform.SetParent(btnGo.transform, false);
-            _bulkMergeText = textGo.AddComponent<TextMeshProUGUI>();
-            _bulkMergeText.text = "\uc77c\uad04 \ud569\uc131 (0\uac74)";
-            _bulkMergeText.fontSize = 24;
-            _bulkMergeText.color = Color.white;
-            _bulkMergeText.alignment = TextAlignmentOptions.Center;
-            _bulkMergeText.raycastTarget = false;
-            var textRt = textGo.GetComponent<RectTransform>();
-            UIManager.StretchFull(textRt);
+            var iconGo = new GameObject("ResultIcon");
+            iconGo.transform.SetParent(_forgeResultArea.transform, false);
+            var iconLe = iconGo.AddComponent<LayoutElement>();
+            iconLe.preferredWidth = 90;
+            _forgeResultIcon = iconGo.AddComponent<Image>();
+            _forgeResultIcon.color = ColorPalette.CardLight;
+
+            var innerGo = new GameObject("Inner");
+            innerGo.transform.SetParent(iconGo.transform, false);
+            var innerRt = innerGo.AddComponent<RectTransform>();
+            innerRt.anchorMin = Vector2.zero;
+            innerRt.anchorMax = Vector2.one;
+            innerRt.offsetMin = new Vector2(3, 3);
+            innerRt.offsetMax = new Vector2(-3, -3);
+            var innerImg = innerGo.AddComponent<Image>();
+            innerImg.color = ColorPalette.Card;
+
+            var spriteGo = new GameObject("Sprite");
+            spriteGo.transform.SetParent(iconGo.transform, false);
+            _forgeResultIconSprite = spriteGo.AddComponent<Image>();
+            _forgeResultIconSprite.preserveAspect = true;
+            _forgeResultIconSprite.raycastTarget = false;
+            _forgeResultIconSprite.gameObject.SetActive(false);
+            var spriteRt = spriteGo.GetComponent<RectTransform>();
+            spriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+            spriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+            spriteRt.offsetMin = Vector2.zero;
+            spriteRt.offsetMax = Vector2.zero;
+
+            var infoGo = new GameObject("ResultInfo");
+            infoGo.transform.SetParent(_forgeResultArea.transform, false);
+            var infoLe = infoGo.AddComponent<LayoutElement>();
+            infoLe.flexibleWidth = 1;
+            var infoLayout = infoGo.AddComponent<VerticalLayoutGroup>();
+            infoLayout.spacing = 4;
+            infoLayout.childForceExpandWidth = true;
+            infoLayout.childForceExpandHeight = false;
+            infoLayout.childAlignment = TextAnchor.MiddleLeft;
+
+            var nameGo = new GameObject("Name");
+            nameGo.transform.SetParent(infoGo.transform, false);
+            var nameLe = nameGo.AddComponent<LayoutElement>();
+            nameLe.preferredHeight = 30;
+            _forgeResultNameText = nameGo.AddComponent<TextMeshProUGUI>();
+            _forgeResultNameText.text = "\uC7A5\uBE44\uB97C \uC120\uD0DD\uD558\uC138\uC694";
+            _forgeResultNameText.fontSize = 24;
+            _forgeResultNameText.color = ColorPalette.TextDim;
+            _forgeResultNameText.alignment = TextAlignmentOptions.Left;
+            _forgeResultNameText.raycastTarget = false;
+
+            var statsGo = new GameObject("Stats");
+            statsGo.transform.SetParent(infoGo.transform, false);
+            var statsLe = statsGo.AddComponent<LayoutElement>();
+            statsLe.preferredHeight = 24;
+            _forgeResultStatsText = statsGo.AddComponent<TextMeshProUGUI>();
+            _forgeResultStatsText.text = "";
+            _forgeResultStatsText.fontSize = 20;
+            _forgeResultStatsText.color = ColorPalette.TextDim;
+            _forgeResultStatsText.alignment = TextAlignmentOptions.Left;
+            _forgeResultStatsText.raycastTarget = false;
+
+            _forgeResultArea.SetActive(false);
         }
 
-        private void BuildMergePreview(Transform parent)
+        private void BuildForgeMaterialRow(Transform parent)
         {
-            var previewGo = new GameObject("MergePreview");
-            previewGo.transform.SetParent(parent, false);
-            _mergePreviewArea = previewGo.GetComponent<RectTransform>();
+            var rowGo = new GameObject("MaterialRow");
+            rowGo.transform.SetParent(parent, false);
+            var rowLe = rowGo.AddComponent<LayoutElement>();
+            rowLe.preferredHeight = 110;
 
-            if (_mergePreviewArea == null) _mergePreviewArea = previewGo.AddComponent<RectTransform>();
-            var previewLe = previewGo.AddComponent<LayoutElement>();
-            previewLe.preferredHeight = 80;
-            previewGo.AddComponent<Image>().color = ColorPalette.Card;
+            var rowLayout = rowGo.AddComponent<HorizontalLayoutGroup>();
+            rowLayout.spacing = 8;
+            rowLayout.padding = new RectOffset(16, 16, 8, 8);
+            rowLayout.childForceExpandWidth = false;
+            rowLayout.childForceExpandHeight = true;
+            rowLayout.childAlignment = TextAnchor.MiddleCenter;
 
-            var previewLayout = previewGo.AddComponent<VerticalLayoutGroup>();
-            previewLayout.padding = new RectOffset(12, 12, 8, 8);
-            previewLayout.childForceExpandWidth = true;
-            previewLayout.childForceExpandHeight = true;
+            var starGo = new GameObject("StarSlot");
+            starGo.transform.SetParent(rowGo.transform, false);
+            var starLe = starGo.AddComponent<LayoutElement>();
+            starLe.preferredWidth = 80;
+            _forgeStarIcon = starGo.AddComponent<Image>();
+            _forgeStarIcon.color = ColorPalette.CardLight;
 
-            var textGo = new GameObject("Text");
-            textGo.transform.SetParent(previewGo.transform, false);
-            _mergePreviewText = textGo.AddComponent<TextMeshProUGUI>();
-            _mergePreviewText.text = "";
-            _mergePreviewText.fontSize = 22;
-            _mergePreviewText.color = ColorPalette.TextDim;
-            _mergePreviewText.alignment = TextAlignmentOptions.Center;
-            _mergePreviewText.raycastTarget = false;
+            var starInner = new GameObject("Inner");
+            starInner.transform.SetParent(starGo.transform, false);
+            var starInnerRt = starInner.AddComponent<RectTransform>();
+            starInnerRt.anchorMin = Vector2.zero;
+            starInnerRt.anchorMax = Vector2.one;
+            starInnerRt.offsetMin = new Vector2(3, 3);
+            starInnerRt.offsetMax = new Vector2(-3, -3);
+            starInner.AddComponent<Image>().color = ColorPalette.Card;
 
-            _mergePreviewArea.gameObject.SetActive(false);
+            var starSpriteGo = new GameObject("Sprite");
+            starSpriteGo.transform.SetParent(starGo.transform, false);
+            _forgeStarSprite = starSpriteGo.AddComponent<Image>();
+            _forgeStarSprite.preserveAspect = true;
+            _forgeStarSprite.raycastTarget = false;
+            _forgeStarSprite.gameObject.SetActive(false);
+            var starSpriteRt = starSpriteGo.GetComponent<RectTransform>();
+            starSpriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+            starSpriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+            starSpriteRt.offsetMin = Vector2.zero;
+            starSpriteRt.offsetMax = Vector2.zero;
+
+            var labelGo = new GameObject("StarLabel");
+            labelGo.transform.SetParent(starGo.transform, false);
+            var labelTmp = labelGo.AddComponent<TextMeshProUGUI>();
+            labelTmp.text = "\u2605";
+            labelTmp.fontSize = 28;
+            labelTmp.color = ColorPalette.Gold;
+            labelTmp.alignment = TextAlignmentOptions.Center;
+            labelTmp.raycastTarget = false;
+            var labelRt = labelGo.GetComponent<RectTransform>();
+            labelRt.anchorMin = Vector2.zero;
+            labelRt.anchorMax = Vector2.one;
+            labelRt.offsetMin = Vector2.zero;
+            labelRt.offsetMax = Vector2.zero;
+
+            _forgeMaterialSlots = new GameObject[2];
+            _forgeMaterialBgs = new Image[2];
+            _forgeMaterialSprites = new Image[2];
+            _forgeMaterialTexts = new TextMeshProUGUI[2];
+
+            for (int i = 0; i < 2; i++)
+            {
+                var plusGo = new GameObject("Plus" + i);
+                plusGo.transform.SetParent(rowGo.transform, false);
+                var plusLe = plusGo.AddComponent<LayoutElement>();
+                plusLe.preferredWidth = 30;
+                var plusText = plusGo.AddComponent<TextMeshProUGUI>();
+                plusText.text = "+";
+                plusText.fontSize = 30;
+                plusText.color = ColorPalette.TextDim;
+                plusText.alignment = TextAlignmentOptions.Center;
+                plusText.raycastTarget = false;
+
+                var matGo = new GameObject("Material" + i);
+                matGo.transform.SetParent(rowGo.transform, false);
+                var matLe = matGo.AddComponent<LayoutElement>();
+                matLe.preferredWidth = 80;
+                _forgeMaterialBgs[i] = matGo.AddComponent<Image>();
+                _forgeMaterialBgs[i].color = ColorPalette.CardLight;
+
+                var matInner = new GameObject("Inner");
+                matInner.transform.SetParent(matGo.transform, false);
+                var matInnerRt = matInner.AddComponent<RectTransform>();
+                matInnerRt.anchorMin = Vector2.zero;
+                matInnerRt.anchorMax = Vector2.one;
+                matInnerRt.offsetMin = new Vector2(3, 3);
+                matInnerRt.offsetMax = new Vector2(-3, -3);
+                matInner.AddComponent<Image>().color = ColorPalette.Card;
+
+                var matSpriteGo = new GameObject("Sprite");
+                matSpriteGo.transform.SetParent(matGo.transform, false);
+                _forgeMaterialSprites[i] = matSpriteGo.AddComponent<Image>();
+                _forgeMaterialSprites[i].preserveAspect = true;
+                _forgeMaterialSprites[i].raycastTarget = false;
+                _forgeMaterialSprites[i].gameObject.SetActive(false);
+                var matSpriteRt = matSpriteGo.GetComponent<RectTransform>();
+                matSpriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+                matSpriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+                matSpriteRt.offsetMin = Vector2.zero;
+                matSpriteRt.offsetMax = Vector2.zero;
+
+                var matTextGo = new GameObject("Label");
+                matTextGo.transform.SetParent(matGo.transform, false);
+                _forgeMaterialTexts[i] = matTextGo.AddComponent<TextMeshProUGUI>();
+                _forgeMaterialTexts[i].text = "?";
+                _forgeMaterialTexts[i].fontSize = 24;
+                _forgeMaterialTexts[i].color = ColorPalette.TextDim;
+                _forgeMaterialTexts[i].alignment = TextAlignmentOptions.Center;
+                _forgeMaterialTexts[i].raycastTarget = false;
+                var matTextRt = matTextGo.GetComponent<RectTransform>();
+                matTextRt.anchorMin = Vector2.zero;
+                matTextRt.anchorMax = Vector2.one;
+                matTextRt.offsetMin = Vector2.zero;
+                matTextRt.offsetMax = Vector2.zero;
+
+                _forgeMaterialSlots[i] = matGo;
+            }
+        }
+
+        private void BuildForgeMergeButtons(Transform parent)
+        {
+            var btnRowGo = new GameObject("ForgeBtnRow");
+            btnRowGo.transform.SetParent(parent, false);
+            var btnRowLe = btnRowGo.AddComponent<LayoutElement>();
+            btnRowLe.preferredHeight = 44;
+            var btnRowLayout = btnRowGo.AddComponent<HorizontalLayoutGroup>();
+            btnRowLayout.spacing = 8;
+            btnRowLayout.childForceExpandWidth = true;
+            btnRowLayout.childForceExpandHeight = true;
+
+            var mergeGo = new GameObject("MergeBtn");
+            mergeGo.transform.SetParent(btnRowGo.transform, false);
+            var mergeBg = mergeGo.AddComponent<Image>();
+            mergeBg.color = ColorPalette.GradeLegendary;
+            _forgeMergeButton = mergeGo.AddComponent<Button>();
+            _forgeMergeButton.targetGraphic = mergeBg;
+            _forgeMergeButton.onClick.AddListener(OnForgeSelectedMerge);
+            _forgeMergeButton.interactable = false;
+            var mergeTextGo = new GameObject("Text");
+            mergeTextGo.transform.SetParent(mergeGo.transform, false);
+            _forgeMergeButtonText = mergeTextGo.AddComponent<TextMeshProUGUI>();
+            _forgeMergeButtonText.text = "\uD569\uC131";
+            _forgeMergeButtonText.fontSize = 24;
+            _forgeMergeButtonText.color = Color.white;
+            _forgeMergeButtonText.fontStyle = FontStyles.Bold;
+            _forgeMergeButtonText.alignment = TextAlignmentOptions.Center;
+            _forgeMergeButtonText.raycastTarget = false;
+            UIManager.StretchFull(mergeTextGo.GetComponent<RectTransform>());
+
+            var bulkGo = new GameObject("BulkMergeBtn");
+            bulkGo.transform.SetParent(btnRowGo.transform, false);
+            var bulkBg = bulkGo.AddComponent<Image>();
+            bulkBg.color = ColorPalette.ButtonPrimary;
+            _forgeBulkMergeButton = bulkGo.AddComponent<Button>();
+            _forgeBulkMergeButton.targetGraphic = bulkBg;
+            _forgeBulkMergeButton.onClick.AddListener(OnBulkMergeClicked);
+            var bulkTextGo = new GameObject("Text");
+            bulkTextGo.transform.SetParent(bulkGo.transform, false);
+            _forgeBulkMergeText = bulkTextGo.AddComponent<TextMeshProUGUI>();
+            _forgeBulkMergeText.text = "\uC77C\uAD04 \uD569\uC131 (0)";
+            _forgeBulkMergeText.fontSize = 22;
+            _forgeBulkMergeText.color = Color.white;
+            _forgeBulkMergeText.alignment = TextAlignmentOptions.Center;
+            _forgeBulkMergeText.raycastTarget = false;
+            UIManager.StretchFull(bulkTextGo.GetComponent<RectTransform>());
+        }
+
+        private void BuildForgeInventoryGrid(Transform parent)
+        {
+            var gridGo = new GameObject("ForgeInvGrid");
+            gridGo.transform.SetParent(parent, false);
+            _forgeInventoryGrid = gridGo.GetComponent<RectTransform>();
+            if (_forgeInventoryGrid == null) _forgeInventoryGrid = gridGo.AddComponent<RectTransform>();
+            var gridLe = gridGo.AddComponent<LayoutElement>();
+            gridLe.preferredHeight = 400;
+
+            var grid = gridGo.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(120, 160);
+            grid.spacing = new Vector2(8, 8);
+            grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
+            grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 4;
         }
 
         private void OnTabChanged(int index)
@@ -1105,143 +1355,244 @@ namespace CatCatGo.Presentation.Screens
 
         private void RefreshForge()
         {
-            foreach (var go in _forgeEntries)
-                Destroy(go);
-            _forgeEntries.Clear();
+            _forgeSelectedEquipment = null;
+            RefreshForgeMaterialDisplay();
+            RefreshForgeInventory();
 
             var candidates = Game.ForgeService.FindMergeCandidates(Game.Player.Inventory);
+            _forgeBulkMergeText.text = $"\uC77C\uAD04 \uD569\uC131 ({candidates.Count})";
+            _forgeBulkMergeButton.interactable = candidates.Count > 0;
+        }
 
-            _bulkMergeText.text = $"\uc77c\uad04 \ud569\uc131 ({candidates.Count}\uac74)";
-            _bulkMergeButton.interactable = candidates.Count > 0;
+        private void OnForgeItemClicked(Equipment equipment)
+        {
+            _forgeSelectedEquipment = equipment;
+            RefreshForgeMaterialDisplay();
+        }
 
-            if (candidates.Count == 0)
+        private void RefreshForgeMaterialDisplay()
+        {
+            if (_forgeSelectedEquipment == null)
             {
-                _mergePreviewArea.gameObject.SetActive(true);
-                _mergePreviewText.text = "\ud569\uc131 \uac00\ub2a5\ud55c \uc7a5\ube44\uac00 \uc5c6\uc2b5\ub2c8\ub2e4";
-            }
-            else
-            {
-                _mergePreviewArea.gameObject.SetActive(true);
-                var first = candidates[0];
-                var source = first[0];
-                Color srcColor = ColorPalette.GetEquipmentGradeColor(source.Grade);
-                string srcGrade = EquipmentDataTable.GetGradeLabel(source.Grade);
-                string srcSlot = EquipmentDataTable.GetSlotLabel(source.Slot);
+                _forgeResultArea.SetActive(false);
+                _forgeStarIcon.color = ColorPalette.CardLight;
+                _forgeStarSprite.gameObject.SetActive(false);
+                _forgeStarIcon.transform.Find("StarLabel").gameObject.SetActive(true);
+                _forgeMergeButton.interactable = false;
 
-                string resultStr;
-                if (EquipmentTable.IsHighGradeMerge(source.Grade) && source.MergeLevel < EquipmentTable.GetMergeEnhanceMax())
+                for (int i = 0; i < 2; i++)
                 {
-                    resultStr = $"{srcGrade} {srcSlot} +{source.MergeLevel + 1}";
+                    _forgeMaterialBgs[i].color = ColorPalette.CardLight;
+                    _forgeMaterialSprites[i].gameObject.SetActive(false);
+                    _forgeMaterialTexts[i].text = "?";
+                    _forgeMaterialTexts[i].color = ColorPalette.TextDim;
+                }
+                return;
+            }
+
+            var eq = _forgeSelectedEquipment;
+            Color gradeColor = ColorPalette.GetEquipmentGradeColor(eq.Grade);
+            int required = Game.ForgeService.GetMergeRequirement(eq.Grade);
+
+            _forgeStarIcon.color = gradeColor;
+            _forgeStarSprite.gameObject.SetActive(true);
+            _forgeStarIcon.transform.Find("StarLabel").gameObject.SetActive(false);
+            if (SpriteManager.Instance != null)
+                _forgeStarSprite.sprite = SpriteManager.Instance.GetEquipmentIcon(eq.Slot, eq.Grade);
+
+            var subKey = eq.Slot == SlotType.WEAPON ? eq.WeaponSubTypeValue : null;
+            int mlKey = EquipmentTable.IsHighGradeMerge(eq.Grade) ? eq.MergeLevel : -1;
+            var sameItems = Game.Player.Inventory
+                .Where(e => e.Id != eq.Id && e.Grade == eq.Grade && e.Slot == eq.Slot && !e.IsS
+                    && (eq.Slot != SlotType.WEAPON || e.WeaponSubTypeValue == subKey)
+                    && (mlKey < 0 || e.MergeLevel == mlKey))
+                .ToList();
+
+            int materialsNeeded = required > 0 ? required - 1 : 2;
+            bool canMerge = sameItems.Count >= materialsNeeded && required > 0;
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (i < materialsNeeded)
+                {
+                    _forgeMaterialSlots[i].SetActive(true);
+                    if (i < sameItems.Count)
+                    {
+                        _forgeMaterialBgs[i].color = gradeColor;
+                        _forgeMaterialSprites[i].gameObject.SetActive(true);
+                        if (SpriteManager.Instance != null)
+                            _forgeMaterialSprites[i].sprite = SpriteManager.Instance.GetEquipmentIcon(sameItems[i].Slot, sameItems[i].Grade);
+                        _forgeMaterialTexts[i].text = "";
+                    }
+                    else
+                    {
+                        _forgeMaterialBgs[i].color = new Color(gradeColor.r * 0.3f, gradeColor.g * 0.3f, gradeColor.b * 0.3f, 1f);
+                        _forgeMaterialSprites[i].gameObject.SetActive(false);
+                        string slotLabel = EquipmentDataTable.GetSlotLabel(eq.Slot);
+                        _forgeMaterialTexts[i].text = slotLabel;
+                        _forgeMaterialTexts[i].color = gradeColor;
+                    }
                 }
                 else
                 {
-                    var nextGrade = EquipmentTable.GetNextGrade(source.Grade);
-                    string nextGradeLabel = nextGrade.HasValue ? EquipmentDataTable.GetGradeLabel(nextGrade.Value) : "MAX";
-                    resultStr = $"{nextGradeLabel} {srcSlot}";
+                    _forgeMaterialSlots[i].SetActive(false);
                 }
-                _mergePreviewText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(srcColor)}>{srcGrade} {srcSlot}</color> x{first.Count} => {resultStr}";
             }
 
-            var grouped = new Dictionary<string, List<List<Equipment>>>();
-            foreach (var group in candidates)
+            _forgeMergeButton.interactable = canMerge;
+
+            _forgeResultArea.SetActive(true);
+            if (canMerge)
             {
-                var first = group[0];
-                string key = $"{first.Slot}_{first.Grade}_{first.MergeLevel}";
-                if (!grouped.ContainsKey(key)) grouped[key] = new List<List<Equipment>>();
-                grouped[key].Add(group);
+                EquipmentGrade resultGrade;
+                int resultMergeLevel = 0;
+                if (EquipmentTable.IsHighGradeMerge(eq.Grade) && eq.MergeLevel < EquipmentTable.GetMergeEnhanceMax())
+                {
+                    resultGrade = eq.Grade;
+                    resultMergeLevel = eq.MergeLevel + 1;
+                }
+                else
+                {
+                    var next = EquipmentTable.GetNextGrade(eq.Grade);
+                    resultGrade = next.HasValue ? next.Value : eq.Grade;
+                }
+
+                Color resultColor = ColorPalette.GetEquipmentGradeColor(resultGrade);
+                _forgeResultIcon.color = resultColor;
+                _forgeResultIconSprite.gameObject.SetActive(true);
+                if (SpriteManager.Instance != null)
+                    _forgeResultIconSprite.sprite = SpriteManager.Instance.GetEquipmentIcon(eq.Slot, resultGrade);
+
+                string resultLabel = EquipmentDataTable.GetGradeLabel(resultGrade);
+                string slotName = EquipmentDataTable.GetSlotLabel(eq.Slot);
+                string mlStr = resultMergeLevel > 0 ? $" +{resultMergeLevel}" : "";
+                _forgeResultNameText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(resultColor)}>{resultLabel}</color> {slotName}{mlStr}";
+                _forgeResultNameText.color = ColorPalette.Text;
+
+                var simStats = EquipmentTable.GetBaseStats(eq.Slot, resultGrade);
+                var sb = new System.Text.StringBuilder();
+                if (simStats.Atk > 0) sb.Append($"ATK +{simStats.Atk}  ");
+                if (simStats.MaxHp > 0) sb.Append($"HP +{simStats.MaxHp}  ");
+                if (simStats.Def > 0) sb.Append($"DEF +{simStats.Def}  ");
+                _forgeResultStatsText.text = sb.ToString();
             }
-
-            foreach (var kv in grouped)
+            else
             {
-                var groups = kv.Value;
-                var first = groups[0][0];
-                Color gradeColor = ColorPalette.GetEquipmentGradeColor(first.Grade);
+                _forgeResultIcon.color = new Color(gradeColor.r * 0.3f, gradeColor.g * 0.3f, gradeColor.b * 0.3f, 1f);
+                _forgeResultIconSprite.gameObject.SetActive(false);
+                string need = $"{EquipmentDataTable.GetSlotLabel(eq.Slot)} {materialsNeeded - sameItems.Count}\uAC1C \uBD80\uC871";
+                _forgeResultNameText.text = need;
+                _forgeResultNameText.color = ColorPalette.TextDim;
+                _forgeResultStatsText.text = "";
+            }
+        }
 
-                var entryGo = new GameObject("ForgeEntry");
-                entryGo.transform.SetParent(_forgeGridContent, false);
-                var entryLe = entryGo.AddComponent<LayoutElement>();
-                entryLe.preferredHeight = 60;
-                entryGo.AddComponent<Image>().color = ColorPalette.Card;
+        private void OnForgeSelectedMerge()
+        {
+            if (_forgeSelectedEquipment == null) return;
 
-                var hlayout = entryGo.AddComponent<HorizontalLayoutGroup>();
-                hlayout.spacing = 8;
-                hlayout.childForceExpandWidth = false;
-                hlayout.childForceExpandHeight = true;
-                hlayout.padding = new RectOffset(8, 8, 6, 6);
+            var eq = _forgeSelectedEquipment;
+            int required = Game.ForgeService.GetMergeRequirement(eq.Grade);
+            if (required <= 0) return;
+
+            var subKey = eq.Slot == SlotType.WEAPON ? eq.WeaponSubTypeValue : null;
+            int mlKey = EquipmentTable.IsHighGradeMerge(eq.Grade) ? eq.MergeLevel : -1;
+            var sameItems = Game.Player.Inventory
+                .Where(e => e.Id != eq.Id && e.Grade == eq.Grade && e.Slot == eq.Slot && !e.IsS
+                    && (eq.Slot != SlotType.WEAPON || e.WeaponSubTypeValue == subKey)
+                    && (mlKey < 0 || e.MergeLevel == mlKey))
+                .Take(required - 1)
+                .ToList();
+
+            if (sameItems.Count < required - 1) return;
+
+            var mergeGroup = new List<Equipment> { eq };
+            mergeGroup.AddRange(sameItems);
+
+            OnMergeClicked(mergeGroup);
+        }
+
+        private void RefreshForgeInventory()
+        {
+            foreach (var go in _forgeInventoryItems)
+                Destroy(go);
+            _forgeInventoryItems.Clear();
+
+            var sorted = Game.Player.Inventory
+                .Where(e => !e.IsS)
+                .OrderByDescending(e => e.GetGradeIndex())
+                .ThenBy(e => e.Slot)
+                .ThenByDescending(e => e.MergeLevel)
+                .ToList();
+
+            foreach (var eq in sorted)
+            {
+                var itemGo = new GameObject("ForgeInvItem");
+                itemGo.transform.SetParent(_forgeInventoryGrid, false);
+                Color gradeColor = ColorPalette.GetEquipmentGradeColor(eq.Grade);
+
+                var itemLayout = itemGo.AddComponent<VerticalLayoutGroup>();
+                itemLayout.spacing = 0;
+                itemLayout.childForceExpandWidth = true;
+                itemLayout.childForceExpandHeight = false;
+                itemLayout.childAlignment = TextAnchor.UpperCenter;
 
                 var iconGo = new GameObject("Icon");
-                iconGo.transform.SetParent(entryGo.transform, false);
+                iconGo.transform.SetParent(itemGo.transform, false);
                 var iconLe = iconGo.AddComponent<LayoutElement>();
-                iconLe.preferredWidth = 48;
-                var iconBg = iconGo.AddComponent<Image>();
-                iconBg.color = gradeColor;
+                iconLe.preferredHeight = 120;
 
-                var iconInner = new GameObject("Inner");
-                iconInner.transform.SetParent(iconGo.transform, false);
-                var iconInnerImg = iconInner.AddComponent<Image>();
-                iconInnerImg.color = new Color(gradeColor.r * 0.3f, gradeColor.g * 0.3f, gradeColor.b * 0.3f, 1f);
-                var iconInnerRt = iconInner.GetComponent<RectTransform>();
-                iconInnerRt.anchorMin = Vector2.zero;
-                iconInnerRt.anchorMax = Vector2.one;
-                iconInnerRt.offsetMin = new Vector2(2, 2);
-                iconInnerRt.offsetMax = new Vector2(-2, -2);
+                var borderImg = iconGo.AddComponent<Image>();
+                borderImg.color = gradeColor;
 
-                string slotAbbr = EquipmentDataTable.GetSlotLabel(first.Slot);
-                var forgeSprite = new GameObject("Sprite");
-                forgeSprite.transform.SetParent(iconGo.transform, false);
-                var forgeSpriteImg = forgeSprite.AddComponent<Image>();
-                forgeSpriteImg.preserveAspect = true;
-                forgeSpriteImg.raycastTarget = false;
+                var innerGo = new GameObject("Inner");
+                innerGo.transform.SetParent(iconGo.transform, false);
+                var innerImg = innerGo.AddComponent<Image>();
+                innerImg.color = new Color(gradeColor.r * 0.3f, gradeColor.g * 0.3f, gradeColor.b * 0.3f, 1f);
+                var innerRt = innerGo.GetComponent<RectTransform>();
+                innerRt.anchorMin = Vector2.zero;
+                innerRt.anchorMax = Vector2.one;
+                innerRt.offsetMin = new Vector2(2, 2);
+                innerRt.offsetMax = new Vector2(-2, -2);
+
+                var spriteGo = new GameObject("Sprite");
+                spriteGo.transform.SetParent(iconGo.transform, false);
+                var spriteImg = spriteGo.AddComponent<Image>();
+                spriteImg.preserveAspect = true;
+                spriteImg.raycastTarget = false;
                 if (SpriteManager.Instance != null)
-                    forgeSpriteImg.sprite = SpriteManager.Instance.GetEquipmentIcon(first.Slot, first.Grade);
-                var forgeSpriteRt = forgeSprite.GetComponent<RectTransform>();
-                forgeSpriteRt.anchorMin = new Vector2(0.1f, 0.1f);
-                forgeSpriteRt.anchorMax = new Vector2(0.9f, 0.9f);
-                forgeSpriteRt.offsetMin = Vector2.zero;
-                forgeSpriteRt.offsetMax = Vector2.zero;
+                    spriteImg.sprite = SpriteManager.Instance.GetEquipmentIcon(eq.Slot, eq.Grade);
+                var spriteRt = spriteGo.GetComponent<RectTransform>();
+                spriteRt.anchorMin = new Vector2(0.1f, 0.1f);
+                spriteRt.anchorMax = new Vector2(0.9f, 0.9f);
+                spriteRt.offsetMin = Vector2.zero;
+                spriteRt.offsetMax = Vector2.zero;
 
-                int totalCount = 0;
-                foreach (var g in groups) totalCount += g.Count;
+                string slotAbbr = EquipmentDataTable.GetSlotLabel(eq.Slot);
+                var labelGo = new GameObject("Label");
+                labelGo.transform.SetParent(itemGo.transform, false);
+                var labelLe = labelGo.AddComponent<LayoutElement>();
+                labelLe.preferredHeight = 36;
+                var labelText = labelGo.AddComponent<TextMeshProUGUI>();
+                string lvStr = eq.Level > 0 ? $" +{eq.Level}" : "";
+                labelText.text = $"{slotAbbr}{lvStr}";
+                labelText.fontSize = 22;
+                labelText.color = gradeColor;
+                labelText.alignment = TextAlignmentOptions.Center;
+                labelText.raycastTarget = false;
 
-                var qtyGo = new GameObject("Qty");
-                qtyGo.transform.SetParent(entryGo.transform, false);
-                var qtyLe = qtyGo.AddComponent<LayoutElement>();
-                qtyLe.preferredWidth = 36;
-                var qtyText = qtyGo.AddComponent<TextMeshProUGUI>();
-                qtyText.text = $"x{totalCount}";
-                qtyText.fontSize = 22;
-                qtyText.color = ColorPalette.TextDim;
-                qtyText.alignment = TextAlignmentOptions.Center;
-                qtyText.raycastTarget = false;
+                var btn = iconGo.AddComponent<Button>();
+                btn.targetGraphic = borderImg;
+                var capturedEq = eq;
+                btn.onClick.AddListener(() => OnForgeItemClicked(capturedEq));
 
-                var infoGo = new GameObject("Info");
-                infoGo.transform.SetParent(entryGo.transform, false);
-                var infoLe = infoGo.AddComponent<LayoutElement>();
-                infoLe.flexibleWidth = 1;
-                var infoText = infoGo.AddComponent<TextMeshProUGUI>();
-                string gradeLabel = EquipmentDataTable.GetGradeLabel(first.Grade);
-                string mergeStr = first.MergeLevel > 0 ? $" +{first.MergeLevel}" : "";
-                infoText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(gradeColor)}>{gradeLabel}</color> {slotAbbr}{mergeStr}";
-                infoText.fontSize = 24;
-                infoText.color = ColorPalette.Text;
-                infoText.alignment = TextAlignmentOptions.Left;
-                infoText.raycastTarget = false;
-
-                var mergeGo = new GameObject("MergeBtn");
-                mergeGo.transform.SetParent(entryGo.transform, false);
-                var mergeLe = mergeGo.AddComponent<LayoutElement>();
-                mergeLe.preferredWidth = 80;
-                var mergeBg = mergeGo.AddComponent<Image>();
-                mergeBg.color = ColorPalette.ButtonPrimary;
-                var mergeBtn = mergeGo.AddComponent<Button>();
-                mergeBtn.targetGraphic = mergeBg;
-                var capturedGroup = groups[0];
-                mergeBtn.onClick.AddListener(() => OnMergeClicked(capturedGroup));
-                var mergeText = UIManager.CreateText(mergeGo.transform, "\ud569\uc131", 22f, Color.white, "Text");
-                mergeText.alignment = TextAlignmentOptions.Center;
-
-                _forgeEntries.Add(entryGo);
+                _forgeInventoryItems.Add(itemGo);
             }
+
+            int rows = Mathf.CeilToInt(sorted.Count / 4f);
+            float gridHeight = Mathf.Max(200, rows * 168 + 12);
+            var gridLe2 = _forgeInventoryGrid.GetComponent<LayoutElement>();
+            gridLe2.preferredHeight = gridHeight;
         }
 
         public override void OnScreenEnter()
