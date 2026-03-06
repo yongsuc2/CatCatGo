@@ -638,3 +638,21 @@
   - API 엔드포인트 48개 설계 (기존 21개 → 48개로 확장)
   - 서버 서비스 14개 정의 (기존 6개 → 14개)
   - DB 테이블 8개 추가 (기존 6개 + 신규 8개 = 14개)
+- **클라이언트 서버 연동 설계** (Y-86 연장)
+  - `docs/16_클라이언트_서버연동_설계.md` 작성 — 클라이언트 측 서버 연동 상세 설계
+  - 현재 오프라인 아키텍처 분석, 목표 서버 권위 모델 정의
+  - 네트워크 레이어(ApiClient/ApiEndpoints/ApiResponse/NetworkMode) 설계
+  - GameState 클래스 분리, StateDelta 기반 상태 갱신
+  - GameManager API 메서드 13개 변환 목록, Screen 직접 변경 7개 변환 목록
+  - EventBus 기반 UI 자동 갱신, 로딩 상태/이중 요청 방지
+  - 오프라인/온라인 모드 전환 설계
+  - 4-Phase 구현 순서 정의
+- **서버 테스트 프로젝트 구성 + 35개 단위 테스트 작성**
+  - `docs/17_서버테스트설계.md` 테스트 기획 문서 작성
+  - 서버 솔루션 파일(.sln) + 5개 프로젝트 .csproj 생성
+  - xUnit + NSubstitute 기반 Mock 단위 테스트 5개 파일:
+    - AuthServiceTests (8): 회원가입/로그인/차단계정/JWT구조/DisplayName기본값/RefreshToken
+    - SaveServiceTests (6): 신규저장/클라이언트최신/서버최신/로드/체크섬SHA256
+    - ShopServiceTests (7): 카탈로그필터/이벤트상품기간/구매성공/중복영수증/비활성상품/검증실패
+    - BattleVerifierTests (7): 전투시작/정상보고/잘못된ID/계정불일치/중복완료/시드불일치치트/속도핵
+    - ArenaServiceTests (7): 신규매칭/기존매칭/자기제외/1~4등포인트변동/0미만방지

@@ -104,6 +104,7 @@
 | Y-92 | [Server] 아레나 백엔드 | 중 | 대기 | 매칭/ELO/시즌 관리, 스냅샷 저장, 비동기 PvP 활성화 |
 | Y-93 | [Server] 가챠 서버사이드 전환 | 중 | 대기 | TreasureChest 서버 실행, 천장 카운터 서버 관리, 확률 조작 방지 |
 | Y-94 | [Server] Unity 클라이언트 NetworkManager | 상 | 대기 | HTTP 클라이언트, JWT 토큰 관리, 오프라인 폴백, 서버 연동 |
+| Y-95 | [Server] 서버 테스트 프로젝트 + 35개 단위 테스트 | 중 | 완료 | xUnit+NSubstitute Mock 테스트, Auth/Save/Shop/Battle/Arena 5개 서비스 커버 |
 
 ---
 
