@@ -1,7 +1,7 @@
 ---
 name: dev-agent
 description: 개발 Agent. 코드 품질 유지, 컴파일/리소스 에러 수정, 그래픽 리소스 규칙 수립, 자동화 도구 개발. 코드 관련 작업 요청 시 사용.
-model: inherit
+model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

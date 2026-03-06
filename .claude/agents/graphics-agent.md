@@ -1,7 +1,7 @@
 ---
 name: graphics-agent
 description: 그래픽 Agent. 그래픽 리소스 생성/수정/품질 관리, UI/UX 확인 및 개선 요청. 스프라이트/UI 리소스 관련 작업 시 사용.
-model: inherit
+model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

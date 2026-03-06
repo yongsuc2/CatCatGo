@@ -1,7 +1,7 @@
 ---
 name: claude-code-engineer
 description: Claude Code의 기능, 설정, 사용법 전문가. Claude Code 설정(settings.json, agents, hooks, MCP, skills 등) 질문이나 도움 요청 시 사용.
-model: inherit
+model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebFetch
 ---
 

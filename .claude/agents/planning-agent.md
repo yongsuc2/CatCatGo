@@ -1,7 +1,7 @@
 ---
 name: planning-agent
 description: 기획 Agent. 기획 문서 품질 검토, 시스템 간 정합성 확인, 아이디어 확장. 기획서 검토/개선 요청 시 사용.
-model: inherit
+model: opus
 tools: Read, Glob, Grep, Edit, Write, WebSearch, WebFetch
 ---
 

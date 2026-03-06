@@ -1,7 +1,7 @@
 ---
 name: qa-agent
 description: QA Agent. 기획과 구현의 일관성 검증, 테스트 케이스 설계, 버그 탐지. 품질 확인/테스트 요청 시 사용.
-model: inherit
+model: opus
 tools: Read, Glob, Grep, Write, Edit, Bash
 ---
 
