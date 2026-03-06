@@ -88,6 +88,43 @@
 
 ---
 
+## 언어 규칙
+
+- 모든 산출물(문서, 커밋 메시지, WorkLog, 보고)은 **한국어**로 작성
+- 코드 식별자(변수명, 클래스명 등)와 기술 용어는 원문 유지
+
+---
+
+## Agent 병렬 작업 규칙
+
+- 여러 Agent가 동시에 작업할 때는 반드시 **git worktree 격리 모드**(`isolation: "worktree"`)로 spawn
+- 동일 working directory에서 병렬 git 작업 **금지** (race condition 발생)
+
+---
+
+## Git Commit 포맷
+
+```
+[에이전트이름] 커밋 메시지 요약
+
+Ref: docs/{Agent디렉토리}/WorkLog/{작업일지파일}
+```
+
+**예시:**
+```
+[dev-agent] 리소스 참조 검증 Editor 도구 추가
+
+Ref: docs/Dev_Client/WorkLog/개발일지_dev-agent.md
+```
+
+**규칙:**
+- 첫 줄: `[에이전트이름]` + 공백 + 변경 내용 요약
+- 본문(선택): 상세 설명이 필요한 경우
+- 마지막 줄: `Ref:` + 해당 작업이 기록된 WorkLog 문서 경로
+- WorkLog가 없으면 커밋 전에 먼저 작성
+
+---
+
 ## 문서 동기화 (필수)
 
 작업으로 인해 시스템 동작, 흐름, 구조가 변경되었을 때 관련 문서도 함께 업데이트할 것.
