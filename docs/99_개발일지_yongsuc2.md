@@ -656,3 +656,16 @@
     - ShopServiceTests (7): 카탈로그필터/이벤트상품기간/구매성공/중복영수증/비활성상품/검증실패
     - BattleVerifierTests (7): 전투시작/정상보고/잘못된ID/계정불일치/중복완료/시드불일치치트/속도핵
     - ArenaServiceTests (7): 신규매칭/기존매칭/자기제외/1~4등포인트변동/0미만방지
+
+---
+
+## 2026-03-06 (Day 21)
+
+### 완료 작업
+- **서버 코드 문서 정합성 분석 + 작업 목록 재정비** (Y-88~Y-98)
+  - `claude/setup-vm-test-environment-OeYAv` 브랜치 fast-forward 머지 (서버 테스트 35개 + VM 환경 설정)
+  - 서버 코드 vs `docs/16_클라이언트_서버연동_설계.md` 정합성 분석 수행
+  - 분석 결과: 30개 엔드포인트 중 구현 3개(10%), StateDelta/ApiResponse 전무, BattleController 설계 불일치
+  - 기존 작업 목록(Y-88~Y-94)을 16번 문서 기준으로 전면 재정비
+  - 신규 작업 추가: Y-96(테스트 재정비), Y-97(클라이언트 NetworkManager), Y-98(Screen 리팩토링+EventBus)
+  - 구현 순서 의존성 재정의: Y-88(폐기/수정) → Y-89(기반) → Y-90~Y-94(API) → Y-96(테스트) → Y-97(클라이언트) → Y-98(Screen)
