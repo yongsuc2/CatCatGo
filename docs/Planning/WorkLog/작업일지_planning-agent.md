@@ -1,5 +1,53 @@
 # Planning Agent 작업일지
 
+## 2026-03-07 기획 문서 정합성 검토 2차 (BUG-004 해결 + 용어 정리 + 장비 패시브 현행화)
+
+### 작업 내용
+QA Agent의 정합성 보고서(consistency-report-v1)에서 보고된 BUG-004를 포함하여, 기획 문서 간 교차 검토 및 코드 대조를 통해 발견한 불일치를 수정했다.
+
+### 작업 1: 삭제된 equipment-passive.data.json 참조 정리 (BUG-004)
+
+K-15 작업에서 장비 패시브 시스템(`EquipmentPassiveTable` + `equipment-passive.data.json`)이 삭제되었으나, 3곳의 기획 문서에서 여전히 참조하고 있었음.
+
+**수정 파일:**
+- `docs/Planning/SystemDesign/06_가챠시스템.md` — 데이터 파일 테이블에서 삭제된 파일 참조 제거, `equipment-base-stats` → `equipment-labels` 경로 수정
+- `docs/Planning/SystemDesign/13_밸런스데이터시트.md` — 장비 패시브 섹션을 "삭제됨" 상태로 변경 + 밸런스 영향 분석 메모 추가, 데이터 소스 테이블에서 삭제된 파일 제거 및 `equipment-labels` 추가
+
+**근거:**
+- `docs/Dev_Client/Todo/작업목록_kkwndud.md:28` (K-15 완료 기록)
+- `grep` 결과: 코드에 `EquipmentPassive` 관련 클래스 0건
+- `equipment-passive.data.json` 파일 미존재 (glob 결과)
+
+### 작업 2: 기획 문서 간 용어/설명 불일치 정리
+
+**수정 파일:**
+- `docs/Planning/SystemDesign/04_스킬시스템.md`
+  - "인카운터별 티어 제한" 테이블을 "인카운터별 스킬 제공 방식"으로 전면 재작성 (코드 근거 추가)
+  - "천사(중박)", "악마(대박)" 용어를 코드의 인카운터 유형명(CHANCE, DEMON)과 일치시킴
+  - "스킬 획득 경로" 테이블에서 용어를 모험시스템 문서와 일치시키고, 금상자/스킬 교환 경로 추가
+- `docs/Planning/SystemDesign/12_모험시스템.md`
+  - "금상자" 보상의 명확한 정의 추가 (코드 참조: `ChapterScreen.ShowEliteReward()`)
+  - 강제 전투 테이블의 승리 보상 칸을 간결화
+
+**발견한 코드-기획 불일치:**
+| 항목 | 기획서 | 실제 코드 | 근거 |
+|------|--------|----------|------|
+| 금상자 티어 제한 | "tier 3 (신화급)" | 제한 없음 (전체 스킬 풀) | `ChapterScreen.cs:752` BuildSkillPool 제한 없이 사용 |
+| 우연 스킬 상자 티어 | "tier 1~2" | 제한 없음 (전체 스킬 풀) | `EncounterGenerator.cs:136` maxTier 미지정 |
+| DEMON 인카운터 | "전체" | 제한 없음 (전체 스킬 풀) | `EncounterGenerator.cs:76` maxTier 미지정 |
+
+### 작업 3: 장비 패시브 섹션 현행화
+
+작업 1과 함께 수행. 밸런스 데이터시트의 장비 패시브 섹션에 삭제 상태 및 밸런스 영향 분석 메모를 추가했다.
+
+### 수정 파일 목록
+- `docs/Planning/SystemDesign/04_스킬시스템.md`
+- `docs/Planning/SystemDesign/06_가챠시스템.md`
+- `docs/Planning/SystemDesign/12_모험시스템.md`
+- `docs/Planning/SystemDesign/13_밸런스데이터시트.md`
+
+---
+
 ## 2026-03-07 기획 문서 정합성 수정
 
 ### 작업 내용
