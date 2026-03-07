@@ -296,7 +296,7 @@ model: opus
 에이전트 지침 내용...
 ```
 
-상세 내용은 `docs/Claude_Code_Engineer/Knowledge/Agent_Teams_통신_구조.md`의 "Agent Teams vs Sub-agents 구분" 참조.
+상세 내용은 `docs/claude-code-engineer/Knowledge/Agent_Teams_통신_구조.md`의 "Agent Teams vs Sub-agents 구분" 참조.
 
 ---
 
@@ -402,5 +402,5 @@ settings.json의 `env` 필드로 환경 변수를 설정한다.
 - Claude Code Sub-agents: https://code.claude.com/docs/en/sub-agents
 
 ## 관련 문서
-- docs/Claude_Code_Engineer/Knowledge/Agent_Teams_통신_구조.md
-- docs/Claude_Code_Engineer/Knowledge/Claude_토큰_사용_구조.md
+- docs/claude-code-engineer/Knowledge/Agent_Teams_통신_구조.md
+- docs/claude-code-engineer/Knowledge/Claude_토큰_사용_구조.md

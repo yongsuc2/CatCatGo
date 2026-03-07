@@ -60,7 +60,7 @@ Verified files: battle, enemy, equipment-base-stats, equipment-substats, active-
 ### [BUG-004] Gacha planning doc references non-existent files (Minor)
 
 - **Severity**: Minor
-- **Location**: docs/Planning/SystemDesign/06_가챠시스템.md bottom table
+- **Location**: docs/planning-agent/SystemDesign/06_가챠시스템.md bottom table
 - **Issue 1**: Equipment grade labels/sell prices references equipment-base-stats.data.json but actual location is equipment-labels.data.json
 - **Issue 2**: Equipment passive references equipment-passive.data.json but this file does not exist
 - **Action**: Fix file references in planning doc

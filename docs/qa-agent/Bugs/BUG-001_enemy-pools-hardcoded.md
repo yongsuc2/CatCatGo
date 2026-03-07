@@ -22,7 +22,7 @@ pools 필드가 chapterThemes 도입 이전의 레거시 데이터였음.
 pools 필드를 참조하는 코드가 없었으므로 실제 게임 동작에는 영향 없었음. 혼란 유발 가능성만 존재.
 
 ## 관련 파일
-- 기획: docs/Planning/SystemDesign/01_전투시스템.md
+- 기획: docs/planning-agent/SystemDesign/01_전투시스템.md
 - 코드/데이터: Assets/_Project/Data/Json/enemy.data.json
 
 ## 수정 이력

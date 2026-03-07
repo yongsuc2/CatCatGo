@@ -14,7 +14,7 @@
 - **문제점**: 펫 화면 기획서에서는 "PetIcon 표시"를 명시하나, 실제로는 색상 배경 + 이니셜 텍스트만 표시
 - **개선 방향**: 펫 아이콘 18종 제작 후, `PetScreen`에서 `SpriteManager.GetPetIcon()` 호출로 전환
 - **영향 범위**: 그래픽 제작 + 코드 변경 필요
-- **참조**: `docs/Graphics/리소스_제작_요청서/펫_아이콘.md` (제작 요청서 작성 완료)
+- **참조**: `docs/graphics-agent/리소스_제작_요청서/펫_아이콘.md` (제작 요청서 작성 완료)
 
 ### 1-2. UI 공통 스프라이트 4종 누락 (심각도: 중간)
 
@@ -118,8 +118,8 @@
 
 | 문서 | 경로 |
 |------|------|
-| 리소스 체크리스트 | `docs/Graphics/리소스_제작_요청서/리소스_체크리스트.md` |
-| 펫 아이콘 제작 요청서 | `docs/Graphics/리소스_제작_요청서/펫_아이콘.md` |
-| 아이콘 리소스 목록 | `docs/Planning/SystemDesign/화면기획/아이콘_리소스_목록.md` |
+| 리소스 체크리스트 | `docs/graphics-agent/리소스_제작_요청서/리소스_체크리스트.md` |
+| 펫 아이콘 제작 요청서 | `docs/graphics-agent/리소스_제작_요청서/펫_아이콘.md` |
+| 아이콘 리소스 목록 | `docs/planning-agent/SystemDesign/화면기획/아이콘_리소스_목록.md` |
 | SpriteManager | `Assets/_Project/Scripts/Presentation/Core/SpriteManager.cs` |
 | SpriteDatabase | `Assets/_Project/Scripts/Presentation/Core/SpriteDatabase.cs` |

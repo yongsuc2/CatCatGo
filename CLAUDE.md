@@ -114,7 +114,7 @@ Ref: docs/{Agent디렉토리}/WorkLog/{작업일지파일}
 ```
 [dev-agent] 리소스 참조 검증 Editor 도구 추가
 
-Ref: docs/Dev_Client/WorkLog/개발일지_dev-agent.md
+Ref: docs/dev-agent/WorkLog/개발일지_dev-agent.md
 ```
 
 **규칙:**
@@ -132,5 +132,14 @@ Ref: docs/Dev_Client/WorkLog/개발일지_dev-agent.md
 
 ### 문서 디렉토리 구조
 
-각 Agent의 문서는 `docs/{Agent이름}/` 하위에서 관리한다.
+각 Agent의 문서는 아래 매핑에 따라 관리한다.
+
+| Agent | 문서 경로 | 담당 영역 |
+|-------|----------|----------|
+| dev-agent | `docs/dev-agent/` | Unity 클라이언트 |
+| dev-server-agent | `docs/dev-server-agent/` | C# 서버 |
+| planning-agent | `docs/planning-agent/` | 기획 |
+| graphics-agent | `docs/graphics-agent/` | 그래픽 리소스 |
+| qa-agent | `docs/qa-agent/` | QA/테스트 |
+| claude-code-engineer | `docs/claude-code-engineer/` | Claude Code 설정 |
 

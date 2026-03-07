@@ -60,7 +60,7 @@ Agent 도구로 catcat-pd를 spawn할 때 다음을 포함한다:
    - 모든 Agent로부터 응답 수신 완료 → "팀 구성 완료, 메시지 수신 정상" 보고 후 본 작업 시작.
 
 ### Open 버그 확인
-5. 본 작업 시작 전 `docs/QA/Bugs/` 디렉토리에서 Open 상태 버그를 확인하세요.
+5. 본 작업 시작 전 `docs/qa-agent/Bugs/` 디렉토리에서 Open 상태 버그를 확인하세요.
    - Critical 버그가 있으면 본 작업보다 우선하여 수정을 할당하세요.
    - Major/Minor 버그는 이번 작업에 포함할지 판단하여 선별하세요.
 
@@ -72,7 +72,8 @@ Agent 도구로 catcat-pd를 spawn할 때 다음을 포함한다:
 | Agent | 담당 |
 |-------|------|
 | planning-agent | 기획 문서, 정합성 검토 |
-| dev-agent | 코드 구현, 컴파일 에러, 도구 개발 |
+| dev-agent | Unity 클라이언트 코드 구현 (Assets/) |
+| dev-server-agent | C# 서버 코드 구현 (Server/) |
 | graphics-agent | 그래픽 리소스, UI/UX |
 | qa-agent | 테스트, 기획-구현 검증 |
 | claude-code-engineer | Claude Code 설정, 사용법 |

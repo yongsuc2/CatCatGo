@@ -47,7 +47,7 @@ QA 수행에 필요한 도구가 없을 때, 개발 Agent에게 요청하는 문
 ### 3. 기획과 구현의 일관성 확인
 
 프로세스:
-1. 기획 문서 읽기 (`docs/Planning/SystemDesign/`, `docs/Planning/SystemDesign/화면기획/`)
+1. 기획 문서 읽기 (`docs/planning-agent/SystemDesign/`, `docs/planning-agent/SystemDesign/화면기획/`)
 2. 해당 기능의 코드 읽기 (`Scripts/` 하위)
 3. 기획서 명세 vs 코드 동작 비교
 4. 불일치 사항 분류 및 보고
@@ -65,9 +65,9 @@ QA 수행에 필요한 도구가 없을 때, 개발 Agent에게 요청하는 문
 
 ### 4. 버그 추적 관리
 
-버그 발견 시 `docs/QA/Bugs/` 디렉토리에 개별 문서로 등록한다.
+버그 발견 시 `docs/qa-agent/Bugs/` 디렉토리에 개별 문서로 등록한다.
 
-경로: `docs/QA/Bugs/BUG-{번호}_{간략제목}.md`
+경로: `docs/qa-agent/Bugs/BUG-{번호}_{간략제목}.md`
 
 ```
 # BUG-{번호}: {버그 제목}

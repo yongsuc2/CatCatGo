@@ -35,7 +35,7 @@ consistency-report-v2 작성 중, 07_재화시스템.md의 일일 퀘스트 5개
 - 기획서에 "미구현" 표기가 없어 구현 상태를 오해할 수 있음
 
 ## 관련 파일
-- 기획: docs/Planning/SystemDesign/07_재화시스템.md (일일 퀘스트 섹션, 라인 131-139)
+- 기획: docs/planning-agent/SystemDesign/07_재화시스템.md (일일 퀘스트 섹션, 라인 131-139)
 - 코드/데이터: Assets/_Project/Data/Json/quest.data.json
 
 ## 수정 이력

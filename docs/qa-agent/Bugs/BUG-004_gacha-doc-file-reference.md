@@ -23,7 +23,7 @@ consistency-report-v1 작성 중, 06_가챠시스템.md 하단 데이터 파일 
 코드 동작에는 영향 없음. 기획 문서를 참고하여 개발할 때 혼란 유발 가능.
 
 ## 관련 파일
-- 기획: docs/Planning/SystemDesign/06_가챠시스템.md
+- 기획: docs/planning-agent/SystemDesign/06_가챠시스템.md
 
 ## 수정 이력
 | 날짜 | 담당 Agent | 내용 | 커밋 |

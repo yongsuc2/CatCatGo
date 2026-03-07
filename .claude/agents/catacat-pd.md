@@ -23,7 +23,8 @@ model: opus
 | Agent | 담당 영역 |
 |-------|----------|
 | planning-agent | 기획 문서, 정합성 검토, 아이디어 |
-| dev-agent | 코드 구현, 컴파일 에러, 도구 개발 |
+| dev-agent | Unity 클라이언트 코드 구현 (Assets/) |
+| dev-server-agent | C# 서버 코드 구현 (Server/) |
 | graphics-agent | 그래픽 리소스, UI/UX |
 | qa-agent | 테스트, 기획-구현 검증, 버그 탐지 |
 | claude-code-engineer | Claude Code 설정, 사용법 |
@@ -48,7 +49,7 @@ Agent가 작업을 완료하면 다음을 확인한다:
 | 시점 | 대상 | 행동 |
 |------|------|------|
 | 발견 즉시 | Critical | 현재 작업을 중단하고 즉시 수정 할당 |
-| `/team` 실행 시 | Open 전체 | `docs/QA/Bugs/`의 Open 버그를 검토하고, 이번 작업에 포함할 버그를 선별 |
+| `/team` 실행 시 | Open 전체 | `docs/qa-agent/Bugs/`의 Open 버그를 검토하고, 이번 작업에 포함할 버그를 선별 |
 | `/bugfix` 실행 시 | Open 전체 | 축적된 Open 버그를 심각도 순으로 정리하고 수정 할당 |
 
 #### 버그 할당 기준

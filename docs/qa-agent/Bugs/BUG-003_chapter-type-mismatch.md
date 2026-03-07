@@ -25,7 +25,7 @@ consistency-report-v1 작성 중, 00_게임개요.md에 3가지 챕터 타입(60
 게임 동작에는 영향 없음. 기획 문서를 읽는 사람이 구현 상태를 오해할 수 있었음.
 
 ## 관련 파일
-- 기획: docs/Planning/SystemDesign/00_게임개요.md, docs/Planning/SystemDesign/05_스테이지던전시스템.md
+- 기획: docs/planning-agent/SystemDesign/00_게임개요.md, docs/planning-agent/SystemDesign/05_스테이지던전시스템.md
 - 코드/데이터: Assets/_Project/Data/Json/encounter.data.json
 
 ## 수정 이력

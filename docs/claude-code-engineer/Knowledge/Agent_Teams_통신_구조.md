@@ -139,4 +139,4 @@ Task claiming은 file locking으로 race condition을 방지한다. 의존성이
 - Claude Code Sub-agents: https://code.claude.com/docs/en/sub-agents
 
 ## 관련 문서
-- docs/Claude_Code_Engineer/Knowledge/Claude_토큰_사용_구조.md
+- docs/claude-code-engineer/Knowledge/Claude_토큰_사용_구조.md

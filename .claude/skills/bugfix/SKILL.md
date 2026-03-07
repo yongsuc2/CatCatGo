@@ -16,7 +16,7 @@ disable-model-invocation: false
 
 ### 1. Open 버그 확인
 
-`docs/QA/Bugs/` 디렉토리에서 상태가 Open인 버그 문서를 모두 읽는다.
+`docs/qa-agent/Bugs/` 디렉토리에서 상태가 Open인 버그 문서를 모두 읽는다.
 - 특정 버그가 지정되었으면 해당 버그만 대상으로 한다.
 - Open 버그가 없으면 사용자에게 "처리할 Open 버그가 없습니다" 보고 후 종료.
 
