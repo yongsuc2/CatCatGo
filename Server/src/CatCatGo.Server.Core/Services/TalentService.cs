@@ -1,5 +1,6 @@
 using CatCatGo.Server.Core.Interfaces;
 using CatCatGo.Server.Core.Models;
+using CatCatGo.Shared.Models;
 
 namespace CatCatGo.Server.Core.Services;
 
@@ -35,7 +36,7 @@ public class TalentService
         return state;
     }
 
-    public async Task<TalentUpgradeResult> UpgradeAsync(Guid accountId, string statType)
+    public async Task<ApiResponse<object>> UpgradeAsync(Guid accountId, string statType)
     {
         var state = await GetStatusAsync(accountId);
 
@@ -49,16 +50,14 @@ public class TalentService
 
         var subLevelInGrade = currentLevel % MaxSubLevel;
         if (subLevelInGrade >= MaxSubLevel - 1 && currentLevel > 0)
-        {
-            return new TalentUpgradeResult { Success = false, Error = "MAX_SUB_LEVEL_REACHED" };
-        }
+            return ApiResponse<object>.Fail("MAX_SUB_LEVEL_REACHED");
 
         var tier = state.TotalLevel / LevelsPerSubGrade;
         var cost = Math.Floor(BaseCost * Math.Pow(CostGrowth, tier));
 
         var spent = await _resourceService.SpendAsync(accountId, "GOLD", cost, "TALENT_UPGRADE");
         if (!spent)
-            return new TalentUpgradeResult { Success = false, Error = "INSUFFICIENT_GOLD" };
+            return ApiResponse<object>.Fail("INSUFFICIENT_GOLD");
 
         switch (statType)
         {
@@ -72,35 +71,96 @@ public class TalentService
         state.UpdatedAt = DateTime.UtcNow;
         await _talentRepo.UpsertAsync(state);
 
-        return new TalentUpgradeResult { Success = true, State = state };
+        var goldBalance = await _resourceService.GetBalanceAsync(accountId, "GOLD");
+        var delta = new StateDeltaBuilder()
+            .AddResource("GOLD", (float)goldBalance)
+            .SetTalent(state.AtkLevel, state.HpLevel, state.DefLevel)
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 
-    public async Task<TalentClaimResult> ClaimMilestoneAsync(Guid accountId, int milestoneLevel)
+    public async Task<ApiResponse<TalentMilestoneResponse>> ClaimMilestoneAsync(Guid accountId, int milestoneLevel)
     {
         var state = await GetStatusAsync(accountId);
 
         if (state.TotalLevel < milestoneLevel)
-            return new TalentClaimResult { Success = false, Error = "LEVEL_NOT_REACHED" };
+            return ApiResponse<TalentMilestoneResponse>.Fail("LEVEL_NOT_REACHED");
 
         var claimed = System.Text.Json.JsonSerializer.Deserialize<List<int>>(state.ClaimedMilestones) ?? new();
         if (claimed.Contains(milestoneLevel))
-            return new TalentClaimResult { Success = false, Error = "ALREADY_CLAIMED" };
+            return ApiResponse<TalentMilestoneResponse>.Fail("ALREADY_CLAIMED");
 
         claimed.Add(milestoneLevel);
         state.ClaimedMilestones = System.Text.Json.JsonSerializer.Serialize(claimed);
 
+        string? rewardType = null;
+        double rewardAmount = 0;
+
         var milestoneIndex = milestoneLevel / 10;
         if (milestoneIndex % 2 == 0)
         {
-            var tier = milestoneLevel / LevelsPerSubGrade;
-            var goldReward = Math.Floor(BaseCost * Math.Pow(CostGrowth, tier)) * 5;
+            var tierVal = milestoneLevel / LevelsPerSubGrade;
+            var goldReward = Math.Floor(BaseCost * Math.Pow(CostGrowth, tierVal)) * 5;
             await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "TALENT_MILESTONE", milestoneLevel.ToString());
+            rewardType = "GOLD";
+            rewardAmount = goldReward;
         }
 
         state.UpdatedAt = DateTime.UtcNow;
         await _talentRepo.UpsertAsync(state);
 
-        return new TalentClaimResult { Success = true };
+        var deltaBuilder = new StateDeltaBuilder()
+            .AddClaimedMilestone(milestoneLevel.ToString());
+
+        if (rewardType != null)
+        {
+            var balance = await _resourceService.GetBalanceAsync(accountId, rewardType);
+            deltaBuilder.AddResource(rewardType, (float)balance);
+        }
+
+        return ApiResponse<TalentMilestoneResponse>.Ok(
+            new TalentMilestoneResponse { RewardType = rewardType, RewardAmount = rewardAmount },
+            deltaBuilder.Build());
+    }
+
+    public async Task<ApiResponse<TalentClaimAllResponse>> ClaimAllMilestonesAsync(Guid accountId)
+    {
+        var state = await GetStatusAsync(accountId);
+        var claimed = System.Text.Json.JsonSerializer.Deserialize<List<int>>(state.ClaimedMilestones) ?? new();
+        var claimedCount = 0;
+        var deltaBuilder = new StateDeltaBuilder();
+
+        for (int milestone = 10; milestone <= state.TotalLevel; milestone += 10)
+        {
+            if (claimed.Contains(milestone)) continue;
+
+            claimed.Add(milestone);
+            deltaBuilder.AddClaimedMilestone(milestone.ToString());
+            claimedCount++;
+
+            var milestoneIndex = milestone / 10;
+            if (milestoneIndex % 2 == 0)
+            {
+                var tierVal = milestone / LevelsPerSubGrade;
+                var goldReward = Math.Floor(BaseCost * Math.Pow(CostGrowth, tierVal)) * 5;
+                await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "TALENT_MILESTONE", milestone.ToString());
+            }
+        }
+
+        if (claimedCount > 0)
+        {
+            state.ClaimedMilestones = System.Text.Json.JsonSerializer.Serialize(claimed);
+            state.UpdatedAt = DateTime.UtcNow;
+            await _talentRepo.UpsertAsync(state);
+
+            var goldBalance = await _resourceService.GetBalanceAsync(accountId, "GOLD");
+            deltaBuilder.AddResource("GOLD", (float)goldBalance);
+        }
+
+        return ApiResponse<TalentClaimAllResponse>.Ok(
+            new TalentClaimAllResponse { ClaimedCount = claimedCount },
+            deltaBuilder.Build());
     }
 
     private static void CheckPromotion(TalentState state)
@@ -128,15 +188,13 @@ public class TalentService
     }
 }
 
-public class TalentUpgradeResult
+public class TalentMilestoneResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public TalentState? State { get; set; }
+    public string? RewardType { get; set; }
+    public double RewardAmount { get; set; }
 }
 
-public class TalentClaimResult
+public class TalentClaimAllResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
+    public int ClaimedCount { get; set; }
 }

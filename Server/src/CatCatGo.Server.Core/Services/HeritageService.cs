@@ -1,5 +1,6 @@
 using CatCatGo.Server.Core.Interfaces;
 using CatCatGo.Server.Core.Models;
+using CatCatGo.Shared.Models;
 
 namespace CatCatGo.Server.Core.Services;
 
@@ -42,14 +43,14 @@ public class HeritageService
         return new HeritageStatusResult { State = state, IsUnlocked = isUnlocked };
     }
 
-    public async Task<HeritageUpgradeResult> UpgradeAsync(Guid accountId, string route)
+    public async Task<ApiResponse<object>> UpgradeAsync(Guid accountId, string route)
     {
         if (!RouteToBook.TryGetValue(route, out var bookType))
-            return new HeritageUpgradeResult { Success = false, Error = "INVALID_ROUTE" };
+            return ApiResponse<object>.Fail("INVALID_ROUTE");
 
         var talent = await _talentRepo.GetByAccountIdAsync(accountId);
         if (talent == null || talent.Grade != "HERO")
-            return new HeritageUpgradeResult { Success = false, Error = "HERITAGE_LOCKED" };
+            return ApiResponse<object>.Fail("HERITAGE_LOCKED");
 
         var state = await _heritageRepo.GetByAccountIdAsync(accountId) ?? new HeritageState
         {
@@ -71,13 +72,13 @@ public class HeritageService
 
         var bookSpent = await _resourceService.SpendAsync(accountId, bookType, bookCost, "HERITAGE_UPGRADE", route);
         if (!bookSpent)
-            return new HeritageUpgradeResult { Success = false, Error = $"INSUFFICIENT_{bookType}" };
+            return ApiResponse<object>.Fail($"INSUFFICIENT_{bookType}");
 
         var goldSpent = await _resourceService.SpendAsync(accountId, "GOLD", goldCost, "HERITAGE_UPGRADE", route);
         if (!goldSpent)
         {
             await _resourceService.GrantAsync(accountId, bookType, bookCost, "HERITAGE_UPGRADE_REFUND", route);
-            return new HeritageUpgradeResult { Success = false, Error = "INSUFFICIENT_GOLD" };
+            return ApiResponse<object>.Fail("INSUFFICIENT_GOLD");
         }
 
         switch (route)
@@ -88,10 +89,28 @@ public class HeritageService
             case "GHOST": state.GhostLevel++; break;
         }
 
+        var newLevel = route switch
+        {
+            "SKULL" => state.SkullLevel,
+            "KNIGHT" => state.KnightLevel,
+            "RANGER" => state.RangerLevel,
+            "GHOST" => state.GhostLevel,
+            _ => 0,
+        };
+
         state.UpdatedAt = DateTime.UtcNow;
         await _heritageRepo.UpsertAsync(state);
 
-        return new HeritageUpgradeResult { Success = true, State = state };
+        var bookBalance = await _resourceService.GetBalanceAsync(accountId, bookType);
+        var goldBalance = await _resourceService.GetBalanceAsync(accountId, "GOLD");
+
+        var delta = new StateDeltaBuilder()
+            .AddResource(bookType, (float)bookBalance)
+            .AddResource("GOLD", (float)goldBalance)
+            .SetHeritage(route, newLevel)
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 }
 
@@ -99,11 +118,4 @@ public class HeritageStatusResult
 {
     public HeritageState? State { get; set; }
     public bool IsUnlocked { get; set; }
-}
-
-public class HeritageUpgradeResult
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public HeritageState? State { get; set; }
 }

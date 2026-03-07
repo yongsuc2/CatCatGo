@@ -25,6 +25,7 @@ public class DailyController : ControllerBase
         return Ok(result);
     }
 
+    /// POST /api/daily/attendance/claim
     [HttpPost("attendance/claim")]
     public async Task<IActionResult> ClaimAttendance()
     {
@@ -41,11 +42,21 @@ public class DailyController : ControllerBase
         return Ok(result);
     }
 
+    /// POST /api/daily/quest/claim
     [HttpPost("quest/claim")]
     public async Task<IActionResult> ClaimQuest([FromBody] QuestClaimRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _dailyService.ClaimQuestAsync(accountId, request.QuestId);
+        var result = await _dailyService.ClaimQuestAsync(accountId, request.EventId, request.MissionId);
+        return Ok(result);
+    }
+
+    /// POST /api/daily/quest/claim-all
+    [HttpPost("quest/claim-all")]
+    public async Task<IActionResult> ClaimAllQuests([FromBody] QuestClaimAllRequest request)
+    {
+        var accountId = GetAccountId();
+        var result = await _dailyService.ClaimAllQuestsAsync(accountId, request.EventId);
         return Ok(result);
     }
 
@@ -58,5 +69,11 @@ public class DailyController : ControllerBase
 
 public class QuestClaimRequest
 {
-    public required string QuestId { get; set; }
+    public required string EventId { get; set; }
+    public required string MissionId { get; set; }
+}
+
+public class QuestClaimAllRequest
+{
+    public required string EventId { get; set; }
 }

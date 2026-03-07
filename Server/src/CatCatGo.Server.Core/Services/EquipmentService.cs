@@ -1,5 +1,6 @@
 using CatCatGo.Server.Core.Interfaces;
 using CatCatGo.Server.Core.Models;
+using CatCatGo.Shared.Models;
 
 namespace CatCatGo.Server.Core.Services;
 
@@ -21,64 +22,154 @@ public class EquipmentService
         _resourceService = resourceService;
     }
 
-    public async Task<EquipmentResult> EnhanceAsync(Guid accountId, Guid equipmentId)
+    public async Task<ApiResponse<object>> UpgradeAsync(Guid accountId, string equipmentId)
     {
-        var equipment = await _equipmentRepo.GetByIdAsync(equipmentId);
+        if (!Guid.TryParse(equipmentId, out var eqGuid))
+            return ApiResponse<object>.Fail("INVALID_EQUIPMENT_ID");
+
+        var equipment = await _equipmentRepo.GetByIdAsync(eqGuid);
         if (equipment == null || equipment.AccountId != accountId)
-            return new EquipmentResult { Success = false, Error = "EQUIPMENT_NOT_FOUND" };
+            return ApiResponse<object>.Fail("EQUIPMENT_NOT_FOUND");
 
-        var goldCost = CalculateEnhanceCost(equipment.EnhancementLevel, equipment.Grade);
         var stoneCost = 1.0;
-
-        var goldSpent = await _resourceService.SpendAsync(accountId, "GOLD", goldCost, "EQUIPMENT_ENHANCE", equipmentId.ToString());
-        if (!goldSpent)
-            return new EquipmentResult { Success = false, Error = "INSUFFICIENT_GOLD" };
-
-        var stoneSpent = await _resourceService.SpendAsync(accountId, "EQUIPMENT_STONE", stoneCost, "EQUIPMENT_ENHANCE", equipmentId.ToString());
+        var stoneSpent = await _resourceService.SpendAsync(accountId, "EQUIPMENT_STONE", stoneCost, "EQUIPMENT_UPGRADE", equipmentId);
         if (!stoneSpent)
-        {
-            await _resourceService.GrantAsync(accountId, "GOLD", goldCost, "EQUIPMENT_ENHANCE_REFUND", equipmentId.ToString());
-            return new EquipmentResult { Success = false, Error = "INSUFFICIENT_EQUIPMENT_STONE" };
-        }
+            return ApiResponse<object>.Fail("INSUFFICIENT_EQUIPMENT_STONE");
 
         equipment.EnhancementLevel++;
         equipment.UpdatedAt = DateTime.UtcNow;
         await _equipmentRepo.UpdateAsync(equipment);
 
-        return new EquipmentResult { Success = true, Equipment = equipment };
+        var stoneBalance = await _resourceService.GetBalanceAsync(accountId, "EQUIPMENT_STONE");
+        var delta = new StateDeltaBuilder()
+            .AddResource("EQUIPMENT_STONE", (float)stoneBalance)
+            .UpgradeEquipment(equipmentId, equipment.EnhancementLevel, 0)
+            .Build();
+
+        if (equipment.SlotIndex >= 0)
+        {
+            delta.EquipmentSlotChanges = new List<EquipSlotDelta>
+            {
+                new() { SlotType = equipment.TemplateId, Index = equipment.SlotIndex, EquipmentId = equipmentId, SlotLevel = equipment.EnhancementLevel }
+            };
+        }
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 
-    public async Task<EquipmentResult> ForgeAsync(Guid accountId, List<Guid> materialIds)
+    public async Task<ApiResponse<object>> EquipAsync(Guid accountId, string equipmentId)
     {
-        if (materialIds.Count < 3)
-            return new EquipmentResult { Success = false, Error = "INSUFFICIENT_MATERIALS" };
+        if (!Guid.TryParse(equipmentId, out var eqGuid))
+            return ApiResponse<object>.Fail("INVALID_EQUIPMENT_ID");
+
+        var equipment = await _equipmentRepo.GetByIdAsync(eqGuid);
+        if (equipment == null || equipment.AccountId != accountId)
+            return ApiResponse<object>.Fail("EQUIPMENT_NOT_FOUND");
+
+        var equipped = await _equipmentRepo.GetEquippedAsync(accountId);
+        var slotIndex = FindAvailableSlot(equipped);
+        if (slotIndex < 0)
+            return ApiResponse<object>.Fail("NO_AVAILABLE_SLOT");
+
+        equipment.SlotIndex = slotIndex;
+        equipment.UpdatedAt = DateTime.UtcNow;
+        await _equipmentRepo.UpdateAsync(equipment);
+
+        var delta = new StateDeltaBuilder()
+            .ChangeEquipSlot(equipment.TemplateId, slotIndex, equipmentId, equipment.EnhancementLevel)
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
+    }
+
+    public async Task<ApiResponse<object>> UnequipAsync(Guid accountId, string slotType, int slotIndex)
+    {
+        var equipped = await _equipmentRepo.GetEquippedAsync(accountId);
+        var equipment = equipped.FirstOrDefault(e => e.SlotIndex == slotIndex);
+        if (equipment == null)
+            return ApiResponse<object>.Fail("SLOT_EMPTY");
+
+        equipment.SlotIndex = -1;
+        equipment.UpdatedAt = DateTime.UtcNow;
+        await _equipmentRepo.UpdateAsync(equipment);
+
+        var delta = new StateDeltaBuilder()
+            .ChangeEquipSlot(slotType, slotIndex, null, 0)
+            .AddEquipment(ToEquipmentDeltaData(equipment))
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
+    }
+
+    public async Task<ApiResponse<object>> SellAsync(Guid accountId, string equipmentId)
+    {
+        if (!Guid.TryParse(equipmentId, out var eqGuid))
+            return ApiResponse<object>.Fail("INVALID_EQUIPMENT_ID");
+
+        var equipment = await _equipmentRepo.GetByIdAsync(eqGuid);
+        if (equipment == null || equipment.AccountId != accountId)
+            return ApiResponse<object>.Fail("EQUIPMENT_NOT_FOUND");
+        if (equipment.IsS)
+            return ApiResponse<object>.Fail("CANNOT_SELL_S_GRADE");
+        if (equipment.SlotIndex >= 0)
+            return ApiResponse<object>.Fail("CANNOT_SELL_EQUIPPED");
+
+        var price = SellPrices.GetValueOrDefault(equipment.Grade, 10);
+        await _equipmentRepo.DeleteAsync(eqGuid);
+        await _resourceService.GrantAsync(accountId, "GOLD", price, "EQUIPMENT_SELL", equipmentId);
+
+        var goldBalance = await _resourceService.GetBalanceAsync(accountId, "GOLD");
+        var delta = new StateDeltaBuilder()
+            .AddResource("GOLD", (float)goldBalance)
+            .RemoveEquipment(equipmentId)
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
+    }
+
+    public async Task<ApiResponse<object>> ForgeAsync(Guid accountId, List<string> equipmentIds)
+    {
+        if (equipmentIds.Count < 3)
+            return ApiResponse<object>.Fail("INSUFFICIENT_MATERIALS");
+
+        var materialGuids = new List<Guid>();
+        foreach (var id in equipmentIds)
+        {
+            if (!Guid.TryParse(id, out var g))
+                return ApiResponse<object>.Fail("INVALID_EQUIPMENT_ID");
+            materialGuids.Add(g);
+        }
 
         var materials = new List<EquipmentEntry>();
-        foreach (var id in materialIds)
+        foreach (var id in materialGuids)
         {
             var mat = await _equipmentRepo.GetByIdAsync(id);
             if (mat == null || mat.AccountId != accountId)
-                return new EquipmentResult { Success = false, Error = "MATERIAL_NOT_FOUND" };
+                return ApiResponse<object>.Fail("MATERIAL_NOT_FOUND");
             if (mat.SlotIndex >= 0)
-                return new EquipmentResult { Success = false, Error = "MATERIAL_IS_EQUIPPED" };
+                return ApiResponse<object>.Fail("MATERIAL_IS_EQUIPPED");
             if (mat.IsS)
-                return new EquipmentResult { Success = false, Error = "CANNOT_FORGE_S_GRADE" };
+                return ApiResponse<object>.Fail("CANNOT_FORGE_S_GRADE");
             materials.Add(mat);
         }
 
         var baseGrade = materials[0].Grade;
         if (!materials.All(m => m.Grade == baseGrade))
-            return new EquipmentResult { Success = false, Error = "GRADE_MISMATCH" };
+            return ApiResponse<object>.Fail("GRADE_MISMATCH");
 
         var nextGrade = GetNextGrade(baseGrade);
         if (nextGrade == null)
-            return new EquipmentResult { Success = false, Error = "MAX_GRADE" };
+            return ApiResponse<object>.Fail("MAX_GRADE");
 
         var mergedSubStats = MergeSubStats(materials);
+        var deltaBuilder = new StateDeltaBuilder();
 
         var totalRefundStones = materials.Sum(m => (double)m.EnhancementLevel);
         foreach (var mat in materials)
+        {
             await _equipmentRepo.DeleteAsync(mat.Id);
+            deltaBuilder.RemoveEquipment(mat.Id.ToString());
+        }
 
         if (totalRefundStones > 0)
             await _resourceService.GrantAsync(accountId, "EQUIPMENT_STONE", totalRefundStones, "FORGE_REFUND");
@@ -96,74 +187,111 @@ public class EquipmentService
             UpdatedAt = DateTime.UtcNow,
         };
         await _equipmentRepo.CreateAsync(newEquipment);
+        deltaBuilder.AddEquipment(ToEquipmentDeltaData(newEquipment));
 
-        return new EquipmentResult { Success = true, Equipment = newEquipment };
-    }
-
-    public async Task<EquipmentResult> EquipAsync(Guid accountId, Guid equipmentId, int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= MaxEquipSlots)
-            return new EquipmentResult { Success = false, Error = "INVALID_SLOT" };
-
-        var equipment = await _equipmentRepo.GetByIdAsync(equipmentId);
-        if (equipment == null || equipment.AccountId != accountId)
-            return new EquipmentResult { Success = false, Error = "EQUIPMENT_NOT_FOUND" };
-
-        var equipped = await _equipmentRepo.GetEquippedAsync(accountId);
-        var slotOccupant = equipped.FirstOrDefault(e => e.SlotIndex == slotIndex);
-        if (slotOccupant != null)
+        if (totalRefundStones > 0)
         {
-            slotOccupant.SlotIndex = -1;
-            slotOccupant.UpdatedAt = DateTime.UtcNow;
-            await _equipmentRepo.UpdateAsync(slotOccupant);
+            var stoneBalance = await _resourceService.GetBalanceAsync(accountId, "EQUIPMENT_STONE");
+            deltaBuilder.AddResource("EQUIPMENT_STONE", (float)stoneBalance);
         }
 
-        equipment.SlotIndex = slotIndex;
-        equipment.UpdatedAt = DateTime.UtcNow;
-        await _equipmentRepo.UpdateAsync(equipment);
-
-        return new EquipmentResult { Success = true, Equipment = equipment };
+        return ApiResponse<object>.Ok(delta: deltaBuilder.Build());
     }
 
-    public async Task<EquipmentResult> UnequipAsync(Guid accountId, Guid equipmentId)
+    public async Task<ApiResponse<BulkForgeResponse>> BulkForgeAsync(Guid accountId)
     {
-        var equipment = await _equipmentRepo.GetByIdAsync(equipmentId);
-        if (equipment == null || equipment.AccountId != accountId)
-            return new EquipmentResult { Success = false, Error = "EQUIPMENT_NOT_FOUND" };
+        var allEquipment = await _equipmentRepo.GetByAccountIdAsync(accountId);
+        var inventory = allEquipment.Where(e => e.SlotIndex < 0 && !e.IsS).ToList();
 
-        equipment.SlotIndex = -1;
-        equipment.UpdatedAt = DateTime.UtcNow;
-        await _equipmentRepo.UpdateAsync(equipment);
+        var deltaBuilder = new StateDeltaBuilder();
+        var mergedCount = 0;
 
-        return new EquipmentResult { Success = true, Equipment = equipment };
-    }
-
-    public async Task<EquipmentResult> SellAsync(Guid accountId, Guid equipmentId)
-    {
-        var equipment = await _equipmentRepo.GetByIdAsync(equipmentId);
-        if (equipment == null || equipment.AccountId != accountId)
-            return new EquipmentResult { Success = false, Error = "EQUIPMENT_NOT_FOUND" };
-        if (equipment.IsS)
-            return new EquipmentResult { Success = false, Error = "CANNOT_SELL_S_GRADE" };
-        if (equipment.SlotIndex >= 0)
-            return new EquipmentResult { Success = false, Error = "CANNOT_SELL_EQUIPPED" };
-
-        var price = SellPrices.GetValueOrDefault(equipment.Grade, 10);
-        await _equipmentRepo.DeleteAsync(equipmentId);
-        await _resourceService.GrantAsync(accountId, "GOLD", price, "EQUIPMENT_SELL", equipmentId.ToString());
-
-        return new EquipmentResult { Success = true, SellPrice = price };
-    }
-
-    private static double CalculateEnhanceCost(int currentLevel, string grade)
-    {
-        var gradeMultiplier = grade switch
+        var groups = inventory.GroupBy(e => new { e.Grade, e.TemplateId });
+        foreach (var group in groups)
         {
-            "COMMON" => 1.0, "UNCOMMON" => 1.15, "RARE" => 1.25,
-            "EPIC" => 1.35, "LEGENDARY" => 1.45, "MYTHIC" => 1.55,
-            _ => 1.0,
+            var items = group.ToList();
+            while (items.Count >= 3)
+            {
+                var batch = items.Take(3).ToList();
+                items = items.Skip(3).ToList();
+
+                var nextGrade = GetNextGrade(batch[0].Grade);
+                if (nextGrade == null) break;
+
+                var mergedSubStats = MergeSubStats(batch);
+                var totalRefundStones = batch.Sum(m => (double)m.EnhancementLevel);
+
+                foreach (var mat in batch)
+                {
+                    await _equipmentRepo.DeleteAsync(mat.Id);
+                    deltaBuilder.RemoveEquipment(mat.Id.ToString());
+                }
+
+                if (totalRefundStones > 0)
+                    await _resourceService.GrantAsync(accountId, "EQUIPMENT_STONE", totalRefundStones, "FORGE_REFUND");
+
+                var newEquipment = new EquipmentEntry
+                {
+                    Id = Guid.NewGuid(),
+                    AccountId = accountId,
+                    TemplateId = batch[0].TemplateId,
+                    Grade = nextGrade,
+                    EnhancementLevel = 0,
+                    SubStats = mergedSubStats,
+                    SlotIndex = -1,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                };
+                await _equipmentRepo.CreateAsync(newEquipment);
+                deltaBuilder.AddEquipment(ToEquipmentDeltaData(newEquipment));
+                mergedCount++;
+            }
+        }
+
+        if (mergedCount > 0)
+        {
+            var stoneBalance = await _resourceService.GetBalanceAsync(accountId, "EQUIPMENT_STONE");
+            deltaBuilder.AddResource("EQUIPMENT_STONE", (float)stoneBalance);
+        }
+
+        return ApiResponse<BulkForgeResponse>.Ok(
+            new BulkForgeResponse { MergedCount = mergedCount },
+            deltaBuilder.Build());
+    }
+
+    private int FindAvailableSlot(List<EquipmentEntry> equipped)
+    {
+        var usedSlots = equipped.Select(e => e.SlotIndex).ToHashSet();
+        for (int i = 0; i < MaxEquipSlots; i++)
+        {
+            if (!usedSlots.Contains(i)) return i;
+        }
+        return -1;
+    }
+
+    private static EquipmentDeltaData ToEquipmentDeltaData(EquipmentEntry entry)
+    {
+        var subStats = new List<SubStatDeltaData>();
+        try
+        {
+            var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(entry.SubStats);
+            if (parsed != null)
+                subStats = parsed.Select(s => new SubStatDeltaData { Stat = s, Value = 0 }).ToList();
+        }
+        catch { }
+
+        return new EquipmentDeltaData
+        {
+            Id = entry.Id.ToString(),
+            Name = entry.TemplateId,
+            Slot = "",
+            Grade = entry.Grade,
+            IsS = entry.IsS,
+            Level = entry.EnhancementLevel,
+            PromoteCount = 0,
+            MergeLevel = 0,
+            SubStats = subStats,
         };
-        return Math.Floor(50 * (1 + currentLevel * 0.5) * gradeMultiplier);
     }
 
     private static string MergeSubStats(List<EquipmentEntry> materials)
@@ -191,10 +319,7 @@ public class EquipmentService
     };
 }
 
-public class EquipmentResult
+public class BulkForgeResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public EquipmentEntry? Equipment { get; set; }
-    public double SellPrice { get; set; }
+    public int MergedCount { get; set; }
 }

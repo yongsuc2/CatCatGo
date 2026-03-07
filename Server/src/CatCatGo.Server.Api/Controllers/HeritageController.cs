@@ -17,6 +17,7 @@ public class HeritageController : ControllerBase
         _heritageService = heritageService;
     }
 
+    /// POST /api/heritage/upgrade
     [HttpPost("upgrade")]
     public async Task<IActionResult> Upgrade([FromBody] HeritageUpgradeRequest request)
     {

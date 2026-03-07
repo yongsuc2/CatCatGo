@@ -17,51 +17,68 @@ public class ChapterController : ControllerBase
         _chapterService = chapterService;
     }
 
+    /// POST /api/chapter/start
     [HttpPost("start")]
-    public async Task<IActionResult> Start()
+    public async Task<IActionResult> Start([FromBody] ChapterStartRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.StartAsync(accountId);
+        var result = await _chapterService.StartAsync(accountId, request.ChapterId, request.ChapterType);
         return Ok(result);
     }
 
-    [HttpPost("encounter")]
-    public async Task<IActionResult> Encounter()
+    /// POST /api/chapter/advance-day (was /encounter)
+    [HttpPost("advance-day")]
+    public async Task<IActionResult> AdvanceDay([FromBody] SessionRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.GenerateEncounterAsync(accountId);
+        var result = await _chapterService.AdvanceDayAsync(accountId, request.SessionId);
         return Ok(result);
     }
 
-    [HttpPost("encounter/resolve")]
-    public async Task<IActionResult> ResolveEncounter([FromBody] EncounterResolveRequest request)
+    /// POST /api/chapter/resolve-encounter (was /encounter/resolve)
+    [HttpPost("resolve-encounter")]
+    public async Task<IActionResult> ResolveEncounter([FromBody] ResolveEncounterRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.ResolveEncounterAsync(accountId, request.Choice);
+        var result = await _chapterService.ResolveEncounterAsync(accountId, request.SessionId, request.ChoiceIndex);
         return Ok(result);
     }
 
-    [HttpPost("skill/select")]
-    public async Task<IActionResult> SelectSkill([FromBody] SkillSelectRequest request)
+    /// POST /api/chapter/select-skill (was /skill/select)
+    [HttpPost("select-skill")]
+    public async Task<IActionResult> SelectSkill([FromBody] SelectSkillRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.SelectSkillAsync(accountId, request.SkillIndex);
+        var result = await _chapterService.SelectSkillAsync(accountId, request.SessionId, request.SkillId);
         return Ok(result);
     }
 
-    [HttpPost("skill/reroll")]
-    public async Task<IActionResult> RerollSkills()
+    /// POST /api/chapter/reroll (was /skill/reroll)
+    [HttpPost("reroll")]
+    public async Task<IActionResult> Reroll([FromBody] SessionRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.RerollSkillsAsync(accountId);
+        var result = await _chapterService.RerollAsync(accountId, request.SessionId);
         return Ok(result);
     }
 
+    /// POST /api/chapter/battle-result
+    [HttpPost("battle-result")]
+    public async Task<IActionResult> BattleResult([FromBody] ChapterBattleResultRequest request)
+    {
+        var accountId = GetAccountId();
+        var result = await _chapterService.BattleResultAsync(
+            accountId, request.SessionId, request.BattleSeed,
+            request.Result, request.TurnCount, request.PlayerRemainingHp);
+        return Ok(result);
+    }
+
+    /// POST /api/chapter/abandon
     [HttpPost("abandon")]
-    public async Task<IActionResult> Abandon()
+    public async Task<IActionResult> Abandon([FromBody] SessionRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _chapterService.AbandonAsync(accountId);
+        var result = await _chapterService.AbandonAsync(accountId, request.SessionId);
         return Ok(result);
     }
 
@@ -73,14 +90,6 @@ public class ChapterController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("treasure/claim")]
-    public async Task<IActionResult> ClaimTreasure([FromBody] TreasureClaimRequest request)
-    {
-        var accountId = GetAccountId();
-        var result = await _chapterService.ClaimTreasureAsync(accountId, request.ChapterId, request.MilestoneKey);
-        return Ok(result);
-    }
-
     private Guid GetAccountId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -88,18 +97,34 @@ public class ChapterController : ControllerBase
     }
 }
 
-public class EncounterResolveRequest
-{
-    public required string Choice { get; set; }
-}
-
-public class SkillSelectRequest
-{
-    public int SkillIndex { get; set; }
-}
-
-public class TreasureClaimRequest
+public class ChapterStartRequest
 {
     public int ChapterId { get; set; }
-    public required string MilestoneKey { get; set; }
+    public string ChapterType { get; set; } = "SIXTY_DAY";
+}
+
+public class SessionRequest
+{
+    public required string SessionId { get; set; }
+}
+
+public class ResolveEncounterRequest
+{
+    public required string SessionId { get; set; }
+    public int ChoiceIndex { get; set; }
+}
+
+public class SelectSkillRequest
+{
+    public required string SessionId { get; set; }
+    public required string SkillId { get; set; }
+}
+
+public class ChapterBattleResultRequest
+{
+    public required string SessionId { get; set; }
+    public int BattleSeed { get; set; }
+    public required string Result { get; set; }
+    public int TurnCount { get; set; }
+    public int PlayerRemainingHp { get; set; }
 }

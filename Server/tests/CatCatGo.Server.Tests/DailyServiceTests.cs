@@ -68,7 +68,7 @@ public class DailyServiceTests
         var result = await _sut.ClaimAttendanceAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.Equal(1, result.Day);
+        Assert.Equal(1, result.Data!.Day);
         await _resourceRepo.Received(1).UpsertBalanceAsync(Arg.Is<ResourceBalance>(b =>
             b.Type == "GOLD" && b.Amount == 1000));
     }
@@ -108,7 +108,7 @@ public class DailyServiceTests
         var result = await _sut.ClaimAttendanceAsync(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("ALREADY_CLAIMED_TODAY", result.Error);
+        Assert.Equal("ALREADY_CLAIMED_TODAY", result.ErrorCode);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class DailyServiceTests
         _dailyRepo.GetQuestsAsync(_accountId, "WEEKLY", Arg.Any<DateTime>()).Returns(new List<QuestProgress>());
         _resourceRepo.GetBalanceAsync(_accountId, "GEMS").Returns((ResourceBalance?)null);
 
-        var result = await _sut.ClaimQuestAsync(_accountId, questId);
+        var result = await _sut.ClaimQuestAsync(_accountId, "daily_event", questId);
 
         Assert.True(result.Success);
         await _resourceRepo.Received(1).UpsertBalanceAsync(Arg.Is<ResourceBalance>(b =>
@@ -163,10 +163,10 @@ public class DailyServiceTests
         _dailyRepo.GetQuestsAsync(_accountId, "DAILY", Arg.Any<DateTime>()).Returns(new List<QuestProgress> { quest });
         _dailyRepo.GetQuestsAsync(_accountId, "WEEKLY", Arg.Any<DateTime>()).Returns(new List<QuestProgress>());
 
-        var result = await _sut.ClaimQuestAsync(_accountId, questId);
+        var result = await _sut.ClaimQuestAsync(_accountId, "daily_event", questId);
 
         Assert.False(result.Success);
-        Assert.Equal("QUEST_NOT_COMPLETED", result.Error);
+        Assert.Equal("QUEST_NOT_COMPLETED", result.ErrorCode);
     }
 
     [Fact]
@@ -181,10 +181,10 @@ public class DailyServiceTests
         _dailyRepo.GetQuestsAsync(_accountId, "DAILY", Arg.Any<DateTime>()).Returns(new List<QuestProgress> { quest });
         _dailyRepo.GetQuestsAsync(_accountId, "WEEKLY", Arg.Any<DateTime>()).Returns(new List<QuestProgress>());
 
-        var result = await _sut.ClaimQuestAsync(_accountId, questId);
+        var result = await _sut.ClaimQuestAsync(_accountId, "daily_event", questId);
 
         Assert.False(result.Success);
-        Assert.Equal("ALREADY_REWARDED", result.Error);
+        Assert.Equal("ALREADY_REWARDED", result.ErrorCode);
     }
 
     [Fact]
@@ -193,9 +193,9 @@ public class DailyServiceTests
         _dailyRepo.GetQuestsAsync(_accountId, "DAILY", Arg.Any<DateTime>()).Returns(new List<QuestProgress>());
         _dailyRepo.GetQuestsAsync(_accountId, "WEEKLY", Arg.Any<DateTime>()).Returns(new List<QuestProgress>());
 
-        var result = await _sut.ClaimQuestAsync(_accountId, "nonexistent");
+        var result = await _sut.ClaimQuestAsync(_accountId, "daily_event", "nonexistent");
 
         Assert.False(result.Success);
-        Assert.Equal("QUEST_NOT_FOUND", result.Error);
+        Assert.Equal("QUEST_NOT_FOUND", result.ErrorCode);
     }
 }

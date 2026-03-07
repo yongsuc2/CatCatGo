@@ -17,43 +17,57 @@ public class EquipmentController : ControllerBase
         _equipmentService = equipmentService;
     }
 
-    [HttpPost("enhance")]
-    public async Task<IActionResult> Enhance([FromBody] EquipmentIdRequest request)
+    /// POST /api/equipment/upgrade (was /enhance)
+    [HttpPost("upgrade")]
+    public async Task<IActionResult> Upgrade([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _equipmentService.EnhanceAsync(accountId, request.EquipmentId);
+        var result = await _equipmentService.UpgradeAsync(accountId, request.EquipmentId);
         return Ok(result);
     }
 
-    [HttpPost("forge")]
-    public async Task<IActionResult> Forge([FromBody] ForgeRequest request)
-    {
-        var accountId = GetAccountId();
-        var result = await _equipmentService.ForgeAsync(accountId, request.MaterialIds);
-        return Ok(result);
-    }
-
+    /// POST /api/equipment/equip
     [HttpPost("equip")]
-    public async Task<IActionResult> Equip([FromBody] EquipSlotRequest request)
+    public async Task<IActionResult> Equip([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _equipmentService.EquipAsync(accountId, request.EquipmentId, request.SlotIndex);
+        var result = await _equipmentService.EquipAsync(accountId, request.EquipmentId);
         return Ok(result);
     }
 
+    /// POST /api/equipment/unequip
     [HttpPost("unequip")]
-    public async Task<IActionResult> Unequip([FromBody] EquipmentIdRequest request)
+    public async Task<IActionResult> Unequip([FromBody] UnequipRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _equipmentService.UnequipAsync(accountId, request.EquipmentId);
+        var result = await _equipmentService.UnequipAsync(accountId, request.SlotType, request.SlotIndex);
         return Ok(result);
     }
 
+    /// POST /api/equipment/sell
     [HttpPost("sell")]
     public async Task<IActionResult> Sell([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.SellAsync(accountId, request.EquipmentId);
+        return Ok(result);
+    }
+
+    /// POST /api/equipment/forge
+    [HttpPost("forge")]
+    public async Task<IActionResult> Forge([FromBody] ForgeRequest request)
+    {
+        var accountId = GetAccountId();
+        var result = await _equipmentService.ForgeAsync(accountId, request.EquipmentIds);
+        return Ok(result);
+    }
+
+    /// POST /api/equipment/bulk-forge
+    [HttpPost("bulk-forge")]
+    public async Task<IActionResult> BulkForge()
+    {
+        var accountId = GetAccountId();
+        var result = await _equipmentService.BulkForgeAsync(accountId);
         return Ok(result);
     }
 
@@ -66,16 +80,16 @@ public class EquipmentController : ControllerBase
 
 public class EquipmentIdRequest
 {
-    public Guid EquipmentId { get; set; }
+    public required string EquipmentId { get; set; }
+}
+
+public class UnequipRequest
+{
+    public required string SlotType { get; set; }
+    public int SlotIndex { get; set; }
 }
 
 public class ForgeRequest
 {
-    public required List<Guid> MaterialIds { get; set; }
-}
-
-public class EquipSlotRequest
-{
-    public Guid EquipmentId { get; set; }
-    public int SlotIndex { get; set; }
+    public required List<string> EquipmentIds { get; set; }
 }
