@@ -17,27 +17,21 @@ public class GachaController : ControllerBase
         _gachaService = gachaService;
     }
 
+    /// POST /api/gacha/pull
     [HttpPost("pull")]
-    public async Task<IActionResult> Pull()
+    public async Task<IActionResult> Pull([FromBody] GachaPullRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _gachaService.PullAsync(accountId);
+        var result = await _gachaService.PullAsync(accountId, request.Count);
         return Ok(result);
     }
 
+    /// POST /api/gacha/pull10
     [HttpPost("pull10")]
     public async Task<IActionResult> Pull10()
     {
         var accountId = GetAccountId();
         var result = await _gachaService.Pull10Async(accountId);
-        return Ok(result);
-    }
-
-    [HttpPost("pet-pull")]
-    public async Task<IActionResult> PetPull()
-    {
-        var accountId = GetAccountId();
-        var result = await _gachaService.PetPullAsync(accountId);
         return Ok(result);
     }
 
@@ -54,4 +48,10 @@ public class GachaController : ControllerBase
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.Parse(claim!);
     }
+}
+
+public class GachaPullRequest
+{
+    public string ChestType { get; set; } = "EQUIPMENT";
+    public int Count { get; set; } = 1;
 }

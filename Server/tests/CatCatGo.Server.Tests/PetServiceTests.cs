@@ -24,17 +24,18 @@ public class PetServiceTests
     }
 
     [Fact]
-    public async Task FeedAsync_SufficientFood_IncreasesExperience()
+    public async Task FeedAsync_SufficientFood_ReturnsSuccessWithDelta()
     {
         var petId = Guid.NewGuid();
         var pet = CreatePet(petId, "COMMON", 1, 0);
         _petRepo.GetByIdAsync(petId).Returns(pet);
         SetupBalance("PET_FOOD", 50);
 
-        var result = await _sut.FeedAsync(_accountId, petId, 50);
+        var result = await _sut.FeedAsync(_accountId, petId.ToString(), 50);
 
         Assert.True(result.Success);
-        Assert.Equal(50, result.Pet!.Experience);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.UpdatedPets);
     }
 
     [Fact]
@@ -45,11 +46,11 @@ public class PetServiceTests
         _petRepo.GetByIdAsync(petId).Returns(pet);
         SetupBalance("PET_FOOD", 150);
 
-        var result = await _sut.FeedAsync(_accountId, petId, 150);
+        var result = await _sut.FeedAsync(_accountId, petId.ToString(), 150);
 
         Assert.True(result.Success);
-        Assert.Equal(3, result.Pet!.Level);
-        Assert.Equal(0, result.Pet.Experience);
+        Assert.NotNull(result.Delta?.UpdatedPets);
+        Assert.Equal(3, result.Delta!.UpdatedPets![0].Level);
     }
 
     [Fact]
@@ -60,10 +61,10 @@ public class PetServiceTests
         _petRepo.GetByIdAsync(petId).Returns(pet);
         SetupBalance("PET_FOOD", 5);
 
-        var result = await _sut.FeedAsync(_accountId, petId, 10);
+        var result = await _sut.FeedAsync(_accountId, petId.ToString(), 10);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_PET_FOOD", result.Error);
+        Assert.Equal("INSUFFICIENT_PET_FOOD", result.ErrorCode);
     }
 
     [Fact]
@@ -74,60 +75,43 @@ public class PetServiceTests
         pet.AccountId = Guid.NewGuid();
         _petRepo.GetByIdAsync(petId).Returns(pet);
 
-        var result = await _sut.FeedAsync(_accountId, petId, 10);
+        var result = await _sut.FeedAsync(_accountId, petId.ToString(), 10);
 
         Assert.False(result.Success);
-        Assert.Equal("PET_NOT_FOUND", result.Error);
+        Assert.Equal("PET_NOT_FOUND", result.ErrorCode);
     }
 
     [Fact]
-    public async Task UpgradeAsync_SufficientDuplicates_UpgradesAndConsumes()
+    public async Task HatchAsync_SufficientEggs_ReturnsNewPet()
     {
-        var petId = Guid.NewGuid();
-        var pet = CreatePet(petId, "COMMON", 1, 0);
-        pet.PetId = "cat_01";
-        var dup1 = CreatePet(Guid.NewGuid(), "COMMON", 1, 0);
-        dup1.PetId = "cat_01";
-        _petRepo.GetByIdAsync(petId).Returns(pet);
-        _petRepo.GetByAccountIdAsync(_accountId).Returns(new List<PetEntry> { pet, dup1 });
+        SetupBalance("PET_EGG", 5);
+        _petRepo.GetByAccountIdAsync(_accountId).Returns(new List<PetEntry>());
 
-        var result = await _sut.UpgradeAsync(_accountId, petId);
+        var result = await _sut.HatchAsync(_accountId);
 
+        // First hatch with no existing pets will create and then count 0 existing
+        // But CreateAsync adds to DB, mock GetByAccountIdAsync returns empty
+        // So isFirstPet logic depends on mock setup
         Assert.True(result.Success);
-        Assert.Equal("RARE", result.Pet!.Grade);
-        await _petRepo.Received(1).DeleteAsync(dup1.Id);
+        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.AddedPets);
+        await _petRepo.Received(1).CreateAsync(Arg.Any<PetEntry>());
     }
 
     [Fact]
-    public async Task UpgradeAsync_InsufficientDuplicates_Fails()
+    public async Task HatchAsync_InsufficientEggs_Fails()
     {
-        var petId = Guid.NewGuid();
-        var pet = CreatePet(petId, "COMMON", 1, 0);
-        pet.PetId = "cat_01";
-        _petRepo.GetByIdAsync(petId).Returns(pet);
-        _petRepo.GetByAccountIdAsync(_accountId).Returns(new List<PetEntry> { pet });
+        SetupBalance("PET_EGG", 0);
 
-        var result = await _sut.UpgradeAsync(_accountId, petId);
+        var result = await _sut.HatchAsync(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_DUPLICATES", result.Error);
+        Assert.Equal("INSUFFICIENT_PET_EGG", result.ErrorCode);
     }
 
     [Fact]
-    public async Task UpgradeAsync_MaxGrade_Fails()
-    {
-        var petId = Guid.NewGuid();
-        var pet = CreatePet(petId, "IMMORTAL", 1, 0);
-        _petRepo.GetByIdAsync(petId).Returns(pet);
-
-        var result = await _sut.UpgradeAsync(_accountId, petId);
-
-        Assert.False(result.Success);
-        Assert.Equal("MAX_GRADE", result.Error);
-    }
-
-    [Fact]
-    public async Task EquipAsync_UnequipsPreviousAndEquipsNew()
+    public async Task DeployAsync_ValidPet_SetActivePetId()
     {
         var newPetId = Guid.NewGuid();
         var oldPetId = Guid.NewGuid();
@@ -137,10 +121,10 @@ public class PetServiceTests
         _petRepo.GetByIdAsync(newPetId).Returns(newPet);
         _petRepo.GetEquippedAsync(_accountId).Returns(oldPet);
 
-        var result = await _sut.EquipAsync(_accountId, newPetId);
+        var result = await _sut.DeployAsync(_accountId, newPetId.ToString());
 
         Assert.True(result.Success);
-        Assert.True(result.Pet!.IsEquipped);
+        Assert.Equal(newPetId.ToString(), result.Delta!.ActivePetId);
         Assert.False(oldPet.IsEquipped);
         await _petRepo.Received(2).UpdateAsync(Arg.Any<PetEntry>());
     }

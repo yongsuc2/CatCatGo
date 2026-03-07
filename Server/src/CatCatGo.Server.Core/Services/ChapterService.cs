@@ -1,5 +1,6 @@
 using CatCatGo.Server.Core.Interfaces;
 using CatCatGo.Server.Core.Models;
+using CatCatGo.Shared.Models;
 
 namespace CatCatGo.Server.Core.Services;
 
@@ -18,18 +19,21 @@ public class ChapterService
         _resourceService = resourceService;
     }
 
-    public async Task<ChapterStartResult> StartAsync(Guid accountId)
+    public async Task<ApiResponse<ChapterStartResponse>> StartAsync(Guid accountId, int chapterId, string chapterType)
     {
         var activeSession = await _chapterRepo.GetActiveSessionAsync(accountId);
         if (activeSession != null)
-            return new ChapterStartResult { Success = false, Error = "SESSION_ALREADY_ACTIVE" };
+            return ApiResponse<ChapterStartResponse>.Fail("SESSION_ALREADY_ACTIVE");
+
+        var progress = await _chapterRepo.GetProgressAsync(accountId);
+        var expectedChapter = (progress?.ClearedChapterMax ?? 0) + 1;
+        if (chapterId != expectedChapter)
+            return ApiResponse<ChapterStartResponse>.Fail("INVALID_CHAPTER_ID");
 
         var spent = await _resourceService.SpendAsync(accountId, "STAMINA", StaminaCost, "CHAPTER_START");
         if (!spent)
-            return new ChapterStartResult { Success = false, Error = "INSUFFICIENT_STAMINA" };
+            return ApiResponse<ChapterStartResponse>.Fail("INSUFFICIENT_STAMINA");
 
-        var progress = await _chapterRepo.GetProgressAsync(accountId);
-        var chapterId = (progress?.ClearedChapterMax ?? 0) + 1;
         var seed = Random.Shared.Next(0, 999999);
 
         var session = new ChapterSession
@@ -45,17 +49,42 @@ public class ChapterService
         };
         await _chapterRepo.CreateSessionAsync(session);
 
-        return new ChapterStartResult { Success = true, SessionId = session.Id.ToString(), ChapterId = chapterId, Seed = seed };
+        var staminaBalance = await _resourceService.GetBalanceAsync(accountId, "STAMINA");
+        var delta = new StateDeltaBuilder()
+            .AddResource("STAMINA", (float)staminaBalance)
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = session.Id.ToString(),
+                CurrentDay = 1,
+                SessionRerollsRemaining = MaxRerollsPerSession,
+                SessionEnded = false,
+            })
+            .Build();
+
+        return ApiResponse<ChapterStartResponse>.Ok(
+            new ChapterStartResponse { SessionId = session.Id.ToString(), ChapterId = chapterId, Seed = seed },
+            delta);
     }
 
-    public async Task<EncounterResult> GenerateEncounterAsync(Guid accountId)
+    public async Task<ApiResponse<AdvanceDayResponse>> AdvanceDayAsync(Guid accountId, string sessionId)
     {
         var session = await _chapterRepo.GetActiveSessionAsync(accountId);
-        if (session == null)
-            return new EncounterResult { Success = false, Error = "NO_ACTIVE_SESSION" };
+        if (session == null || session.Id.ToString() != sessionId)
+            return ApiResponse<AdvanceDayResponse>.Fail("NO_ACTIVE_SESSION");
 
         var encounterType = DetermineEncounterType(session);
         session.PendingEncounter = $"{{\"type\":\"{encounterType}\",\"day\":{session.CurrentDay}}}";
+
+        string? battleRequired = "NONE";
+        int? battleSeed = null;
+        string? enemyTemplateId = null;
+
+        if (encounterType == "COMBAT")
+        {
+            battleRequired = DetermineBattleType(session.CurrentDay);
+            battleSeed = session.Seed + session.CurrentDay * 100;
+            enemyTemplateId = $"enemy_{battleRequired.ToLowerInvariant()}_{session.CurrentDay}";
+        }
 
         if (encounterType is "CHANCE" or "DEMON")
         {
@@ -66,20 +95,38 @@ public class ChapterService
         session.UpdatedAt = DateTime.UtcNow;
         await _chapterRepo.UpdateSessionAsync(session);
 
-        return new EncounterResult { Success = true, EncounterType = encounterType, Day = session.CurrentDay };
+        var delta = new StateDeltaBuilder()
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = sessionId,
+                CurrentDay = session.CurrentDay,
+                JungbakCount = session.JungbakCounter,
+                DaebakCount = session.DaebakCounter,
+            })
+            .Build();
+
+        return ApiResponse<AdvanceDayResponse>.Ok(
+            new AdvanceDayResponse
+            {
+                BattleRequired = battleRequired,
+                BattleSeed = battleSeed,
+                EnemyTemplateId = enemyTemplateId,
+            },
+            delta);
     }
 
-    public async Task<EncounterResolveResult> ResolveEncounterAsync(Guid accountId, string choice)
+    public async Task<ApiResponse<object>> ResolveEncounterAsync(Guid accountId, string sessionId, int choiceIndex)
     {
         var session = await _chapterRepo.GetActiveSessionAsync(accountId);
-        if (session == null)
-            return new EncounterResolveResult { Success = false, Error = "NO_ACTIVE_SESSION" };
+        if (session == null || session.Id.ToString() != sessionId)
+            return ApiResponse<object>.Fail("NO_ACTIVE_SESSION");
 
         session.CurrentDay++;
         session.PendingEncounter = "{}";
         session.PendingSkillChoices = "[]";
 
-        if (session.CurrentDay > TotalDays)
+        var isComplete = session.CurrentDay > TotalDays;
+        if (isComplete)
         {
             session.IsActive = false;
             var progress = await _chapterRepo.GetProgressAsync(accountId) ?? new ChapterProgress
@@ -94,37 +141,26 @@ public class ChapterService
         session.UpdatedAt = DateTime.UtcNow;
         await _chapterRepo.UpdateSessionAsync(session);
 
-        return new EncounterResolveResult { Success = true, NewDay = session.CurrentDay, IsChapterComplete = session.CurrentDay > TotalDays };
+        var delta = new StateDeltaBuilder()
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = sessionId,
+                CurrentDay = session.CurrentDay,
+                SessionEnded = isComplete,
+            })
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 
-    public async Task<SkillSelectResult> SelectSkillAsync(Guid accountId, int skillIndex)
+    public async Task<ApiResponse<object>> RerollAsync(Guid accountId, string sessionId)
     {
         var session = await _chapterRepo.GetActiveSessionAsync(accountId);
-        if (session == null)
-            return new SkillSelectResult { Success = false, Error = "NO_ACTIVE_SESSION" };
-
-        var choices = System.Text.Json.JsonSerializer.Deserialize<List<string>>(session.PendingSkillChoices) ?? new();
-        if (skillIndex < 0 || skillIndex >= choices.Count)
-            return new SkillSelectResult { Success = false, Error = "INVALID_SKILL_INDEX" };
-
-        var sessionSkills = System.Text.Json.JsonSerializer.Deserialize<List<string>>(session.SessionSkills) ?? new();
-        sessionSkills.Add(choices[skillIndex]);
-        session.SessionSkills = System.Text.Json.JsonSerializer.Serialize(sessionSkills);
-        session.PendingSkillChoices = "[]";
-        session.UpdatedAt = DateTime.UtcNow;
-        await _chapterRepo.UpdateSessionAsync(session);
-
-        return new SkillSelectResult { Success = true, SelectedSkill = choices[skillIndex] };
-    }
-
-    public async Task<SkillRerollResult> RerollSkillsAsync(Guid accountId)
-    {
-        var session = await _chapterRepo.GetActiveSessionAsync(accountId);
-        if (session == null)
-            return new SkillRerollResult { Success = false, Error = "NO_ACTIVE_SESSION" };
+        if (session == null || session.Id.ToString() != sessionId)
+            return ApiResponse<object>.Fail("NO_ACTIVE_SESSION");
 
         if (session.RerollsUsed >= MaxRerollsPerSession)
-            return new SkillRerollResult { Success = false, Error = "NO_REROLLS_REMAINING" };
+            return ApiResponse<object>.Fail("NO_REROLLS_REMAINING");
 
         session.RerollsUsed++;
         var skills = GenerateSkillChoices(session.Seed + session.RerollsUsed, session.CurrentDay);
@@ -132,14 +168,116 @@ public class ChapterService
         session.UpdatedAt = DateTime.UtcNow;
         await _chapterRepo.UpdateSessionAsync(session);
 
-        return new SkillRerollResult { Success = true, NewChoices = skills, RerollsRemaining = MaxRerollsPerSession - session.RerollsUsed };
+        var delta = new StateDeltaBuilder()
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = sessionId,
+                SessionRerollsRemaining = MaxRerollsPerSession - session.RerollsUsed,
+            })
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 
-    public async Task<ChapterAbandonResult> AbandonAsync(Guid accountId)
+    public async Task<ApiResponse<object>> SelectSkillAsync(Guid accountId, string sessionId, string skillId)
     {
         var session = await _chapterRepo.GetActiveSessionAsync(accountId);
-        if (session == null)
-            return new ChapterAbandonResult { Success = false, Error = "NO_ACTIVE_SESSION" };
+        if (session == null || session.Id.ToString() != sessionId)
+            return ApiResponse<object>.Fail("NO_ACTIVE_SESSION");
+
+        var choices = System.Text.Json.JsonSerializer.Deserialize<List<string>>(session.PendingSkillChoices) ?? new();
+        if (!choices.Contains(skillId))
+            return ApiResponse<object>.Fail("INVALID_SKILL_ID");
+
+        var sessionSkills = System.Text.Json.JsonSerializer.Deserialize<List<string>>(session.SessionSkills) ?? new();
+        sessionSkills.Add(skillId);
+        session.SessionSkills = System.Text.Json.JsonSerializer.Serialize(sessionSkills);
+        session.PendingSkillChoices = "[]";
+        session.UpdatedAt = DateTime.UtcNow;
+        await _chapterRepo.UpdateSessionAsync(session);
+
+        var delta = new StateDeltaBuilder()
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = sessionId,
+                SessionSkillIds = sessionSkills,
+            })
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
+    }
+
+    public async Task<ApiResponse<BattleResultResponse>> BattleResultAsync(Guid accountId, string sessionId, int battleSeed, string result, int turnCount, int playerRemainingHp)
+    {
+        var session = await _chapterRepo.GetActiveSessionAsync(accountId);
+        if (session == null || session.Id.ToString() != sessionId)
+            return ApiResponse<BattleResultResponse>.Fail("NO_ACTIVE_SESSION");
+
+        var deltaBuilder = new StateDeltaBuilder();
+        var goldEarned = 0;
+
+        var isBoss = session.CurrentDay >= TotalDays;
+
+        if (result == "VICTORY")
+        {
+            goldEarned = isBoss ? session.ChapterId * 500 : session.CurrentDay * 10;
+            await _resourceService.GrantAsync(accountId, "GOLD", goldEarned, "CHAPTER_BATTLE", sessionId);
+
+            if (isBoss)
+            {
+                await _resourceService.GrantAsync(accountId, "GEMS", 100, "CHAPTER_CLEAR", sessionId);
+                session.IsActive = false;
+
+                var progress = await _chapterRepo.GetProgressAsync(accountId) ?? new ChapterProgress { AccountId = accountId };
+                progress.ClearedChapterMax = Math.Max(progress.ClearedChapterMax, session.ChapterId);
+                progress.UpdatedAt = DateTime.UtcNow;
+                await _chapterRepo.UpsertProgressAsync(progress);
+
+                deltaBuilder.SetClearedChapterMax(progress.ClearedChapterMax);
+
+                var gemsBalance = await _resourceService.GetBalanceAsync(accountId, "GEMS");
+                deltaBuilder.AddResource("GEMS", (float)gemsBalance);
+            }
+
+            session.CurrentDay++;
+        }
+        else
+        {
+            session.IsActive = false;
+        }
+
+        var progress2 = await _chapterRepo.GetProgressAsync(accountId) ?? new ChapterProgress { AccountId = accountId };
+        var bestDays = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(progress2.BestSurvivalDays) ?? new();
+        var key = session.ChapterId.ToString();
+        bestDays[key] = Math.Max(bestDays.GetValueOrDefault(key, 0), session.CurrentDay);
+        progress2.BestSurvivalDays = System.Text.Json.JsonSerializer.Serialize(bestDays);
+        progress2.UpdatedAt = DateTime.UtcNow;
+        await _chapterRepo.UpsertProgressAsync(progress2);
+
+        session.BestSurvivalDays = session.CurrentDay;
+        session.UpdatedAt = DateTime.UtcNow;
+        await _chapterRepo.UpdateSessionAsync(session);
+
+        var goldBalance = await _resourceService.GetBalanceAsync(accountId, "GOLD");
+        deltaBuilder.AddResource("GOLD", (float)goldBalance);
+        deltaBuilder.SetBestSurvivalDays(bestDays);
+        deltaBuilder.SetChapterSession(new ChapterSessionDelta
+        {
+            SessionId = sessionId,
+            CurrentDay = session.CurrentDay,
+            SessionEnded = !session.IsActive,
+        });
+
+        return ApiResponse<BattleResultResponse>.Ok(
+            new BattleResultResponse { Verified = true, GoldEarned = goldEarned },
+            deltaBuilder.Build());
+    }
+
+    public async Task<ApiResponse<object>> AbandonAsync(Guid accountId, string sessionId)
+    {
+        var session = await _chapterRepo.GetActiveSessionAsync(accountId);
+        if (session == null || (sessionId != null && session.Id.ToString() != sessionId))
+            return ApiResponse<object>.Fail("NO_ACTIVE_SESSION");
 
         session.IsActive = false;
         session.BestSurvivalDays = session.CurrentDay;
@@ -148,13 +286,22 @@ public class ChapterService
 
         var progress = await _chapterRepo.GetProgressAsync(accountId) ?? new ChapterProgress { AccountId = accountId };
         var bestDays = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, int>>(progress.BestSurvivalDays) ?? new();
-        var key = session.ChapterId.ToString();
-        bestDays[key] = Math.Max(bestDays.GetValueOrDefault(key, 0), session.CurrentDay);
+        var chapterKey = session.ChapterId.ToString();
+        bestDays[chapterKey] = Math.Max(bestDays.GetValueOrDefault(chapterKey, 0), session.CurrentDay);
         progress.BestSurvivalDays = System.Text.Json.JsonSerializer.Serialize(bestDays);
         progress.UpdatedAt = DateTime.UtcNow;
         await _chapterRepo.UpsertProgressAsync(progress);
 
-        return new ChapterAbandonResult { Success = true };
+        var delta = new StateDeltaBuilder()
+            .SetBestSurvivalDays(bestDays)
+            .SetChapterSession(new ChapterSessionDelta
+            {
+                SessionId = session.Id.ToString(),
+                SessionEnded = true,
+            })
+            .Build();
+
+        return ApiResponse<object>.Ok(delta: delta);
     }
 
     public async Task<ChapterStateResult> GetStateAsync(Guid accountId)
@@ -168,31 +315,6 @@ public class ChapterService
             Session = session,
             ClearedChapterMax = progress?.ClearedChapterMax ?? 0,
         };
-    }
-
-    public async Task<TreasureClaimResult> ClaimTreasureAsync(Guid accountId, int chapterId, string milestoneKey)
-    {
-        var progress = await _chapterRepo.GetProgressAsync(accountId);
-        if (progress == null)
-            return new TreasureClaimResult { Success = false, Error = "NO_PROGRESS" };
-
-        var claimed = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(progress.ClaimedTreasures) ?? new();
-        var chapterKey = chapterId.ToString();
-        if (!claimed.ContainsKey(chapterKey))
-            claimed[chapterKey] = new();
-
-        if (claimed[chapterKey].Contains(milestoneKey))
-            return new TreasureClaimResult { Success = false, Error = "ALREADY_CLAIMED" };
-
-        claimed[chapterKey].Add(milestoneKey);
-        progress.ClaimedTreasures = System.Text.Json.JsonSerializer.Serialize(claimed);
-        progress.UpdatedAt = DateTime.UtcNow;
-        await _chapterRepo.UpsertProgressAsync(progress);
-
-        var goldReward = chapterId * 100.0;
-        await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "CHAPTER_TREASURE", $"{chapterId}_{milestoneKey}");
-
-        return new TreasureClaimResult { Success = true };
     }
 
     private static string DetermineEncounterType(ChapterSession session)
@@ -240,6 +362,14 @@ public class ChapterService
         return encounterType;
     }
 
+    private static string DetermineBattleType(int day) => day switch
+    {
+        60 => "BOSS",
+        50 => "MIDBOSS",
+        30 or 40 => "ELITE",
+        _ => "COMBAT",
+    };
+
     private static List<string> GenerateSkillChoices(int seed, int day)
     {
         var rng = new Random(seed + day * 1000);
@@ -252,50 +382,24 @@ public class ChapterService
     }
 }
 
-public class ChapterStartResult
+public class ChapterStartResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public string? SessionId { get; set; }
+    public string SessionId { get; set; } = string.Empty;
     public int ChapterId { get; set; }
     public int Seed { get; set; }
 }
 
-public class EncounterResult
+public class AdvanceDayResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public string? EncounterType { get; set; }
-    public int Day { get; set; }
+    public string BattleRequired { get; set; } = "NONE";
+    public int? BattleSeed { get; set; }
+    public string? EnemyTemplateId { get; set; }
 }
 
-public class EncounterResolveResult
+public class BattleResultResponse
 {
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public int NewDay { get; set; }
-    public bool IsChapterComplete { get; set; }
-}
-
-public class SkillSelectResult
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public string? SelectedSkill { get; set; }
-}
-
-public class SkillRerollResult
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
-    public List<string> NewChoices { get; set; } = new();
-    public int RerollsRemaining { get; set; }
-}
-
-public class ChapterAbandonResult
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
+    public bool Verified { get; set; }
+    public int GoldEarned { get; set; }
 }
 
 public class ChapterStateResult
@@ -303,10 +407,4 @@ public class ChapterStateResult
     public bool HasActiveSession { get; set; }
     public ChapterSession? Session { get; set; }
     public int ClearedChapterMax { get; set; }
-}
-
-public class TreasureClaimResult
-{
-    public bool Success { get; set; }
-    public string? Error { get; set; }
 }

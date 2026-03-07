@@ -17,6 +17,7 @@ public class TalentController : ControllerBase
         _talentService = talentService;
     }
 
+    /// POST /api/talent/upgrade
     [HttpPost("upgrade")]
     public async Task<IActionResult> Upgrade([FromBody] TalentUpgradeRequest request)
     {
@@ -25,11 +26,21 @@ public class TalentController : ControllerBase
         return Ok(result);
     }
 
+    /// POST /api/talent/claim-milestone
     [HttpPost("claim-milestone")]
     public async Task<IActionResult> ClaimMilestone([FromBody] TalentMilestoneRequest request)
     {
         var accountId = GetAccountId();
         var result = await _talentService.ClaimMilestoneAsync(accountId, request.MilestoneLevel);
+        return Ok(result);
+    }
+
+    /// POST /api/talent/claim-all-milestones
+    [HttpPost("claim-all-milestones")]
+    public async Task<IActionResult> ClaimAllMilestones()
+    {
+        var accountId = GetAccountId();
+        var result = await _talentService.ClaimAllMilestonesAsync(accountId);
         return Ok(result);
     }
 

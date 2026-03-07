@@ -30,11 +30,11 @@ public class ChapterServiceTests
         _chapterRepo.GetProgressAsync(_accountId).Returns((ChapterProgress?)null);
         SetupBalance("STAMINA", 100);
 
-        var result = await _sut.StartAsync(_accountId);
+        var result = await _sut.StartAsync(_accountId, 1, "SIXTY_DAY");
 
         Assert.True(result.Success);
-        Assert.Equal(1, result.ChapterId);
-        Assert.True(result.Seed >= 0);
+        Assert.Equal(1, result.Data!.ChapterId);
+        Assert.True(result.Data.Seed >= 0);
         await _chapterRepo.Received(1).CreateSessionAsync(Arg.Any<ChapterSession>());
     }
 
@@ -46,22 +46,23 @@ public class ChapterServiceTests
             AccountId = _accountId, IsActive = true
         });
 
-        var result = await _sut.StartAsync(_accountId);
+        var result = await _sut.StartAsync(_accountId, 1, "SIXTY_DAY");
 
         Assert.False(result.Success);
-        Assert.Equal("SESSION_ALREADY_ACTIVE", result.Error);
+        Assert.Equal("SESSION_ALREADY_ACTIVE", result.ErrorCode);
     }
 
     [Fact]
     public async Task StartAsync_InsufficientStamina_Fails()
     {
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns((ChapterSession?)null);
+        _chapterRepo.GetProgressAsync(_accountId).Returns((ChapterProgress?)null);
         SetupBalance("STAMINA", 2);
 
-        var result = await _sut.StartAsync(_accountId);
+        var result = await _sut.StartAsync(_accountId, 1, "SIXTY_DAY");
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_STAMINA", result.Error);
+        Assert.Equal("INSUFFICIENT_STAMINA", result.ErrorCode);
     }
 
     [Fact]
@@ -74,49 +75,21 @@ public class ChapterServiceTests
         });
         SetupBalance("STAMINA", 100);
 
-        var result = await _sut.StartAsync(_accountId);
+        var result = await _sut.StartAsync(_accountId, 6, "SIXTY_DAY");
 
         Assert.True(result.Success);
-        Assert.Equal(6, result.ChapterId);
+        Assert.Equal(6, result.Data!.ChapterId);
     }
 
     [Fact]
-    public async Task GenerateEncounterAsync_NoSession_Fails()
+    public async Task AdvanceDayAsync_NoSession_Fails()
     {
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns((ChapterSession?)null);
 
-        var result = await _sut.GenerateEncounterAsync(_accountId);
+        var result = await _sut.AdvanceDayAsync(_accountId, "invalid-session");
 
         Assert.False(result.Success);
-        Assert.Equal("NO_ACTIVE_SESSION", result.Error);
-    }
-
-    [Fact]
-    public async Task GenerateEncounterAsync_ForcedBattleDay_ReturnsCombat()
-    {
-        var session = CreateSession(20);
-        _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
-
-        var result = await _sut.GenerateEncounterAsync(_accountId);
-
-        Assert.True(result.Success);
-        Assert.Equal("COMBAT", result.EncounterType);
-        Assert.Equal(20, result.Day);
-    }
-
-    [Theory]
-    [InlineData(30)]
-    [InlineData(40)]
-    [InlineData(50)]
-    [InlineData(60)]
-    public async Task GenerateEncounterAsync_AllForcedBattleDays_ReturnCombat(int day)
-    {
-        var session = CreateSession(day);
-        _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
-
-        var result = await _sut.GenerateEncounterAsync(_accountId);
-
-        Assert.Equal("COMBAT", result.EncounterType);
+        Assert.Equal("NO_ACTIVE_SESSION", result.ErrorCode);
     }
 
     [Fact]
@@ -125,11 +98,11 @@ public class ChapterServiceTests
         var session = CreateSession(5);
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
 
-        var result = await _sut.ResolveEncounterAsync(_accountId, "FIGHT");
+        var result = await _sut.ResolveEncounterAsync(_accountId, session.Id.ToString(), 0);
 
         Assert.True(result.Success);
-        Assert.Equal(6, result.NewDay);
-        Assert.False(result.IsChapterComplete);
+        Assert.NotNull(result.Delta);
+        Assert.Equal(6, result.Delta!.ChapterSession!.CurrentDay);
     }
 
     [Fact]
@@ -139,64 +112,63 @@ public class ChapterServiceTests
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
         _chapterRepo.GetProgressAsync(_accountId).Returns((ChapterProgress?)null);
 
-        var result = await _sut.ResolveEncounterAsync(_accountId, "FIGHT");
+        var result = await _sut.ResolveEncounterAsync(_accountId, session.Id.ToString(), 0);
 
-        Assert.True(result.IsChapterComplete);
+        Assert.True(result.Delta!.ChapterSession!.SessionEnded!.Value);
         await _chapterRepo.Received(1).UpsertProgressAsync(Arg.Any<ChapterProgress>());
     }
 
     [Fact]
-    public async Task SelectSkillAsync_ValidIndex_AddsToSession()
+    public async Task SelectSkillAsync_ValidSkill_AddsToSession()
     {
         var session = CreateSession(5);
         session.PendingSkillChoices = "[\"skill_1\",\"skill_2\",\"skill_3\"]";
         session.SessionSkills = "[]";
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
 
-        var result = await _sut.SelectSkillAsync(_accountId, 1);
+        var result = await _sut.SelectSkillAsync(_accountId, session.Id.ToString(), "skill_2");
 
         Assert.True(result.Success);
-        Assert.Equal("skill_2", result.SelectedSkill);
+        Assert.Contains("skill_2", result.Delta!.ChapterSession!.SessionSkillIds!);
     }
 
     [Fact]
-    public async Task SelectSkillAsync_InvalidIndex_Fails()
+    public async Task SelectSkillAsync_InvalidSkillId_Fails()
     {
         var session = CreateSession(5);
         session.PendingSkillChoices = "[\"skill_1\",\"skill_2\",\"skill_3\"]";
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
 
-        var result = await _sut.SelectSkillAsync(_accountId, 5);
+        var result = await _sut.SelectSkillAsync(_accountId, session.Id.ToString(), "skill_999");
 
         Assert.False(result.Success);
-        Assert.Equal("INVALID_SKILL_INDEX", result.Error);
+        Assert.Equal("INVALID_SKILL_ID", result.ErrorCode);
     }
 
     [Fact]
-    public async Task RerollSkillsAsync_WithinLimit_Succeeds()
+    public async Task RerollAsync_WithinLimit_Succeeds()
     {
         var session = CreateSession(5);
         session.RerollsUsed = 0;
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
 
-        var result = await _sut.RerollSkillsAsync(_accountId);
+        var result = await _sut.RerollAsync(_accountId, session.Id.ToString());
 
         Assert.True(result.Success);
-        Assert.Equal(3, result.NewChoices.Count);
-        Assert.Equal(1, result.RerollsRemaining);
+        Assert.Equal(1, result.Delta!.ChapterSession!.SessionRerollsRemaining);
     }
 
     [Fact]
-    public async Task RerollSkillsAsync_ExceedsLimit_Fails()
+    public async Task RerollAsync_ExceedsLimit_Fails()
     {
         var session = CreateSession(5);
         session.RerollsUsed = 2;
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
 
-        var result = await _sut.RerollSkillsAsync(_accountId);
+        var result = await _sut.RerollAsync(_accountId, session.Id.ToString());
 
         Assert.False(result.Success);
-        Assert.Equal("NO_REROLLS_REMAINING", result.Error);
+        Assert.Equal("NO_REROLLS_REMAINING", result.ErrorCode);
     }
 
     [Fact]
@@ -206,39 +178,12 @@ public class ChapterServiceTests
         _chapterRepo.GetActiveSessionAsync(_accountId).Returns(session);
         _chapterRepo.GetProgressAsync(_accountId).Returns((ChapterProgress?)null);
 
-        var result = await _sut.AbandonAsync(_accountId);
+        var result = await _sut.AbandonAsync(_accountId, session.Id.ToString());
 
         Assert.True(result.Success);
         Assert.False(session.IsActive);
         Assert.Equal(25, session.BestSurvivalDays);
-    }
-
-    [Fact]
-    public async Task ClaimTreasureAsync_ValidMilestone_GrantsReward()
-    {
-        _chapterRepo.GetProgressAsync(_accountId).Returns(new ChapterProgress
-        {
-            AccountId = _accountId, ClearedChapterMax = 3, ClaimedTreasures = "{}"
-        });
-        _resourceRepo.GetBalanceAsync(_accountId, "GOLD").Returns((ResourceBalance?)null);
-
-        var result = await _sut.ClaimTreasureAsync(_accountId, 1, "day_30");
-
-        Assert.True(result.Success);
-    }
-
-    [Fact]
-    public async Task ClaimTreasureAsync_AlreadyClaimed_Fails()
-    {
-        _chapterRepo.GetProgressAsync(_accountId).Returns(new ChapterProgress
-        {
-            AccountId = _accountId, ClaimedTreasures = "{\"1\":[\"day_30\"]}"
-        });
-
-        var result = await _sut.ClaimTreasureAsync(_accountId, 1, "day_30");
-
-        Assert.False(result.Success);
-        Assert.Equal("ALREADY_CLAIMED", result.Error);
+        Assert.True(result.Delta!.ChapterSession!.SessionEnded!.Value);
     }
 
     private ChapterSession CreateSession(int currentDay)

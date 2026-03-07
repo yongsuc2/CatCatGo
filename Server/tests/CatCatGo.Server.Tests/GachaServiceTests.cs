@@ -10,7 +10,6 @@ public class GachaServiceTests
 {
     private readonly IGachaRepository _gachaRepo;
     private readonly IEquipmentRepository _equipmentRepo;
-    private readonly IPetRepository _petRepo;
     private readonly IResourceRepository _resourceRepo;
     private readonly ResourceService _resourceService;
     private readonly GachaService _sut;
@@ -21,10 +20,9 @@ public class GachaServiceTests
     {
         _gachaRepo = Substitute.For<IGachaRepository>();
         _equipmentRepo = Substitute.For<IEquipmentRepository>();
-        _petRepo = Substitute.For<IPetRepository>();
         _resourceRepo = Substitute.For<IResourceRepository>();
         _resourceService = new ResourceService(_resourceRepo);
-        _sut = new GachaService(_gachaRepo, _equipmentRepo, _petRepo, _resourceService);
+        _sut = new GachaService(_gachaRepo, _equipmentRepo, _resourceService);
     }
 
     [Fact]
@@ -36,8 +34,8 @@ public class GachaServiceTests
         var result = await _sut.PullAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.Single(result.Items);
-        Assert.NotNull(result.Items[0].Grade);
+        Assert.Single(result.Data!.Results);
+        Assert.NotNull(result.Data.Results[0].Grade);
         await _equipmentRepo.Received(1).CreateAsync(Arg.Any<EquipmentEntry>());
     }
 
@@ -49,7 +47,7 @@ public class GachaServiceTests
         var result = await _sut.PullAsync(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_GEMS", result.Error);
+        Assert.Equal("INSUFFICIENT_GEMS", result.ErrorCode);
     }
 
     [Fact]
@@ -61,7 +59,7 @@ public class GachaServiceTests
         var result = await _sut.Pull10Async(_accountId);
 
         Assert.True(result.Success);
-        Assert.Equal(10, result.Items.Count);
+        Assert.Equal(10, result.Data!.Results.Count);
     }
 
     [Fact]
@@ -72,7 +70,7 @@ public class GachaServiceTests
         var result = await _sut.Pull10Async(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_GEMS", result.Error);
+        Assert.Equal("INSUFFICIENT_GEMS", result.ErrorCode);
     }
 
     [Fact]
@@ -88,7 +86,7 @@ public class GachaServiceTests
         var result = await _sut.PullAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.Equal("MYTHIC", result.Items[0].Grade);
+        Assert.Equal("MYTHIC", result.Data!.Results[0].Grade);
     }
 
     [Fact]
@@ -119,33 +117,6 @@ public class GachaServiceTests
 
         Assert.Equal(50, result.PityCount);
         Assert.Equal(180, result.Threshold);
-    }
-
-    [Fact]
-    public async Task PetPullAsync_SufficientEggs_ReturnsPet()
-    {
-        SetupBalance("PET_EGG", 5);
-        _resourceRepo.GetBalanceAsync(_accountId, "PET_FOOD").Returns((ResourceBalance?)null);
-
-        var result = await _sut.PetPullAsync(_accountId);
-
-        Assert.True(result.Success);
-        Assert.NotNull(result.Pet);
-        Assert.Equal("COMMON", result.Pet!.Grade);
-        Assert.Equal(1, result.Pet.Level);
-        Assert.True(result.BonusFood > 0);
-        await _petRepo.Received(1).CreateAsync(Arg.Any<PetEntry>());
-    }
-
-    [Fact]
-    public async Task PetPullAsync_InsufficientEggs_Fails()
-    {
-        SetupBalance("PET_EGG", 0);
-
-        var result = await _sut.PetPullAsync(_accountId);
-
-        Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_PET_EGG", result.Error);
     }
 
     private void SetupBalance(string type, double amount)

@@ -57,6 +57,7 @@ builder.Services.AddScoped<PetService>();
 builder.Services.AddScoped<HeritageService>();
 builder.Services.AddScoped<DailyService>();
 builder.Services.AddScoped<ContentService>();
+builder.Services.AddScoped<TreasureService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

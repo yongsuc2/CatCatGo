@@ -37,7 +37,7 @@ public class TalentServiceTests
     }
 
     [Fact]
-    public async Task UpgradeAsync_SufficientGold_IncreasesLevel()
+    public async Task UpgradeAsync_SufficientGold_ReturnsSuccessWithDelta()
     {
         var accountId = Guid.NewGuid();
         var state = new TalentState { AccountId = accountId, AtkLevel = 0, HpLevel = 0, DefLevel = 0, TotalLevel = 0, ClaimedMilestones = "[]" };
@@ -50,12 +50,13 @@ public class TalentServiceTests
         var result = await _sut.UpgradeAsync(accountId, "ATK");
 
         Assert.True(result.Success);
-        Assert.Equal(1, result.State!.AtkLevel);
-        Assert.Equal(1, result.State.TotalLevel);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.Talent);
+        Assert.Equal(1, result.Delta.Talent!.AtkLevel);
     }
 
     [Fact]
-    public async Task UpgradeAsync_InsufficientGold_ReturnsFalse()
+    public async Task UpgradeAsync_InsufficientGold_ReturnsFail()
     {
         var accountId = Guid.NewGuid();
         var state = new TalentState { AccountId = accountId, TotalLevel = 0, ClaimedMilestones = "[]" };
@@ -68,7 +69,7 @@ public class TalentServiceTests
         var result = await _sut.UpgradeAsync(accountId, "ATK");
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_GOLD", result.Error);
+        Assert.Equal("INSUFFICIENT_GOLD", result.ErrorCode);
     }
 
     [Fact]
@@ -104,7 +105,7 @@ public class TalentServiceTests
         var result = await _sut.ClaimMilestoneAsync(accountId, 10);
 
         Assert.False(result.Success);
-        Assert.Equal("LEVEL_NOT_REACHED", result.Error);
+        Assert.Equal("LEVEL_NOT_REACHED", result.ErrorCode);
     }
 
     [Fact]
@@ -117,6 +118,6 @@ public class TalentServiceTests
         var result = await _sut.ClaimMilestoneAsync(accountId, 10);
 
         Assert.False(result.Success);
-        Assert.Equal("ALREADY_CLAIMED", result.Error);
+        Assert.Equal("ALREADY_CLAIMED", result.ErrorCode);
     }
 }

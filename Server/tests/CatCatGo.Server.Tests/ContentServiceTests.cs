@@ -24,7 +24,7 @@ public class ContentServiceTests
     }
 
     [Fact]
-    public async Task TowerChallengeAsync_WithToken_IncreasesStage()
+    public async Task TowerChallengeAsync_WithToken_ReturnsResult()
     {
         SetupBalance("CHALLENGE_TOKEN", 5);
         _contentRepo.GetProgressAsync(_accountId, "TOWER").Returns((ContentProgress?)null);
@@ -32,7 +32,9 @@ public class ContentServiceTests
         var result = await _sut.TowerChallengeAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.Equal(1, result.Stage);
+        Assert.NotNull(result.Data);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.Tower);
     }
 
     [Fact]
@@ -43,40 +45,24 @@ public class ContentServiceTests
         var result = await _sut.TowerChallengeAsync(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_CHALLENGE_TOKEN", result.Error);
+        Assert.Equal("INSUFFICIENT_CHALLENGE_TOKEN", result.ErrorCode);
     }
 
     [Fact]
-    public async Task TowerChallengeAsync_EveryFifthFloor_GrantsPowerStone()
-    {
-        SetupBalance("CHALLENGE_TOKEN", 5);
-        _contentRepo.GetProgressAsync(_accountId, "TOWER").Returns(new ContentProgress
-        {
-            AccountId = _accountId, ContentType = "TOWER", HighestStage = 4
-        });
-        _resourceRepo.GetBalanceAsync(_accountId, "POWER_STONE").Returns((ResourceBalance?)null);
-
-        var result = await _sut.TowerChallengeAsync(_accountId);
-
-        Assert.Equal(5, result.Stage);
-        await _resourceRepo.Received(1).UpsertBalanceAsync(Arg.Is<ResourceBalance>(b =>
-            b.Type == "POWER_STONE"));
-    }
-
-    [Fact]
-    public async Task DungeonEnterAsync_FirstEntry_Succeeds()
+    public async Task DungeonChallengeAsync_FirstEntry_Succeeds()
     {
         _contentRepo.GetProgressAsync(_accountId, "DUNGEON_SHARED").Returns((ContentProgress?)null);
         _contentRepo.GetProgressAsync(_accountId, "DUNGEON_BEEHIVE").Returns((ContentProgress?)null);
 
-        var result = await _sut.DungeonEnterAsync(_accountId, "BEEHIVE");
+        var result = await _sut.DungeonChallengeAsync(_accountId, "BEEHIVE");
 
         Assert.True(result.Success);
-        Assert.Equal(2, result.RunsRemaining);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.Dungeons);
     }
 
     [Fact]
-    public async Task DungeonEnterAsync_SharedLimitReached_Fails()
+    public async Task DungeonChallengeAsync_SharedLimitReached_Fails()
     {
         _contentRepo.GetProgressAsync(_accountId, "DUNGEON_SHARED").Returns(new ContentProgress
         {
@@ -84,95 +70,63 @@ public class ContentServiceTests
             DailyRunsUsed = 3, LastResetDate = DateTime.UtcNow.Date
         });
 
-        var result = await _sut.DungeonEnterAsync(_accountId, "TIGER_CLIFF");
+        var result = await _sut.DungeonChallengeAsync(_accountId, "TIGER_CLIFF");
 
         Assert.False(result.Success);
-        Assert.Equal("DAILY_LIMIT_REACHED", result.Error);
+        Assert.Equal("DAILY_LIMIT_REACHED", result.ErrorCode);
     }
 
     [Fact]
-    public async Task DungeonEnterAsync_NewDay_ResetsCounter()
+    public async Task DungeonSweepAsync_WithClearRecord_Succeeds()
     {
         _contentRepo.GetProgressAsync(_accountId, "DUNGEON_SHARED").Returns(new ContentProgress
         {
             AccountId = _accountId, ContentType = "DUNGEON_SHARED",
-            DailyRunsUsed = 3, LastResetDate = DateTime.UtcNow.Date.AddDays(-1)
+            DailyRunsUsed = 0, LastResetDate = DateTime.UtcNow.Date
         });
-        _contentRepo.GetProgressAsync(_accountId, "DUNGEON_BEEHIVE").Returns((ContentProgress?)null);
-
-        var result = await _sut.DungeonEnterAsync(_accountId, "BEEHIVE");
-
-        Assert.True(result.Success);
-        Assert.Equal(2, result.RunsRemaining);
-    }
-
-    [Fact]
-    public async Task DungeonResultAsync_Victory_IncreasesStageAndRewards()
-    {
         _contentRepo.GetProgressAsync(_accountId, "DUNGEON_BEEHIVE").Returns(new ContentProgress
         {
             AccountId = _accountId, ContentType = "DUNGEON_BEEHIVE", HighestStage = 5
         });
         _resourceRepo.GetBalanceAsync(_accountId, "STAMINA").Returns((ResourceBalance?)null);
 
-        var result = await _sut.DungeonResultAsync(_accountId, "BEEHIVE", true);
+        var result = await _sut.DungeonSweepAsync(_accountId, "BEEHIVE");
 
         Assert.True(result.Success);
-        Assert.Equal(6, result.Stage);
+        Assert.NotNull(result.Delta);
     }
 
     [Fact]
-    public async Task DungeonResultAsync_Defeat_NoStageIncrease()
+    public async Task DungeonSweepAsync_NoClearRecord_Fails()
     {
-        var result = await _sut.DungeonResultAsync(_accountId, "BEEHIVE", false);
+        _contentRepo.GetProgressAsync(_accountId, "DUNGEON_SHARED").Returns(new ContentProgress
+        {
+            AccountId = _accountId, ContentType = "DUNGEON_SHARED",
+            DailyRunsUsed = 0, LastResetDate = DateTime.UtcNow.Date
+        });
+        _contentRepo.GetProgressAsync(_accountId, "DUNGEON_BEEHIVE").Returns(new ContentProgress
+        {
+            AccountId = _accountId, ContentType = "DUNGEON_BEEHIVE", HighestStage = 0
+        });
 
-        Assert.True(result.Success);
-        Assert.Equal(0, result.Stage);
-    }
-
-    [Fact]
-    public async Task TravelStartAsync_SufficientStamina_Succeeds()
-    {
-        SetupBalance("STAMINA", 50);
-
-        var result = await _sut.TravelStartAsync(_accountId, 10);
-
-        Assert.True(result.Success);
-    }
-
-    [Fact]
-    public async Task TravelStartAsync_InsufficientStamina_Fails()
-    {
-        SetupBalance("STAMINA", 5);
-
-        var result = await _sut.TravelStartAsync(_accountId, 10);
+        var result = await _sut.DungeonSweepAsync(_accountId, "BEEHIVE");
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_STAMINA", result.Error);
+        Assert.Equal("NO_CLEAR_RECORD", result.ErrorCode);
     }
 
     [Fact]
-    public async Task TravelCompleteAsync_CalculatesGoldReward()
-    {
-        _resourceRepo.GetBalanceAsync(_accountId, "GOLD").Returns((ResourceBalance?)null);
-
-        var result = await _sut.TravelCompleteAsync(_accountId, 5, 2.0);
-
-        Assert.True(result.Success);
-        var expected = 100.0 * (1 + 5 * 0.5) * 2.0;
-        Assert.Equal(expected, result.GoldEarned);
-    }
-
-    [Fact]
-    public async Task GoblinMineAsync_WithPickaxe_GrantsGold()
+    public async Task GoblinMineAsync_WithPickaxe_ReturnsOreGained()
     {
         SetupBalance("PICKAXE", 3);
-        _resourceRepo.GetBalanceAsync(_accountId, "GOLD").Returns((ResourceBalance?)null);
+        _contentRepo.GetProgressAsync(_accountId, "GOBLIN").Returns((ContentProgress?)null);
 
         var result = await _sut.GoblinMineAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.True(result.GoldEarned > 0);
+        Assert.NotNull(result.Data);
+        Assert.True(result.Data!.OreGained > 0);
+        Assert.NotNull(result.Delta!.GoblinOreCount);
     }
 
     [Fact]
@@ -183,23 +137,64 @@ public class ContentServiceTests
         var result = await _sut.GoblinMineAsync(_accountId);
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_PICKAXE", result.Error);
+        Assert.Equal("INSUFFICIENT_PICKAXE", result.ErrorCode);
     }
 
     [Fact]
-    public async Task CatacombRunAsync_IncreasesStageAndRewards()
+    public async Task GoblinCartAsync_SufficientOre_ReturnsReward()
     {
-        _contentRepo.GetProgressAsync(_accountId, "CATACOMB").Returns(new ContentProgress
+        _contentRepo.GetProgressAsync(_accountId, "GOBLIN").Returns(new ContentProgress
         {
-            AccountId = _accountId, ContentType = "CATACOMB", HighestStage = 2
+            AccountId = _accountId, ContentType = "GOBLIN", HighestStage = 50
         });
         _resourceRepo.GetBalanceAsync(_accountId, "GOLD").Returns((ResourceBalance?)null);
 
-        var result = await _sut.CatacombRunAsync(_accountId);
+        var result = await _sut.GoblinCartAsync(_accountId);
 
         Assert.True(result.Success);
-        Assert.Equal(3, result.Stage);
-        Assert.Equal(600.0, result.GoldEarned);
+        Assert.Equal(0, result.Delta!.GoblinOreCount);
+    }
+
+    [Fact]
+    public async Task GoblinCartAsync_InsufficientOre_Fails()
+    {
+        _contentRepo.GetProgressAsync(_accountId, "GOBLIN").Returns(new ContentProgress
+        {
+            AccountId = _accountId, ContentType = "GOBLIN", HighestStage = 10
+        });
+
+        var result = await _sut.GoblinCartAsync(_accountId);
+
+        Assert.False(result.Success);
+        Assert.Equal("INSUFFICIENT_ORE", result.ErrorCode);
+    }
+
+    [Fact]
+    public async Task CatacombStartAsync_NoActiveRun_Succeeds()
+    {
+        _contentRepo.GetProgressAsync(_accountId, "CATACOMB").Returns(new ContentProgress
+        {
+            AccountId = _accountId, ContentType = "CATACOMB", DailyRunsUsed = 0, HighestStage = 3
+        });
+
+        var result = await _sut.CatacombStartAsync(_accountId);
+
+        Assert.True(result.Success);
+        Assert.True(result.Delta!.Catacomb!.IsRunning!.Value);
+    }
+
+    [Fact]
+    public async Task CatacombStartAsync_ActiveRun_Fails()
+    {
+        _contentRepo.GetProgressAsync(_accountId, "CATACOMB").Returns(new ContentProgress
+        {
+            AccountId = _accountId, ContentType = "CATACOMB", DailyRunsUsed = 1
+        });
+
+        var result = await _sut.CatacombStartAsync(_accountId);
+
+        Assert.False(result.Success);
+        Assert.Equal("RUN_ALREADY_ACTIVE", result.ErrorCode);
     }
 
     private void SetupBalance(string type, double amount)

@@ -17,6 +17,16 @@ public class PetController : ControllerBase
         _petService = petService;
     }
 
+    /// POST /api/pet/hatch (was /upgrade for pet gacha)
+    [HttpPost("hatch")]
+    public async Task<IActionResult> Hatch()
+    {
+        var accountId = GetAccountId();
+        var result = await _petService.HatchAsync(accountId);
+        return Ok(result);
+    }
+
+    /// POST /api/pet/feed
     [HttpPost("feed")]
     public async Task<IActionResult> Feed([FromBody] PetFeedRequest request)
     {
@@ -25,19 +35,12 @@ public class PetController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("upgrade")]
-    public async Task<IActionResult> Upgrade([FromBody] PetIdRequest request)
+    /// POST /api/pet/deploy (was /equip)
+    [HttpPost("deploy")]
+    public async Task<IActionResult> Deploy([FromBody] PetIdRequest request)
     {
         var accountId = GetAccountId();
-        var result = await _petService.UpgradeAsync(accountId, request.PetId);
-        return Ok(result);
-    }
-
-    [HttpPost("equip")]
-    public async Task<IActionResult> Equip([FromBody] PetIdRequest request)
-    {
-        var accountId = GetAccountId();
-        var result = await _petService.EquipAsync(accountId, request.PetId);
+        var result = await _petService.DeployAsync(accountId, request.PetId);
         return Ok(result);
     }
 
@@ -50,11 +53,11 @@ public class PetController : ControllerBase
 
 public class PetFeedRequest
 {
-    public Guid PetId { get; set; }
+    public required string PetId { get; set; }
     public int Amount { get; set; }
 }
 
 public class PetIdRequest
 {
-    public Guid PetId { get; set; }
+    public required string PetId { get; set; }
 }

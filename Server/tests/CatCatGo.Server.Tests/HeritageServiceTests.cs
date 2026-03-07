@@ -54,7 +54,7 @@ public class HeritageServiceTests
     }
 
     [Fact]
-    public async Task UpgradeAsync_HeroWithResources_IncreasesLevel()
+    public async Task UpgradeAsync_HeroWithResources_ReturnsSuccessWithDelta()
     {
         _talentRepo.GetByAccountIdAsync(_accountId).Returns(new TalentState
         {
@@ -70,7 +70,9 @@ public class HeritageServiceTests
         var result = await _sut.UpgradeAsync(_accountId, "SKULL");
 
         Assert.True(result.Success);
-        Assert.Equal(1, result.State!.SkullLevel);
+        Assert.NotNull(result.Delta);
+        Assert.NotNull(result.Delta!.Heritage);
+        Assert.Equal(1, result.Delta.Heritage!.Level);
     }
 
     [Fact]
@@ -84,7 +86,7 @@ public class HeritageServiceTests
         var result = await _sut.UpgradeAsync(_accountId, "SKULL");
 
         Assert.False(result.Success);
-        Assert.Equal("HERITAGE_LOCKED", result.Error);
+        Assert.Equal("HERITAGE_LOCKED", result.ErrorCode);
     }
 
     [Fact]
@@ -93,7 +95,7 @@ public class HeritageServiceTests
         var result = await _sut.UpgradeAsync(_accountId, "INVALID");
 
         Assert.False(result.Success);
-        Assert.Equal("INVALID_ROUTE", result.Error);
+        Assert.Equal("INVALID_ROUTE", result.ErrorCode);
     }
 
     [Fact]
@@ -109,7 +111,7 @@ public class HeritageServiceTests
         var result = await _sut.UpgradeAsync(_accountId, "KNIGHT");
 
         Assert.False(result.Success);
-        Assert.Contains("INSUFFICIENT", result.Error);
+        Assert.Contains("INSUFFICIENT", result.ErrorCode);
     }
 
     [Fact]
@@ -129,7 +131,7 @@ public class HeritageServiceTests
         var result = await _sut.UpgradeAsync(_accountId, "RANGER");
 
         Assert.False(result.Success);
-        Assert.Equal("INSUFFICIENT_GOLD", result.Error);
+        Assert.Equal("INSUFFICIENT_GOLD", result.ErrorCode);
         await _resourceRepo.Received().UpsertBalanceAsync(Arg.Is<ResourceBalance>(b =>
             b.Type == "RANGER_BOOK"));
     }
