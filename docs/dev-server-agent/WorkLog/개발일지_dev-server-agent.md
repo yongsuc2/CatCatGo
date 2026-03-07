@@ -1,5 +1,26 @@
 # dev-server-agent 개발일지
 
+## 2026-03-08: TalentService milestone delta key 형식 수정
+
+### 버그 원인
+`ClaimMilestoneAsync`와 `ClaimAllMilestonesAsync`에서 `AddClaimedMilestone(milestoneLevel.ToString())`로 `"10"` 같은 숫자 문자열을 delta에 넣고 있었음. 클라이언트는 `$"LV_{level}"` 형식을 사용하므로 key 불일치로 수령 후에도 미수령으로 표시되는 버그 발생.
+
+### 수정 내용
+
+**`Server/src/CatCatGo.Server.Core/Services/TalentService.cs`:**
+- `ClaimMilestoneAsync` (line 146): `AddClaimedMilestone(milestoneLevel.ToString())` → `AddClaimedMilestone($"LV_{milestoneLevel}")`
+- `ClaimAllMilestonesAsync` (line 171): `AddClaimedMilestone(milestone.ToString())` → `AddClaimedMilestone($"LV_{milestone}")`
+
+**`Server/tests/CatCatGo.Server.Tests/TalentServiceTests.cs`:**
+- `ClaimMilestoneAsync_ValidMilestone_Success`: delta의 milestone key가 `"LV_10"` 형식인지 검증 추가
+- `ClaimAllMilestonesAsync_DeltaContainsLvPrefixedKeys`: 신규 테스트 — delta에 `"LV_10"`, `"LV_20"`, `"LV_30"` 포함 및 순수 숫자 `"10"` 미포함 검증
+
+### 검증
+- `dotnet build` — 0 Error
+- `dotnet test` — 129개 테스트 전부 통과 (기존 128 + 신규 1)
+
+---
+
 ## 2026-03-07: Phase 4-5 서버 API 설계 문서 스펙 정비
 
 ### 작업 목표

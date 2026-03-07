@@ -93,6 +93,8 @@ public class TalentServiceTests
         var result = await _sut.ClaimMilestoneAsync(accountId, 10);
 
         Assert.True(result.Success);
+        Assert.NotNull(result.Delta);
+        Assert.Contains("LV_10", result.Delta!.AddedClaimedMilestones!);
     }
 
     [Fact]
@@ -119,5 +121,26 @@ public class TalentServiceTests
 
         Assert.False(result.Success);
         Assert.Equal("ALREADY_CLAIMED", result.ErrorCode);
+    }
+
+    [Fact]
+    public async Task ClaimAllMilestonesAsync_DeltaContainsLvPrefixedKeys()
+    {
+        var accountId = Guid.NewGuid();
+        var state = new TalentState { AccountId = accountId, TotalLevel = 30, ClaimedMilestones = "[]" };
+        _talentRepo.GetByAccountIdAsync(accountId).Returns(state);
+        _resourceRepo.GetBalanceAsync(accountId, "GOLD").Returns(new ResourceBalance
+        {
+            AccountId = accountId, Type = "GOLD", Amount = 5000
+        });
+
+        var result = await _sut.ClaimAllMilestonesAsync(accountId);
+
+        Assert.True(result.Success);
+        Assert.NotNull(result.Delta);
+        Assert.Contains("LV_10", result.Delta!.AddedClaimedMilestones!);
+        Assert.Contains("LV_20", result.Delta!.AddedClaimedMilestones!);
+        Assert.Contains("LV_30", result.Delta!.AddedClaimedMilestones!);
+        Assert.DoesNotContain("10", result.Delta!.AddedClaimedMilestones!);
     }
 }

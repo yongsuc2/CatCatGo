@@ -143,7 +143,7 @@ public class TalentService
         await _talentRepo.UpsertAsync(state);
 
         var deltaBuilder = new StateDeltaBuilder()
-            .AddClaimedMilestone(milestoneLevel.ToString());
+            .AddClaimedMilestone($"LV_{milestoneLevel}");
 
         if (rewardType != null)
         {
@@ -168,7 +168,7 @@ public class TalentService
             if (claimed.Contains(milestone)) continue;
 
             claimed.Add(milestone);
-            deltaBuilder.AddClaimedMilestone(milestone.ToString());
+            deltaBuilder.AddClaimedMilestone($"LV_{milestone}");
             claimedCount++;
 
             var milestoneIndex = milestone / 10;
