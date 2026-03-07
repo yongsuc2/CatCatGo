@@ -38,14 +38,52 @@ namespace CatCatGo.Domain.Economy
             PityCount = 0;
         }
 
-        public int GetCostPerPull()
+        private GachaChestConfig GetChestConfig()
         {
             switch (Type)
             {
-                case ChestType.EQUIPMENT: return GachaDataTable.Equipment.CostPerPull;
-                case ChestType.PET: return GachaDataTable.Pet.CostPerPull;
-                default: return 0;
+                case ChestType.EQUIPMENT: return GachaDataTable.Equipment;
+                case ChestType.ADVENTURER: return GachaDataTable.AdventurerChest;
+                case ChestType.HERO: return GachaDataTable.HeroChest;
+                default: return null;
             }
+        }
+
+        private GachaPetConfig GetPetConfig()
+        {
+            switch (Type)
+            {
+                case ChestType.PET: return GachaDataTable.Pet;
+                case ChestType.BASIC_PET: return GachaDataTable.BasicPet;
+                default: return null;
+            }
+        }
+
+        public int GetCostPerPull()
+        {
+            var chestConfig = GetChestConfig();
+            if (chestConfig != null) return chestConfig.CostPerPull;
+
+            var petConfig = GetPetConfig();
+            if (petConfig != null) return petConfig.CostPerPull;
+
+            return 0;
+        }
+
+        public ResourceType GetCostCurrency()
+        {
+            string currency = null;
+
+            var chestConfig = GetChestConfig();
+            if (chestConfig != null) currency = chestConfig.CostCurrency;
+
+            var petConfig = GetPetConfig();
+            if (petConfig != null) currency = petConfig.CostCurrency;
+
+            if (currency != null && Enum.TryParse<ResourceType>(currency, out var resType))
+                return resType;
+
+            return ResourceType.GEMS;
         }
 
         public int GetPull10Cost()
@@ -55,34 +93,37 @@ namespace CatCatGo.Domain.Economy
 
         public int GetPityThreshold()
         {
-            switch (Type)
-            {
-                case ChestType.EQUIPMENT: return GachaDataTable.Equipment.PityThreshold;
-                case ChestType.PET: return GachaDataTable.Pet.PityThreshold;
-                default: return 0;
-            }
+            var chestConfig = GetChestConfig();
+            if (chestConfig != null) return chestConfig.PityThreshold;
+
+            var petConfig = GetPetConfig();
+            if (petConfig != null) return petConfig.PityThreshold;
+
+            return 0;
         }
 
         public PullResult Pull(SeededRandom rng)
         {
-            if (Type == ChestType.PET)
-                return PullSpecial(rng);
+            if (Type == ChestType.PET || Type == ChestType.BASIC_PET)
+                return PullPet(rng);
+
+            var config = GetChestConfig();
+            if (config == null) return null;
 
             PityCount += 1;
 
-            int pityThreshold = GetPityThreshold();
+            int pityThreshold = config.PityThreshold;
             if (pityThreshold > 0 && PityCount >= pityThreshold)
             {
                 PityCount = 0;
                 return CreatePityResult(rng);
             }
 
-            var config = GachaDataTable.Equipment;
             var entries = config.GradeWeights.Select(w => (item: w.Grade, weight: w.Weight)).ToList();
             var grade = rng.WeightedPick(entries);
 
             var slot = rng.Pick(Slots);
-            bool isS = GachaDataTable.SEligibleGrades.Contains(grade) && rng.Chance(GachaDataTable.SRate);
+            bool isS = config.SEligibleGrades.Contains(grade) && config.SRate > 0 && rng.Chance(config.SRate);
             WeaponSubType? subType = slot == SlotType.WEAPON ? (WeaponSubType?)rng.Pick(WeaponSubTypes) : null;
             string name = slot == SlotType.WEAPON && subType.HasValue
                 ? $"{EquipmentDataTable.GetGradeLabel(grade)} {EquipmentDataTable.GetWeaponSubTypeLabel(subType.Value)}"
@@ -132,15 +173,18 @@ namespace CatCatGo.Domain.Economy
             return new PullResult { Equipment = equipment, Resources = new List<ResourceReward>(), IsPity = true };
         }
 
-        private PullResult PullSpecial(SeededRandom rng)
+        private PullResult PullPet(SeededRandom rng)
         {
+            var config = GetPetConfig();
+            if (config == null) return null;
+
             return new PullResult
             {
                 Equipment = null,
                 Resources = new List<ResourceReward>
                 {
-                    new ResourceReward(ResourceType.PET_EGG, GachaDataTable.Pet.EggAmount),
-                    new ResourceReward(ResourceType.PET_FOOD, rng.NextInt(GachaDataTable.Pet.FoodMin, GachaDataTable.Pet.FoodMax)),
+                    new ResourceReward(ResourceType.PET_EGG, config.EggAmount),
+                    new ResourceReward(ResourceType.PET_FOOD, rng.NextInt(config.FoodMin, config.FoodMax)),
                 },
                 IsPity = false,
             };

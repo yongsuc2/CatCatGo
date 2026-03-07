@@ -66,6 +66,29 @@ namespace CatCatGo.Services
             set => State.EquipmentChestSystem = value;
         }
 
+        public TreasureChest AdventurerChestSystem
+        {
+            get => State.AdventurerChestSystem;
+            set => State.AdventurerChestSystem = value;
+        }
+
+        public TreasureChest HeroChestSystem
+        {
+            get => State.HeroChestSystem;
+            set => State.HeroChestSystem = value;
+        }
+
+        public TreasureChest GetChestSystem(ChestType type)
+        {
+            switch (type)
+            {
+                case ChestType.EQUIPMENT: return EquipmentChestSystem;
+                case ChestType.ADVENTURER: return AdventurerChestSystem;
+                case ChestType.HERO: return HeroChestSystem;
+                default: return null;
+            }
+        }
+
         public Collection CollectionSystem
         {
             get => State.CollectionSystem;
@@ -236,12 +259,26 @@ namespace CatCatGo.Services
 
         public PullResult PullGacha()
         {
-            int cost = EquipmentChestSystem.GetCostPerPull();
-            if (!Player.Resources.CanAfford(ResourceType.GEMS, cost))
+            return PullChest(ChestType.EQUIPMENT);
+        }
+
+        public List<PullResult> PullGacha10()
+        {
+            return PullChest10(ChestType.EQUIPMENT);
+        }
+
+        public PullResult PullChest(ChestType chestType)
+        {
+            var chest = GetChestSystem(chestType);
+            if (chest == null) return null;
+
+            int cost = chest.GetCostPerPull();
+            var currency = chest.GetCostCurrency();
+            if (!Player.Resources.CanAfford(currency, cost))
                 return null;
 
-            Player.Resources.Spend(ResourceType.GEMS, cost);
-            var result = EquipmentChestSystem.Pull(Rng);
+            Player.Resources.Spend(currency, cost);
+            var result = chest.Pull(Rng);
             if (result != null)
             {
                 if (result.Equipment != null)
@@ -249,19 +286,23 @@ namespace CatCatGo.Services
                 foreach (var r in result.Resources)
                     Player.Resources.Add(r.Type, r.Amount);
                 SaveGame();
-                GameLog.I("Game", $"PullGacha gems=-{cost} eq={result.Equipment?.Name ?? "none"}({result.Equipment?.Grade})");
+                GameLog.I("Game", $"PullChest({chestType}) {currency}=-{cost} eq={result.Equipment?.Name ?? "none"}({result.Equipment?.Grade})");
             }
             return result;
         }
 
-        public List<PullResult> PullGacha10()
+        public List<PullResult> PullChest10(ChestType chestType)
         {
-            int cost = EquipmentChestSystem.GetPull10Cost();
-            if (!Player.Resources.CanAfford(ResourceType.GEMS, cost))
+            var chest = GetChestSystem(chestType);
+            if (chest == null) return null;
+
+            int cost = chest.GetPull10Cost();
+            var currency = chest.GetCostCurrency();
+            if (!Player.Resources.CanAfford(currency, cost))
                 return null;
 
-            Player.Resources.Spend(ResourceType.GEMS, cost);
-            var results = EquipmentChestSystem.Pull10(Rng);
+            Player.Resources.Spend(currency, cost);
+            var results = chest.Pull10(Rng);
             if (results != null)
             {
                 foreach (var result in results)
@@ -1134,7 +1175,17 @@ namespace CatCatGo.Services
 
         public void PullGachaAsync(Action<PullResult> callback)
         {
-            if (_networkMode == NetworkMode.OFFLINE) { callback(PullGacha()); return; }
+            PullChestAsync(ChestType.EQUIPMENT, callback);
+        }
+
+        public void PullGacha10Async(Action<List<PullResult>> callback)
+        {
+            PullChest10Async(ChestType.EQUIPMENT, callback);
+        }
+
+        public void PullChestAsync(ChestType chestType, Action<PullResult> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(PullChest(chestType)); return; }
 
             GachaApi.Pull(response =>
             {
@@ -1150,9 +1201,9 @@ namespace CatCatGo.Services
             });
         }
 
-        public void PullGacha10Async(Action<List<PullResult>> callback)
+        public void PullChest10Async(ChestType chestType, Action<List<PullResult>> callback)
         {
-            if (_networkMode == NetworkMode.OFFLINE) { callback(PullGacha10()); return; }
+            if (_networkMode == NetworkMode.OFFLINE) { callback(PullChest10(chestType)); return; }
 
             GachaApi.Pull10(response =>
             {

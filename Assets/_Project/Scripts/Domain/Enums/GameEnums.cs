@@ -120,7 +120,10 @@ namespace CatCatGo.Domain.Enums
     public enum ChestType
     {
         EQUIPMENT,
+        ADVENTURER,
+        HERO,
         PET,
+        BASIC_PET,
     }
 
     public enum StatusEffectType
@@ -158,6 +161,8 @@ namespace CatCatGo.Domain.Enums
         GHOST_BOOK,
         PET_EGG,
         PET_FOOD,
+        SILVER_KEY,
+        GOLD_KEY,
     }
 
     public enum SkillHierarchy

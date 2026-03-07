@@ -129,28 +129,31 @@ namespace CatCatGo.Presentation.Screens
             }
         }
 
+        private int GetChestCost1(ChestType type)
+        {
+            if (Game == null) return 0;
+            var chest = Game.GetChestSystem(type);
+            return chest?.GetCostPerPull() ?? 0;
+        }
+
+        private int GetChestCost10(ChestType type)
+        {
+            if (Game == null) return 0;
+            var chest = Game.GetChestSystem(type);
+            return chest?.GetPull10Cost() ?? 0;
+        }
+
         private void BuildEquipmentShopProducts()
         {
             BuildProductCard(
-                "S\uAE09 \uC7A5\uBE44\uBF51\uAE30",
-                "\uC774\uBCA4\uD2B8\uB85C \uD2B9\uC815 S\uAE09 \uC7A5\uBE44 \uBF51\uAE30 \uD655\uB960\uC774 \uB192\uC544\uC9D1\uB2C8\uB2E4",
-                ColorPalette.GradeMythic,
-                "\uBCF4\uC11D",
-                GetEquipmentCost1(),
-                GetEquipmentCost10(),
-                OnSGradePull1,
-                OnSGradePull10
-            );
-
-            BuildProductCard(
-                "\uC7A5\uBE44\uBF51\uAE30",
-                "\uC5D0\uD53D \uC774\uC0C1 \uC7A5\uBE44\uB97C \uBF51\uC744 \uD655\uB960\uC774 \uB192\uC740 \uC0C1\uC790",
+                "\uBCF4\uC11D \uC7A5\uBE44\uBF51\uAE30",
+                "\uC77C\uBC18~\uC2E0\uD654 \uC804 \uB4F1\uAE09 \uCD9C\uD604, S\uB4F1\uAE09 \uC7A5\uBE44 \uD68D\uB4DD \uAC00\uB2A5",
                 ColorPalette.GradeLegendary,
                 "\uBCF4\uC11D",
-                GetEquipmentCost1(),
-                GetEquipmentCost10(),
-                OnEquipmentPull1,
-                OnEquipmentPull10
+                GetChestCost1(ChestType.EQUIPMENT),
+                GetChestCost10(ChestType.EQUIPMENT),
+                () => ExecuteChestPull(ChestType.EQUIPMENT, false),
+                () => ExecuteChestPull(ChestType.EQUIPMENT, true)
             );
 
             BuildProductCard(
@@ -158,10 +161,10 @@ namespace CatCatGo.Presentation.Screens
                 "\uC77C\uBC18~\uC6B0\uC218 \uC7A5\uBE44\uBF51\uAE30 \uC0C1\uC790 (\uC740\uC5F4\uC1E0\uB85C \uBF51\uAE30)",
                 ColorPalette.GradeUncommon,
                 "\uC740\uC5F4\uC1E0",
-                0,
-                0,
-                null,
-                null
+                GetChestCost1(ChestType.ADVENTURER),
+                GetChestCost10(ChestType.ADVENTURER),
+                () => ExecuteChestPull(ChestType.ADVENTURER, false),
+                () => ExecuteChestPull(ChestType.ADVENTURER, true)
             );
 
             BuildProductCard(
@@ -169,10 +172,10 @@ namespace CatCatGo.Presentation.Screens
                 "\uC6B0\uC218~\uC5D0\uD53D \uC7A5\uBE44 \uD3EC\uD568 (\uAE08\uC5F4\uC1E0\uB85C \uBF51\uAE30)",
                 ColorPalette.GradeEpic,
                 "\uAE08\uC5F4\uC1E0",
-                0,
-                0,
-                null,
-                null
+                GetChestCost1(ChestType.HERO),
+                GetChestCost10(ChestType.HERO),
+                () => ExecuteChestPull(ChestType.HERO, false),
+                () => ExecuteChestPull(ChestType.HERO, true)
             );
         }
 
@@ -183,10 +186,10 @@ namespace CatCatGo.Presentation.Screens
                 "\uC5D0\uD53D \uC774\uC0C1 \uD3AB \uBF51\uAE30 \uD655\uB960\uC774 \uB192\uC740 \uBF51\uAE30",
                 ColorPalette.GradeEpic,
                 "\uBCF4\uC11D",
-                GetEquipmentCost1(),
-                GetEquipmentCost10(),
-                OnPremiumPetPull1,
-                OnPremiumPetPull10
+                GetChestCost1(ChestType.PET),
+                GetChestCost10(ChestType.PET),
+                () => ExecuteChestPull(ChestType.PET, false),
+                () => ExecuteChestPull(ChestType.PET, true)
             );
 
             BuildProductCard(
@@ -194,10 +197,10 @@ namespace CatCatGo.Presentation.Screens
                 "\uC77C\uBC18\uBD80\uD130 \uB4DC\uBB3C\uAC8C \uC5D0\uD53D\uD3AB\uB3C4 \uB098\uC624\uB294 \uBF51\uAE30",
                 ColorPalette.GradeCommon,
                 "\uD3AB \uC54C",
-                0,
-                0,
-                null,
-                null
+                GetChestCost1(ChestType.BASIC_PET),
+                GetChestCost10(ChestType.BASIC_PET),
+                () => ExecuteChestPull(ChestType.BASIC_PET, false),
+                () => ExecuteChestPull(ChestType.BASIC_PET, true)
             );
         }
 
@@ -306,11 +309,7 @@ namespace CatCatGo.Presentation.Screens
             currencyText.color = ColorPalette.Gems;
             currencyText.alignment = TextAlignmentOptions.Left;
             currencyText.raycastTarget = false;
-
-            if (onPull1 != null)
-                currencyText.text = $"\uD544\uC694: {currencyName}";
-            else
-                currencyText.text = $"\uD544\uC694: {currencyName} (\uC900\uBE44 \uC911)";
+            currencyText.text = $"\uD544\uC694: {currencyName}";
 
             var btnRowGo = new GameObject("ButtonRow");
             btnRowGo.transform.SetParent(cardGo.transform, false);
@@ -355,59 +354,21 @@ namespace CatCatGo.Presentation.Screens
             UIManager.StretchFull(textGo.GetComponent<RectTransform>());
         }
 
-        private int GetEquipmentCost1()
-        {
-            if (Game == null) return 0;
-            return Game.EquipmentChestSystem.GetCostPerPull();
-        }
-
-        private int GetEquipmentCost10()
-        {
-            if (Game == null) return 0;
-            return Game.EquipmentChestSystem.GetPull10Cost();
-        }
-
-        private void OnSGradePull1()
-        {
-            ExecuteEquipmentPull(false);
-        }
-
-        private void OnSGradePull10()
-        {
-            ExecuteEquipmentPull(true);
-        }
-
-        private void OnEquipmentPull1()
-        {
-            ExecuteEquipmentPull(false);
-        }
-
-        private void OnEquipmentPull10()
-        {
-            ExecuteEquipmentPull(true);
-        }
-
-        private void OnPremiumPetPull1()
-        {
-            ExecuteEquipmentPull(false);
-        }
-
-        private void OnPremiumPetPull10()
-        {
-            ExecuteEquipmentPull(true);
-        }
-
         private bool _isRequestPending;
 
-        private void ExecuteEquipmentPull(bool isTenPull)
+        private void ExecuteChestPull(ChestType chestType, bool isTenPull)
         {
             if (_isRequestPending || Game == null || Game.Player == null) return;
 
-            int cost = isTenPull ? GetEquipmentCost10() : GetEquipmentCost1();
-            int gems = (int)Game.Player.Resources.Gems;
-            if (gems < cost)
+            var chest = Game.GetChestSystem(chestType);
+            if (chest == null) return;
+
+            int cost = isTenPull ? chest.GetPull10Cost() : chest.GetCostPerPull();
+            var currency = chest.GetCostCurrency();
+            int available = (int)Game.Player.Resources.Get(currency);
+            if (available < cost)
             {
-                ShowInsufficientPopup(cost, gems);
+                ShowInsufficientPopup(cost, available);
                 return;
             }
 
@@ -415,7 +376,7 @@ namespace CatCatGo.Presentation.Screens
 
             if (isTenPull)
             {
-                Game.PullGacha10Async(results =>
+                Game.PullChest10Async(chestType, results =>
                 {
                     _isRequestPending = false;
                     if (results == null) return;
@@ -424,13 +385,13 @@ namespace CatCatGo.Presentation.Screens
                     UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
                     {
                         Results = results,
-                        OnPullAgain = () => ExecuteEquipmentPull(true)
+                        OnPullAgain = () => ExecuteChestPull(chestType, true)
                     });
                 });
             }
             else
             {
-                Game.PullGachaAsync(result =>
+                Game.PullChestAsync(chestType, result =>
                 {
                     _isRequestPending = false;
                     if (result == null) return;
@@ -439,7 +400,7 @@ namespace CatCatGo.Presentation.Screens
                     UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
                     {
                         Results = new List<PullResult> { result },
-                        OnPullAgain = () => ExecuteEquipmentPull(false)
+                        OnPullAgain = () => ExecuteChestPull(chestType, false)
                     });
                 });
             }

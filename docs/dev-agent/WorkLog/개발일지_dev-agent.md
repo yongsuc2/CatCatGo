@@ -721,6 +721,68 @@ Unity Editor 메뉴 `Tools/Resource Validator`에서 실행 가능한 리소스 
 - `Assets/_Project/Data/Json/dungeon.data.json`
 - `Assets/Resources/_Project/Data/Json/dungeon.data.json`
 
+### 가챠 시스템 확장 - 장비 상자 3종 + 펫 2종
+
+**배경**: 상점화면 기획서에 정의된 가챠 콘텐츠(모험가 상자, 영웅상자, 일반 펫뽑기)가 기획서/데이터/코드에 반영되지 않은 상태를 보완
+
+**기획서 보완**:
+- `06_가챠시스템.md`: 보석 장비뽑기(COMMON 260), 모험가 상자(은열쇠), 영웅상자(금열쇠), 우수 펫뽑기, 일반 펫뽑기 5종 체계로 전면 재작성
+- `07_재화시스템.md`: 은열쇠/금열쇠 재화 추가
+- `11_과금시스템.md`: 보물상자 키 패키지에 은열쇠/금열쇠 명시
+- `상점화면_기획서.md`: 장비상점 3종 카드(보석 장비뽑기, 모험가 상자, 영웅상자) 반영
+
+**데이터 확장** (`gacha.data.json`):
+- equipment: COMMON 가중치 243→260 변경
+- adventurerChest: 은열쇠 1개, COMMON(3)/UNCOMMON(1), S등급/천장 없음
+- heroChest: 금열쇠 1개, UNCOMMON(9)/RARE(3)/EPIC(1), S등급/천장 없음
+- basicPet: 펫 알 1개, 사료 0~2개
+- 전 섹션에 costCurrency 필드 추가
+
+**Enum 확장** (`GameEnums.cs`):
+- ChestType: ADVENTURER, HERO, BASIC_PET 추가
+- ResourceType: SILVER_KEY, GOLD_KEY 추가
+
+**GachaDataTable 재설계** (`GachaDataTable.cs`):
+- sRate/sEligibleGrades를 전역 static에서 GachaChestConfig 내부 필드로 이동
+- GachaChestConfig/GachaPetConfig에 CostCurrency 필드 추가
+- Equipment, AdventurerChest, HeroChest, Pet, BasicPet 5개 static 프로퍼티 노출
+- ParseChestConfig/ParsePetConfig 헬퍼로 중복 파싱 제거
+
+**TreasureChest 일반화** (`TreasureChest.cs`):
+- EQUIPMENT/PET 하드코딩 분기를 GetChestConfig()/GetPetConfig() config 기반 패턴으로 변경
+- GetCostCurrency() 메서드 추가 (config의 costCurrency를 ResourceType으로 파싱)
+- Pull()에서 config별 sRate/sEligibleGrades 사용
+
+**GameState/GameManager 확장**:
+- GameState: AdventurerChestSystem, HeroChestSystem 필드 추가
+- GameManager: GetChestSystem(ChestType), PullChest/PullChest10, PullChestAsync/PullChest10Async 추가
+- 기존 PullGacha/PullGacha10은 PullChest(EQUIPMENT)로 위임
+
+**ShopScreen UI 정리** (`ShopScreen.cs`):
+- 기존 개별 pull 메서드(OnSGradePull1/10, OnEquipmentPull1/10 등) 전체 삭제
+- ExecuteChestPull(ChestType, bool isTenPull) 단일 메서드로 통합
+- GetChestCost1/GetChestCost10 범용 헬퍼로 교체
+- 장비상점 3카드(보석 장비뽑기/모험가 상자/영웅상자), 펫상점 2카드(우수 펫/일반 펫) 실제 콜백 연결
+
+**테스트 추가** (`TreasureChestTests.cs`):
+- AdventurerChestCosts1SilverKey, AdventurerChestDropsOnlyCommonOrUncommon
+- HeroChestCosts1GoldKey, HeroChestDropsOnlyUncommonToEpic
+- AdventurerChestHasNoPity, BasicPetChestReturnsPetResources
+
+**파일**:
+- `Assets/_Project/Data/Json/gacha.data.json` (+ Resources 복사본)
+- `Assets/_Project/Scripts/Domain/Enums/GameEnums.cs`
+- `Assets/_Project/Scripts/Domain/Data/GachaDataTable.cs`
+- `Assets/_Project/Scripts/Domain/Economy/TreasureChest.cs`
+- `Assets/_Project/Scripts/Services/GameState.cs`
+- `Assets/_Project/Scripts/Services/GameManager.cs`
+- `Assets/_Project/Scripts/Presentation/Screens/ShopScreen.cs`
+- `Assets/_Project/Tests/Editor/Economy/TreasureChestTests.cs`
+- `docs/planning-agent/SystemDesign/06_가챠시스템.md`
+- `docs/planning-agent/SystemDesign/07_재화시스템.md`
+- `docs/planning-agent/SystemDesign/11_과금시스템.md`
+- `docs/planning-agent/SystemDesign/화면기획/상점화면_기획서.md`
+
 ### 컴파일 에러 해결: asmdef 참조 + BattleManagerTests 수정
 
 **원인**: Newtonsoft.Json을 사용하는 코드가 Services/Tests 어셈블리에 있으나 asmdef에 참조가 누락되어 컴파일 실패. BattleManagerTests에서 `List<T>.Length` (배열 전용) 대신 `List<T>.Count`를 사용해야 하는 오류.

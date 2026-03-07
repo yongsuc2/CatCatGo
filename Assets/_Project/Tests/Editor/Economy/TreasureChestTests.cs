@@ -128,5 +128,78 @@ namespace CatCatGo.Tests.Economy
             Assert.Greater(uncommonCount, rareCount);
             Assert.Greater(rareCount, epicCount);
         }
+
+        [Test]
+        public void AdventurerChestCosts1SilverKey()
+        {
+            var chest = new TreasureChest(ChestType.ADVENTURER);
+            Assert.AreEqual(1, chest.GetCostPerPull());
+            Assert.AreEqual(ResourceType.SILVER_KEY, chest.GetCostCurrency());
+        }
+
+        [Test]
+        public void AdventurerChestDropsOnlyCommonOrUncommon()
+        {
+            var chest = new TreasureChest(ChestType.ADVENTURER);
+            var rng = new SeededRandom(42);
+
+            for (int i = 0; i < 200; i++)
+            {
+                var result = chest.Pull(rng);
+                Assert.IsNotNull(result.Equipment);
+                Assert.IsTrue(
+                    result.Equipment.Grade == EquipmentGrade.COMMON ||
+                    result.Equipment.Grade == EquipmentGrade.UNCOMMON,
+                    $"Adventurer chest dropped {result.Equipment.Grade}");
+                Assert.IsFalse(result.Equipment.IsS);
+            }
+        }
+
+        [Test]
+        public void HeroChestCosts1GoldKey()
+        {
+            var chest = new TreasureChest(ChestType.HERO);
+            Assert.AreEqual(1, chest.GetCostPerPull());
+            Assert.AreEqual(ResourceType.GOLD_KEY, chest.GetCostCurrency());
+        }
+
+        [Test]
+        public void HeroChestDropsOnlyUncommonToEpic()
+        {
+            var chest = new TreasureChest(ChestType.HERO);
+            var rng = new SeededRandom(42);
+
+            for (int i = 0; i < 200; i++)
+            {
+                var result = chest.Pull(rng);
+                Assert.IsNotNull(result.Equipment);
+                Assert.IsTrue(
+                    result.Equipment.Grade == EquipmentGrade.UNCOMMON ||
+                    result.Equipment.Grade == EquipmentGrade.RARE ||
+                    result.Equipment.Grade == EquipmentGrade.EPIC,
+                    $"Hero chest dropped {result.Equipment.Grade}");
+                Assert.IsFalse(result.Equipment.IsS);
+            }
+        }
+
+        [Test]
+        public void AdventurerChestHasNoPity()
+        {
+            var chest = new TreasureChest(ChestType.ADVENTURER);
+            Assert.AreEqual(0, chest.GetPityThreshold());
+            Assert.AreEqual(-1, chest.GetRemainingToPity());
+        }
+
+        [Test]
+        public void BasicPetChestReturnsPetResources()
+        {
+            var chest = new TreasureChest(ChestType.BASIC_PET);
+            var rng = new SeededRandom(42);
+            var result = chest.Pull(rng);
+
+            Assert.IsNull(result.Equipment);
+            Assert.Greater(result.Resources.Count, 0);
+            Assert.AreEqual(ResourceType.PET_EGG, chest.GetCostCurrency());
+        }
     }
 }

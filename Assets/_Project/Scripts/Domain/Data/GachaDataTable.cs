@@ -15,13 +15,17 @@ namespace CatCatGo.Domain.Data
     public class GachaChestConfig
     {
         public int CostPerPull;
+        public string CostCurrency;
         public int PityThreshold;
         public List<GachaGradeWeight> GradeWeights;
+        public float SRate;
+        public HashSet<EquipmentGrade> SEligibleGrades;
     }
 
     public class GachaPetConfig
     {
         public int CostPerPull;
+        public string CostCurrency;
         public int PityThreshold;
         public int EggAmount;
         public int FoodMin;
@@ -31,9 +35,10 @@ namespace CatCatGo.Domain.Data
     public static class GachaDataTable
     {
         private static GachaChestConfig _equipment;
+        private static GachaChestConfig _adventurerChest;
+        private static GachaChestConfig _heroChest;
         private static GachaPetConfig _pet;
-        private static float _sRate;
-        private static HashSet<EquipmentGrade> _sEligibleGrades;
+        private static GachaPetConfig _basicPet;
 
         private static void EnsureLoaded()
         {
@@ -42,36 +47,53 @@ namespace CatCatGo.Domain.Data
             var data = JsonDataLoader.LoadJObject("gacha.data.json");
             if (data == null) return;
 
-            var eq = data["equipment"];
-            _equipment = new GachaChestConfig
+            _equipment = ParseChestConfig(data["equipment"]);
+            _adventurerChest = ParseChestConfig(data["adventurerChest"]);
+            _heroChest = ParseChestConfig(data["heroChest"]);
+            _pet = ParsePetConfig(data["pet"]);
+            _basicPet = ParsePetConfig(data["basicPet"]);
+        }
+
+        private static GachaChestConfig ParseChestConfig(JToken token)
+        {
+            var config = new GachaChestConfig
             {
-                CostPerPull = eq["costPerPull"].Value<int>(),
-                PityThreshold = eq["pityThreshold"].Value<int>(),
-                GradeWeights = eq["gradeWeights"].Select(w => new GachaGradeWeight
+                CostPerPull = token["costPerPull"].Value<int>(),
+                CostCurrency = token["costCurrency"]?.Value<string>() ?? "GEMS",
+                PityThreshold = token["pityThreshold"].Value<int>(),
+                GradeWeights = token["gradeWeights"].Select(w => new GachaGradeWeight
                 {
                     Grade = (EquipmentGrade)System.Enum.Parse(typeof(EquipmentGrade), w["grade"].ToString()),
                     Weight = w["weight"].Value<float>(),
                 }).ToList(),
+                SRate = token["sRate"]?.Value<float>() ?? 0f,
             };
-            _sRate = eq["sRate"].Value<float>();
-            _sEligibleGrades = new HashSet<EquipmentGrade>(
-                eq["sEligibleGrades"].Select(g => (EquipmentGrade)System.Enum.Parse(typeof(EquipmentGrade), g.ToString()))
-            );
 
-            var p = data["pet"];
-            _pet = new GachaPetConfig
+            var sGrades = token["sEligibleGrades"];
+            config.SEligibleGrades = sGrades != null && sGrades.HasValues
+                ? new HashSet<EquipmentGrade>(sGrades.Select(g => (EquipmentGrade)System.Enum.Parse(typeof(EquipmentGrade), g.ToString())))
+                : new HashSet<EquipmentGrade>();
+
+            return config;
+        }
+
+        private static GachaPetConfig ParsePetConfig(JToken token)
+        {
+            return new GachaPetConfig
             {
-                CostPerPull = p["costPerPull"].Value<int>(),
-                PityThreshold = p["pityThreshold"].Value<int>(),
-                EggAmount = p["eggAmount"].Value<int>(),
-                FoodMin = p["foodMin"].Value<int>(),
-                FoodMax = p["foodMax"].Value<int>(),
+                CostPerPull = token["costPerPull"].Value<int>(),
+                CostCurrency = token["costCurrency"]?.Value<string>() ?? "GEMS",
+                PityThreshold = token["pityThreshold"].Value<int>(),
+                EggAmount = token["eggAmount"].Value<int>(),
+                FoodMin = token["foodMin"].Value<int>(),
+                FoodMax = token["foodMax"].Value<int>(),
             };
         }
 
         public static GachaChestConfig Equipment { get { EnsureLoaded(); return _equipment; } }
+        public static GachaChestConfig AdventurerChest { get { EnsureLoaded(); return _adventurerChest; } }
+        public static GachaChestConfig HeroChest { get { EnsureLoaded(); return _heroChest; } }
         public static GachaPetConfig Pet { get { EnsureLoaded(); return _pet; } }
-        public static float SRate { get { EnsureLoaded(); return _sRate; } }
-        public static HashSet<EquipmentGrade> SEligibleGrades { get { EnsureLoaded(); return _sEligibleGrades; } }
+        public static GachaPetConfig BasicPet { get { EnsureLoaded(); return _basicPet; } }
     }
 }

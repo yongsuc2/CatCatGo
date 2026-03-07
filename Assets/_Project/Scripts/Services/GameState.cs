@@ -25,6 +25,8 @@ namespace CatCatGo.Services
         public GoblinMiner GoblinMinerSystem;
 
         public TreasureChest EquipmentChestSystem;
+        public TreasureChest AdventurerChestSystem;
+        public TreasureChest HeroChestSystem;
         public Collection CollectionSystem;
         public DailyResetSystem DailyResetSystem;
         public EventManager EventManagerSystem;
@@ -44,6 +46,8 @@ namespace CatCatGo.Services
             GoblinMinerSystem = new GoblinMiner();
 
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
+            AdventurerChestSystem = new TreasureChest(ChestType.ADVENTURER);
+            HeroChestSystem = new TreasureChest(ChestType.HERO);
             CollectionSystem = new Collection();
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
@@ -61,6 +65,8 @@ namespace CatCatGo.Services
             DungeonManager = new DailyDungeonManager();
             GoblinMinerSystem = new GoblinMiner();
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
+            AdventurerChestSystem = new TreasureChest(ChestType.ADVENTURER);
+            HeroChestSystem = new TreasureChest(ChestType.HERO);
             CollectionSystem = new Collection();
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
