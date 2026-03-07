@@ -62,18 +62,21 @@ APP_LOG = re.compile(r"(info|warn|fail|crit|dbug):\s+(\S+)")
 # ─── 상태 추적 ───
 class Monitor:
     def __init__(self):
-        self.endpoint_counts = defaultdict(int)       # endpoint → 요청 수
-        self.error_counts = defaultdict(int)           # endpoint → 에러 수
-        self.status_counts = defaultdict(int)          # status_code → 수
-        self.recent_errors = []                        # 최근 에러 목록
+        self.endpoint_counts = defaultdict(int)       # endpoint -> req count
+        self.error_counts = defaultdict(int)           # endpoint -> error count
+        self.status_counts = defaultdict(int)          # status_code -> count
+        self.recent_errors = []                        # recent error list
         self.window_start = time.time()
         self.window_requests = 0
         self.window_errors = 0
+        self.window_lines = 0
         self.last_method = ""
         self.last_url = ""
-        self.spam_detector = defaultdict(list)         # endpoint → [timestamps]
+        self.spam_detector = defaultdict(list)         # endpoint -> [timestamps]
+        self.line_timestamps = []                      # line rate detection
         self.total_lines = 0
         self.filtered_lines = 0
+        self.flood_alerted = False
 
     def is_noise(self, line):
         for pattern in NOISE_COMPILED:
@@ -93,8 +96,27 @@ class Monitor:
             return count
         return 0
 
+    def detect_log_flood(self):
+        """1초 내 로그 50줄 이상이면 폭주 감지"""
+        now = time.time()
+        self.line_timestamps.append(now)
+        self.line_timestamps = [t for t in self.line_timestamps if now - t < 1.0]
+        rate = len(self.line_timestamps)
+        if rate >= 50 and not self.flood_alerted:
+            self.flood_alerted = True
+            return rate
+        if rate < 10:
+            self.flood_alerted = False
+        return 0
+
     def process_line(self, line):
         self.total_lines += 1
+        self.window_lines += 1
+
+        # 로그 폭주 감지
+        flood_rate = self.detect_log_flood()
+        if flood_rate > 0:
+            return f"\033[91;1m[FLOOD] 로그 폭주 감지! {flood_rate} lines/sec\033[0m"
 
         # 노이즈 필터링
         if self.is_noise(line):
@@ -164,21 +186,36 @@ class Monitor:
 
         rps = self.window_requests / elapsed
         eps = self.window_errors / elapsed
+        lps = self.window_lines / elapsed
 
-        print(f"\033[90m── 통계: {self.window_requests}req/{elapsed:.0f}s ({rps:.1f}/s) | "
-              f"에러: {self.window_errors} ({eps:.1f}/s) | "
-              f"필터링: {self.filtered_lines}/{self.total_lines} lines ──\033[0m")
+        # 로그 속도 색상
+        if lps > 50:
+            lps_color = "\033[91m"  # 빨강: 폭주
+            lps_label = "FLOOD"
+        elif lps > 10:
+            lps_color = "\033[93m"  # 노랑: 주의
+            lps_label = "HIGH"
+        else:
+            lps_color = "\033[92m"  # 초록: 정상
+            lps_label = "OK"
+
+        print(f"\033[90m-- [{datetime.now().strftime('%H:%M:%S')}] "
+              f"req: {self.window_requests} ({rps:.1f}/s) | "
+              f"err: {self.window_errors} ({eps:.1f}/s) | "
+              f"{lps_color}log: {self.window_lines} ({lps:.0f}/s {lps_label})\033[0m\033[90m | "
+              f"filtered: {self.filtered_lines}/{self.total_lines} --\033[0m")
 
         if self.error_counts:
-            print("\033[90m   에러 Top 5:\033[0m")
+            print("\033[90m   err top 5:\033[0m")
             sorted_errors = sorted(self.error_counts.items(), key=lambda x: -x[1])[:5]
             for ep, cnt in sorted_errors:
-                print(f"\033[90m     {ep}: {cnt}회\033[0m")
+                print(f"\033[93m     {ep}: {cnt}\033[0m")
 
         # 윈도우 리셋
         self.window_start = now
         self.window_requests = 0
         self.window_errors = 0
+        self.window_lines = 0
 
     def print_summary(self):
         print("\n\033[1m=== 서버 로그 요약 ===\033[0m\n")
@@ -238,8 +275,8 @@ def run_realtime(errors_only=False):
                     continue
                 print(result)
 
-            # 30초마다 통계 출력
-            if time.time() - last_stats > 30:
+            # 5초마다 통계 출력
+            if time.time() - last_stats > 5:
                 monitor.print_stats()
                 last_stats = time.time()
 
