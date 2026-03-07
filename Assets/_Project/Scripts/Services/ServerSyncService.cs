@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Newtonsoft.Json;
+using CatCatGo.Infrastructure;
 using CatCatGo.Network;
 using CatCatGo.Shared.Responses;
 
@@ -68,7 +69,7 @@ namespace CatCatGo.Services
                 authComplete = true;
 
                 if (isNew)
-                    Debug.Log("[ServerSync] New account registered");
+                    GameLog.I("Sync", "New account registered");
             });
 
             while (!authComplete)
@@ -124,11 +125,11 @@ namespace CatCatGo.Services
                     var serverState = JsonConvert.DeserializeObject<SaveState>(response.Data.Data);
                     game.State.ApplyFullSync(serverState);
                     _saveVersion = response.Data.Version;
-                    Debug.Log("[ServerSync] Full sync applied from server");
+                    GameLog.I("Sync", "Full sync applied from server");
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogWarning($"[ServerSync] Failed to parse server save: {ex.Message}");
+                    GameLog.W("Sync", $"Failed to parse server save: {ex.Message}");
                 }
 
                 onComplete(true);
@@ -167,11 +168,11 @@ namespace CatCatGo.Services
                         _pendingSave = false;
                         _lastSyncTime = Time.realtimeSinceStartup;
                         _saveVersion = response.Data.Version;
-                        Debug.Log("[ServerSync] Save synced to server");
+                        GameLog.I("Sync", "Save synced to server");
                     }
                     else
                     {
-                        Debug.Log("[ServerSync] Server has newer data, loading server state");
+                        GameLog.I("Sync", "Server has newer data, loading server state");
                         LoadFullSync(_ => { });
                     }
                 }
@@ -179,12 +180,12 @@ namespace CatCatGo.Services
                 {
                     _lastSyncTime = Time.realtimeSinceStartup;
                     SetState(ConnectionState.Offline);
-                    Debug.Log("[ServerSync] Offline - save kept locally");
+                    GameLog.I("Sync", "Offline - save kept locally");
                 }
                 else
                 {
                     _lastSyncTime = Time.realtimeSinceStartup;
-                    Debug.LogWarning($"[ServerSync] Sync failed: {response.ErrorMessage}");
+                    GameLog.W("Sync", $"Sync failed: {response.ErrorMessage}");
                 }
             });
         }

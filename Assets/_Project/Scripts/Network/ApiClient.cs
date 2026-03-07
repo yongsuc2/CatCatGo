@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using CatCatGo.Infrastructure;
 using CatCatGo.Shared.Requests;
 using CatCatGo.Shared.Responses;
 
@@ -95,7 +96,7 @@ namespace CatCatGo.Network
             }
 
             string url = _config.BaseUrl + "/" + endpoint;
-            Debug.Log($"[Net] {method} {url}");
+            string bodyJson = null;
             UnityWebRequest request;
 
             if (method == "GET")
@@ -104,8 +105,8 @@ namespace CatCatGo.Network
             }
             else
             {
-                string json = body != null ? JsonConvert.SerializeObject(body) : "{}";
-                byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+                bodyJson = body != null ? JsonConvert.SerializeObject(body) : "{}";
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJson);
                 request = new UnityWebRequest(url, "POST");
                 request.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 request.downloadHandler = new DownloadHandlerBuffer();
@@ -119,15 +120,20 @@ namespace CatCatGo.Network
                 request.SetRequestHeader("Authorization", "Bearer " + TokenStore.AccessToken);
             }
 
+            string bodySummary = SummarizeBody(bodyJson);
+            GameLog.I("Net", $"{method} {endpoint}{bodySummary}");
+            float startTime = Time.realtimeSinceStartup;
+
             using (request)
             {
                 yield return request.SendWebRequest();
+                int elapsedMs = (int)((Time.realtimeSinceStartup - startTime) * 1000f);
 
                 if (request.result == UnityWebRequest.Result.ConnectionError ||
                     request.result == UnityWebRequest.Result.DataProcessingError)
                 {
                     IsOnline = false;
-                    Debug.LogWarning($"[Net] {method} {endpoint} FAILED: {request.error} (retry {retryCount}/{_config.MaxRetryCount})");
+                    GameLog.W("Net", $"{method} {endpoint} FAILED ({elapsedMs}ms): {request.error} (retry {retryCount}/{_config.MaxRetryCount})");
                     if (retryCount < _config.MaxRetryCount)
                     {
                         yield return new WaitForSeconds(_config.RetryDelaySeconds);
@@ -153,10 +159,11 @@ namespace CatCatGo.Network
                     yield break;
                 }
 
+                string responseSummary = SummarizeBody(request.downloadHandler?.text);
                 if (statusCode >= 400)
-                    Debug.LogWarning($"[Net] {method} {endpoint} → {statusCode}");
+                    GameLog.W("Net", $"{method} {endpoint} -> {statusCode} ({elapsedMs}ms){responseSummary}");
                 else
-                    Debug.Log($"[Net] {method} {endpoint} → {statusCode}");
+                    GameLog.D("Net", $"{method} {endpoint} -> {statusCode} ({elapsedMs}ms){responseSummary}");
 
                 if (statusCode >= 200 && statusCode < 300)
                 {
@@ -199,6 +206,12 @@ namespace CatCatGo.Network
                     }
                 }
             }
+        }
+
+        private static string SummarizeBody(string json)
+        {
+            if (string.IsNullOrEmpty(json) || json == "{}") return "";
+            return json.Length <= 120 ? $" | {json}" : $" | {json.Substring(0, 120)}...";
         }
 
         private IEnumerator RefreshTokenCoroutine()

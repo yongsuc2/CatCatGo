@@ -184,6 +184,7 @@ namespace CatCatGo.Services
             if (!Player.Resources.CanAfford(ResourceType.STAMINA, staminaCost)) return;
             Player.Resources.Spend(ResourceType.STAMINA, staminaCost);
             CurrentChapter = new Chapter(chapterId, type, Rng.NextInt(0, 999999));
+            GameLog.I("Game", $"StartChapter id={chapterId} type={type} stamina=-{staminaCost}");
         }
 
         public Result<DungeonBattleResult> ChallengeDungeon(DungeonType type)
@@ -247,6 +248,7 @@ namespace CatCatGo.Services
                 foreach (var r in result.Resources)
                     Player.Resources.Add(r.Type, r.Amount);
                 SaveGame();
+                GameLog.I("Game", $"PullGacha gems=-{cost} eq={result.Equipment?.Name ?? "none"}({result.Equipment?.Grade})");
             }
             return result;
         }
@@ -356,6 +358,9 @@ namespace CatCatGo.Services
             if (result.IsOk() && ServerSyncService.Instance != null)
                 ServerSyncService.Instance.MarkSaveDirty();
 
+            if (result.IsFail())
+                GameLog.W("Game", $"SaveGame failed: {result.Message}");
+
             return result.IsOk();
         }
 
@@ -401,9 +406,9 @@ namespace CatCatGo.Services
                 AuthApi.ResetData(response =>
                 {
                     if (response.IsSuccess)
-                        Debug.Log("[GameManager] Server data reset successful");
+                        GameLog.I("Game", "Server data reset successful");
                     else
-                        Debug.LogWarning($"[GameManager] Server data reset failed: {response.ErrorMessage}");
+                        GameLog.W("Game", $"Server data reset failed: {response.ErrorMessage}");
                 });
             }
         }
@@ -455,6 +460,7 @@ namespace CatCatGo.Services
             if (_networkMode == mode) return;
             _networkMode = mode;
             _consecutiveFailures = 0;
+            GameLog.I("Game", $"NetworkMode -> {mode}");
             EventBus.Publish(new NetworkModeChangedEvent { Mode = mode });
         }
 
@@ -483,6 +489,7 @@ namespace CatCatGo.Services
             }
 
             _consecutiveFailures++;
+            GameLog.W("Game", $"ApiFailed consecutive={_consecutiveFailures}/{MaxConsecutiveFailures} errorCode={errorCode ?? "network"}");
             if (_consecutiveFailures >= MaxConsecutiveFailures && _networkMode == NetworkMode.ONLINE)
             {
                 SetNetworkMode(NetworkMode.OFFLINE);
@@ -504,6 +511,7 @@ namespace CatCatGo.Services
             if (result.IsFail()) return result;
             Player.Resources.Spend(ResourceType.GOLD, result.Data.Cost);
             SaveGame();
+            GameLog.I("Game", $"TalentUpgrade {statType} gold=-{result.Data.Cost}");
             return result;
         }
 
@@ -581,6 +589,7 @@ namespace CatCatGo.Services
             var slot2 = Player.GetEquipmentSlot(foundSlotType);
             slot2.SyncLevel(foundSlotIndex);
             SaveGame();
+            GameLog.I("Game", $"UpgradeEquipment id={equipmentId} lv={equipment.Level} stone=-{result.Data.Cost}");
             return Result.Ok();
         }
 

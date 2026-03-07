@@ -1,5 +1,53 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (17) - 클라이언트 로그 시스템 보강
+
+### 개요
+
+클라이언트 로그를 구조화하고 보강했다. 전용 GameLog 유틸리티 추가, API 호출 로그 개선(body 요약/소요시간), 핵심 상태 변경 로그 추가, 런타임 로그 뷰어 추가.
+
+### 신규 파일
+
+| 파일 | 설명 |
+|------|------|
+| `Assets/_Project/Scripts/Infrastructure/GameLog.cs` | 구조화된 로그 유틸리티 (태그/레벨/버퍼/이벤트) |
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `CatCatGo.Network.asmdef` | CatCatGo.Infrastructure 참조 추가 |
+| `ApiClient.cs` | Debug.Log -> GameLog 전환, 요청/응답 body 요약(120자), 소요시간(ms) 측정 |
+| `ServerSyncService.cs` | Debug.Log -> GameLog 전환 (Sync 태그) |
+| `GameManager.cs` | Debug.Log -> GameLog 전환, 핵심 상태 변경 로그 6개 추가 (StartChapter, PullGacha, TalentUpgrade, UpgradeEquipment, NetworkMode, ApiFailed) |
+| `DebugScreen.cs` | 로그 콘솔 섹션 추가 (레벨 필터 ALL/INFO/WARN/ERR, 실시간 스트리밍, CLR 버튼) |
+
+### GameLog 설계
+
+- LogLevel: Debug/Info/Warn/Error
+- 태그 기반: Net, Sync, Game 등
+- 순환 버퍼 200개
+- OnLogAdded 이벤트로 실시간 UI 업데이트
+- MinLevel 프로퍼티로 런타임 필터링
+- Unity Debug.Log/LogWarning/LogError로도 동시 출력
+
+### API 로그 개선 (ApiClient)
+
+- 요청 시: `[Net] POST api/talent/upgrade | {"statType":"ATK"}`
+- 응답 시: `[Net] POST api/talent/upgrade -> 200 (45ms) | {"success":true,...}`
+- 에러 시: `[Net] POST api/talent/upgrade FAILED (3000ms): Connection refused (retry 1/3)`
+- body 120자 초과 시 truncate
+
+### DebugScreen 로그 뷰어
+
+- 400px 높이 스크롤 영역
+- 레벨별 색상: Debug(회색), Info(흰색), Warn(노랑), Error(빨강)
+- 필터 버튼: ALL, INFO, WARN, ERR
+- CLR 버튼: 로그 전체 삭제
+- 실시간 로그 추가 + 자동 스크롤
+
+---
+
 ## 2026-03-07 (16) - 서버-클라이언트 연동 버그 수정 (BUG-008, BUG-009, BUG-011)
 
 ### 개요

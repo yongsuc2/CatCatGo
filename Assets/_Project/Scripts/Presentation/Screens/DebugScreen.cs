@@ -1,10 +1,12 @@
 using System;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Data;
+using CatCatGo.Infrastructure;
 using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Utils;
 
@@ -14,10 +16,33 @@ namespace CatCatGo.Presentation.Screens
     {
         private TMP_InputField _chapterInput;
         private TextMeshProUGUI _statusText;
+        private TextMeshProUGUI _logText;
+        private ScrollRect _logScrollRect;
+        private LogLevel _logFilterLevel = LogLevel.Debug;
 
         private void Awake()
         {
             BuildUI();
+        }
+
+        private void OnEnable()
+        {
+            GameLog.OnLogAdded += OnLogAdded;
+            RefreshLogView();
+        }
+
+        private void OnDisable()
+        {
+            GameLog.OnLogAdded -= OnLogAdded;
+        }
+
+        private void OnLogAdded(LogEntry entry)
+        {
+            if (entry.Level < _logFilterLevel) return;
+            AppendLogLine(entry);
+            Canvas.ForceUpdateCanvases();
+            if (_logScrollRect != null)
+                _logScrollRect.verticalNormalizedPosition = 0f;
         }
 
         private void BuildUI()
@@ -251,6 +276,153 @@ namespace CatCatGo.Presentation.Screens
                 Game.ResetToNewGame();
                 SetStatus("\ub9ac\uc14b \uc644\ub8cc");
             });
+
+            BuildLogConsole(contentGo.transform);
+        }
+
+        private void BuildLogConsole(Transform parent)
+        {
+            CreateSectionHeader(parent, "\ub85c\uadf8 \ucf58\uc194");
+
+            var filterRowGo = new GameObject("LogFilterRow");
+            filterRowGo.transform.SetParent(parent, false);
+            var filterRowLe = filterRowGo.AddComponent<LayoutElement>();
+            filterRowLe.preferredHeight = 36;
+            var filterRowLayout = filterRowGo.AddComponent<HorizontalLayoutGroup>();
+            filterRowLayout.spacing = 6;
+            filterRowLayout.childForceExpandWidth = true;
+            filterRowLayout.childForceExpandHeight = true;
+
+            CreateFilterButton(filterRowGo.transform, "ALL", LogLevel.Debug);
+            CreateFilterButton(filterRowGo.transform, "INFO", LogLevel.Info);
+            CreateFilterButton(filterRowGo.transform, "WARN", LogLevel.Warn);
+            CreateFilterButton(filterRowGo.transform, "ERR", LogLevel.Error);
+
+            var clearBtnGo = new GameObject("ClearLogBtn");
+            clearBtnGo.transform.SetParent(filterRowGo.transform, false);
+            var clearBtnBg = clearBtnGo.AddComponent<Image>();
+            clearBtnBg.color = ColorPalette.Hp;
+            var clearBtn = clearBtnGo.AddComponent<Button>();
+            clearBtn.targetGraphic = clearBtnBg;
+            clearBtn.onClick.AddListener(() =>
+            {
+                GameLog.Clear();
+                RefreshLogView();
+            });
+            var clearTextGo = new GameObject("Text");
+            clearTextGo.transform.SetParent(clearBtnGo.transform, false);
+            var clearText = clearTextGo.AddComponent<TextMeshProUGUI>();
+            clearText.text = "CLR";
+            clearText.fontSize = 18;
+            clearText.color = Color.white;
+            clearText.alignment = TextAlignmentOptions.Center;
+            clearText.raycastTarget = false;
+            UIManager.StretchFull(clearTextGo.GetComponent<RectTransform>());
+
+            var logContainerGo = new GameObject("LogContainer");
+            logContainerGo.transform.SetParent(parent, false);
+            var logContainerLe = logContainerGo.AddComponent<LayoutElement>();
+            logContainerLe.preferredHeight = 400;
+            logContainerGo.AddComponent<Image>().color = new Color(0.05f, 0.08f, 0.12f, 1f);
+
+            var logScrollGo = new GameObject("LogScroll");
+            logScrollGo.transform.SetParent(logContainerGo.transform, false);
+            var logScrollRt = logScrollGo.GetComponent<RectTransform>();
+            if (logScrollRt == null) logScrollRt = logScrollGo.AddComponent<RectTransform>();
+            UIManager.StretchFull(logScrollRt);
+            _logScrollRect = logScrollGo.AddComponent<ScrollRect>();
+            _logScrollRect.horizontal = false;
+            _logScrollRect.vertical = true;
+
+            var logViewportGo = new GameObject("Viewport");
+            logViewportGo.transform.SetParent(logScrollGo.transform, false);
+            var logViewportRt = logViewportGo.GetComponent<RectTransform>();
+            if (logViewportRt == null) logViewportRt = logViewportGo.AddComponent<RectTransform>();
+            UIManager.StretchFull(logViewportRt);
+            logViewportGo.AddComponent<RectMask2D>();
+
+            var logContentGo = new GameObject("LogContent");
+            logContentGo.transform.SetParent(logViewportGo.transform, false);
+            var logContentRt = logContentGo.GetComponent<RectTransform>();
+            if (logContentRt == null) logContentRt = logContentGo.AddComponent<RectTransform>();
+            logContentRt.anchorMin = new Vector2(0, 1);
+            logContentRt.anchorMax = new Vector2(1, 1);
+            logContentRt.pivot = new Vector2(0.5f, 1);
+            logContentRt.offsetMin = Vector2.zero;
+            logContentRt.offsetMax = Vector2.zero;
+
+            var logContentFitter = logContentGo.AddComponent<ContentSizeFitter>();
+            logContentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            _logScrollRect.content = logContentRt;
+            _logScrollRect.viewport = logViewportRt;
+
+            _logText = logContentGo.AddComponent<TextMeshProUGUI>();
+            _logText.fontSize = 16;
+            _logText.color = ColorPalette.Text;
+            _logText.alignment = TextAlignmentOptions.TopLeft;
+            _logText.raycastTarget = false;
+            _logText.enableWordWrapping = true;
+            _logText.overflowMode = TextOverflowModes.Truncate;
+            _logText.margin = new Vector4(8, 4, 8, 4);
+        }
+
+        private void CreateFilterButton(Transform parent, string label, LogLevel level)
+        {
+            var go = new GameObject("Filter_" + label);
+            go.transform.SetParent(parent, false);
+            var bg = go.AddComponent<Image>();
+            bg.color = _logFilterLevel == level ? ColorPalette.ButtonPrimary : ColorPalette.ButtonSecondary;
+            var btn = go.AddComponent<Button>();
+            btn.targetGraphic = bg;
+            btn.onClick.AddListener(() =>
+            {
+                _logFilterLevel = level;
+                RefreshLogView();
+            });
+            var textGo = new GameObject("Text");
+            textGo.transform.SetParent(go.transform, false);
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = label;
+            tmp.fontSize = 18;
+            tmp.color = Color.white;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.raycastTarget = false;
+            UIManager.StretchFull(textGo.GetComponent<RectTransform>());
+        }
+
+        private void RefreshLogView()
+        {
+            if (_logText == null) return;
+            var sb = new StringBuilder();
+            foreach (var entry in GameLog.Entries)
+            {
+                if (entry.Level < _logFilterLevel) continue;
+                sb.AppendLine(FormatEntry(entry));
+            }
+            _logText.text = sb.ToString();
+        }
+
+        private void AppendLogLine(LogEntry entry)
+        {
+            if (_logText == null) return;
+            _logText.text += FormatEntry(entry) + "\n";
+        }
+
+        private static string FormatEntry(LogEntry entry)
+        {
+            string levelColor = entry.Level switch
+            {
+                LogLevel.Debug => "#a0a0b0",
+                LogLevel.Info => "#f0f0f0",
+                LogLevel.Warn => "#ffd700",
+                LogLevel.Error => "#e74c3c",
+                _ => "#f0f0f0",
+            };
+            int seconds = (int)entry.Time;
+            int m = seconds / 60;
+            int s = seconds % 60;
+            return $"<color={levelColor}>{m:D2}:{s:D2} [{entry.Tag}] {entry.Message}</color>";
         }
 
         private void CreateSectionHeader(Transform parent, string text)
@@ -313,6 +485,7 @@ namespace CatCatGo.Presentation.Screens
 
         public override void Refresh()
         {
+            RefreshLogView();
         }
     }
 }

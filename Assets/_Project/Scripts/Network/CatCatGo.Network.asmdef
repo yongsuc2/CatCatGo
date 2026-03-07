@@ -3,6 +3,7 @@
     "rootNamespace": "CatCatGo.Network",
     "references": [
         "CatCatGo.Shared",
+        "CatCatGo.Infrastructure",
         "com.unity.nuget.newtonsoft-json"
     ],
     "includePlatforms": [],
