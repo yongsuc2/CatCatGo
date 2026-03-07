@@ -12,10 +12,12 @@ namespace CatCatGo.Server.Api.Controllers;
 public class ArenaController : ControllerBase
 {
     private readonly ArenaService _arenaService;
+    private readonly ResourceService _resourceService;
 
-    public ArenaController(ArenaService arenaService)
+    public ArenaController(ArenaService arenaService, ResourceService resourceService)
     {
         _arenaService = arenaService;
+        _resourceService = resourceService;
     }
 
     [HttpPost("match")]
@@ -45,11 +47,39 @@ public class ArenaController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("defense")]
+    public async Task<IActionResult> UpdateDefense([FromBody] ArenaDefenseRequest request)
+    {
+        var accountId = GetAccountId();
+        await _arenaService.UpdateDefenseAsync(accountId, request.PlayerDataJson);
+        return Ok();
+    }
+
+    [HttpGet("season")]
+    public IActionResult GetSeason()
+    {
+        var info = _arenaService.GetSeasonInfo();
+        return Ok(info);
+    }
+
+    [HttpPost("retry")]
+    public async Task<IActionResult> Retry()
+    {
+        var accountId = GetAccountId();
+        var result = await _arenaService.RetryAsync(accountId, _resourceService);
+        return Ok(result);
+    }
+
     private Guid GetAccountId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.Parse(claim!);
     }
+}
+
+public class ArenaDefenseRequest
+{
+    public required string PlayerDataJson { get; set; }
 }
 
 public class ArenaResultRequest

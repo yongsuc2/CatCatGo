@@ -4,6 +4,8 @@
     "references": [
         "CatCatGo.Domain",
         "CatCatGo.Infrastructure",
+        "CatCatGo.Network",
+        "CatCatGo.Shared",
         "com.unity.nuget.newtonsoft-json"
     ],
     "includePlatforms": [],

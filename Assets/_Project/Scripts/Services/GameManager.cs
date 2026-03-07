@@ -271,6 +271,10 @@ namespace CatCatGo.Services
             string json = JsonConvert.SerializeObject(state);
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             var result = SaveManagerSystem.Save(dict);
+
+            if (result.IsOk() && ServerSyncService.Instance != null)
+                ServerSyncService.Instance.MarkSaveDirty();
+
             return result.IsOk();
         }
 

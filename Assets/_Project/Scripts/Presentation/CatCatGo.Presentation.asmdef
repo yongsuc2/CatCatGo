@@ -5,6 +5,8 @@
         "CatCatGo.Domain",
         "CatCatGo.Services",
         "CatCatGo.Infrastructure",
+        "CatCatGo.Network",
+        "CatCatGo.Shared",
         "Unity.TextMeshPro",
         "Unity.InputSystem"
     ],

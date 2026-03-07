@@ -142,9 +142,64 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task RefreshAsync_NotImplemented_ReturnsNull()
+    public async Task RefreshAsync_ValidToken_ReturnsNewTokens()
     {
-        var result = await _sut.RefreshAsync("some-refresh-token");
+        var account = new Account
+        {
+            Id = Guid.NewGuid(),
+            DeviceId = "device-refresh",
+            DisplayName = "RefreshPlayer",
+            RefreshToken = "valid-refresh-token",
+            RefreshTokenExpiry = DateTime.UtcNow.AddDays(10),
+        };
+        _accountRepo.GetByRefreshTokenAsync("valid-refresh-token").Returns(account);
+
+        var result = await _sut.RefreshAsync("valid-refresh-token");
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result!.AccessToken);
+        Assert.NotEqual("valid-refresh-token", result.RefreshToken);
+    }
+
+    [Fact]
+    public async Task RefreshAsync_ExpiredToken_ReturnsNull()
+    {
+        var account = new Account
+        {
+            Id = Guid.NewGuid(),
+            RefreshToken = "expired-token",
+            RefreshTokenExpiry = DateTime.UtcNow.AddDays(-1),
+        };
+        _accountRepo.GetByRefreshTokenAsync("expired-token").Returns(account);
+
+        var result = await _sut.RefreshAsync("expired-token");
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task RefreshAsync_InvalidToken_ReturnsNull()
+    {
+        _accountRepo.GetByRefreshTokenAsync("invalid-token").Returns((Account?)null);
+
+        var result = await _sut.RefreshAsync("invalid-token");
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task RefreshAsync_BannedAccount_ReturnsNull()
+    {
+        var account = new Account
+        {
+            Id = Guid.NewGuid(),
+            RefreshToken = "banned-token",
+            RefreshTokenExpiry = DateTime.UtcNow.AddDays(10),
+            IsBanned = true,
+        };
+        _accountRepo.GetByRefreshTokenAsync("banned-token").Returns(account);
+
+        var result = await _sut.RefreshAsync("banned-token");
 
         Assert.Null(result);
     }

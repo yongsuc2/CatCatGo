@@ -6,6 +6,8 @@
         "CatCatGo.Infrastructure",
         "CatCatGo.Services",
         "CatCatGo.Presentation",
+        "CatCatGo.Network",
+        "CatCatGo.Shared",
         "Unity.TextMeshPro",
         "com.unity.nuget.newtonsoft-json"
     ],

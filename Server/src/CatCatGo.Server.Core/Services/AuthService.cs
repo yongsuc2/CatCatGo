@@ -64,7 +64,19 @@ public class AuthService
 
     public async Task<LoginResponse?> RefreshAsync(string refreshToken)
     {
-        return await Task.FromResult<LoginResponse?>(null);
+        var account = await _accountRepo.GetByRefreshTokenAsync(refreshToken);
+        if (account == null || account.IsBanned)
+            return null;
+
+        if (account.RefreshTokenExpiry == null || account.RefreshTokenExpiry < DateTime.UtcNow)
+            return null;
+
+        account.LastLoginAt = DateTime.UtcNow;
+        account.RefreshToken = GenerateRefreshToken();
+        account.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_refreshTokenDays);
+        await _accountRepo.UpdateAsync(account);
+
+        return await GenerateTokenResponse(account, false);
     }
 
     private Task<LoginResponse> GenerateTokenResponse(Account account, bool isNew)

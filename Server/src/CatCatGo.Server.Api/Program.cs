@@ -29,6 +29,15 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<IArenaRepository, ArenaRepository>();
 builder.Services.AddScoped<ICheatFlagRepository, CheatFlagRepository>();
+builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<ITalentRepository, TalentRepository>();
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
+builder.Services.AddScoped<IGachaRepository, GachaRepository>();
+builder.Services.AddScoped<IPetRepository, PetRepository>();
+builder.Services.AddScoped<IHeritageRepository, HeritageRepository>();
+builder.Services.AddScoped<IDailyRepository, DailyRepository>();
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
 
 builder.Services.AddScoped<IReceiptVerifier, GooglePlayVerifier>();
 builder.Services.AddScoped<IReceiptVerifier, AppStoreVerifier>();
@@ -39,6 +48,15 @@ builder.Services.AddScoped<SaveService>();
 builder.Services.AddScoped<ShopService>();
 builder.Services.AddScoped<ArenaService>();
 builder.Services.AddScoped<BattleVerifier>();
+builder.Services.AddScoped<ResourceService>();
+builder.Services.AddScoped<TalentService>();
+builder.Services.AddScoped<EquipmentService>();
+builder.Services.AddScoped<ChapterService>();
+builder.Services.AddScoped<GachaService>();
+builder.Services.AddScoped<PetService>();
+builder.Services.AddScoped<HeritageService>();
+builder.Services.AddScoped<DailyService>();
+builder.Services.AddScoped<ContentService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

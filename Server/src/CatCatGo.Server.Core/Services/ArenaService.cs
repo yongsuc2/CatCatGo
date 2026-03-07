@@ -116,6 +116,36 @@ public class ArenaService
         await _arenaRepo.UpsertAsync(ranking);
     }
 
+    public async Task UpdateDefenseAsync(Guid accountId, string playerDataJson)
+    {
+        var ranking = await _arenaRepo.GetByAccountIdAsync(accountId);
+        if (ranking == null) return;
+
+        ranking.PlayerData = playerDataJson;
+        ranking.UpdatedAt = DateTime.UtcNow;
+        await _arenaRepo.UpsertAsync(ranking);
+    }
+
+    public ArenaSeasonInfo GetSeasonInfo()
+    {
+        return new ArenaSeasonInfo
+        {
+            Season = 1,
+            StartAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+            EndAt = new DateTimeOffset(2026, 4, 1, 0, 0, 0, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+        };
+    }
+
+    public async Task<ArenaRetryResult> RetryAsync(Guid accountId, ResourceService resourceService)
+    {
+        var spent = await resourceService.SpendAsync(accountId, "GEMS", 50, "ARENA_RETRY");
+        if (!spent)
+            return new ArenaRetryResult { Success = false, Error = "INSUFFICIENT_GEMS" };
+
+        var match = await MatchAsync(accountId);
+        return new ArenaRetryResult { Success = true, Match = match };
+    }
+
     private static string CalculateTier(int points)
     {
         for (int i = TierThresholds.Length - 1; i >= 0; i--)
@@ -125,4 +155,18 @@ public class ArenaService
         }
         return "BRONZE";
     }
+}
+
+public class ArenaSeasonInfo
+{
+    public int Season { get; set; }
+    public long StartAt { get; set; }
+    public long EndAt { get; set; }
+}
+
+public class ArenaRetryResult
+{
+    public bool Success { get; set; }
+    public string? Error { get; set; }
+    public ArenaMatchResponse? Match { get; set; }
 }

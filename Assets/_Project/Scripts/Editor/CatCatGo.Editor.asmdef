@@ -5,6 +5,8 @@
         "CatCatGo.Domain",
         "CatCatGo.Services",
         "CatCatGo.Presentation",
+        "CatCatGo.Network",
+        "CatCatGo.Shared",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": ["Editor"],
