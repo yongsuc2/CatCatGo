@@ -56,6 +56,7 @@ public class EquipmentDeltaData
     public int Level { get; set; }
     public int PromoteCount { get; set; }
     public int MergeLevel { get; set; }
+    public string? WeaponSubType { get; set; }
     public List<SubStatDeltaData>? SubStats { get; set; }
 }
 

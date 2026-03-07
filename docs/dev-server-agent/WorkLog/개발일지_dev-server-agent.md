@@ -1,5 +1,34 @@
 # dev-server-agent 개발일지
 
+## 2026-03-08: BUG-017 서버 EquipmentDeltaData WeaponSubType 필드 추가
+
+### 버그 원인
+서버 `EquipmentDeltaData`에 `WeaponSubType` 프로퍼티가 없어, 가챠/합성으로 획득한 무기의 종류(검/지팡이/활) 정보가 클라이언트에 전달되지 않았음. 클라이언트에서는 `WeaponSubType` 필드를 파싱하지만 서버가 값을 보내지 않아 항상 null.
+
+### 수정 내용
+
+**`Server/src/CatCatGo.Server.Core/Models/EquipmentEntry.cs`:**
+- `Slot` (string) 필드 추가 — 장비 슬롯 타입 (WEAPON, ARMOR, RING 등)
+- `WeaponSubType` (string?) 필드 추가 — 무기 종류 (SWORD, STAFF, BOW), 무기가 아니면 null
+
+**`Server/src/CatCatGo.Shared/Models/StateDelta.cs`:**
+- `EquipmentDeltaData`에 `public string? WeaponSubType { get; set; }` 프로퍼티 추가
+
+**`Server/src/CatCatGo.Server.Core/Services/GachaService.cs`:**
+- `Slots`, `WeaponSubTypes` 상수 배열 추가
+- `GenerateEquipment()`: 랜덤 Slot 결정, Slot이 WEAPON이면 랜덤 WeaponSubType 설정
+- `ToEquipmentDeltaData()`: `Slot`과 `WeaponSubType` 매핑
+
+**`Server/src/CatCatGo.Server.Core/Services/EquipmentService.cs`:**
+- `ToEquipmentDeltaData()`: `Slot`과 `WeaponSubType` 매핑
+- `ForgeAsync()`, `BulkForgeAsync()`: 합성 시 원본 장비의 Slot/WeaponSubType 유지
+
+### 검증
+- `dotnet build` — 0 Error
+- `dotnet test` — 129개 테스트 전부 통과
+
+---
+
 ## 2026-03-08: 서버 코드 자체 검토
 
 ### 작업 목표

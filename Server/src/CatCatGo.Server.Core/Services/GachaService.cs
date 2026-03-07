@@ -21,6 +21,9 @@ public class GachaService
         { "EPIC", 5 }, { "LEGENDARY", 1 }, { "MYTHIC", 0.2 },
     };
 
+    private static readonly string[] Slots = { "WEAPON", "ARMOR", "RING", "NECKLACE", "SHOES", "GLOVES", "HAT" };
+    private static readonly string[] WeaponSubTypes = { "SWORD", "STAFF", "BOW" };
+
     public GachaService(IGachaRepository gachaRepo, IEquipmentRepository equipmentRepo, ResourceService resourceService)
     {
         _gachaRepo = gachaRepo;
@@ -80,6 +83,8 @@ public class GachaService
     {
         var grade = pity.PityCount >= PityThreshold ? "MYTHIC" : RollGrade();
         var isS = SEligibleGrades.Contains(grade) && Random.Shared.NextDouble() < SRate;
+        var slot = Slots[Random.Shared.Next(Slots.Length)];
+        string? weaponSubType = slot == "WEAPON" ? WeaponSubTypes[Random.Shared.Next(WeaponSubTypes.Length)] : null;
 
         return new EquipmentEntry
         {
@@ -89,6 +94,8 @@ public class GachaService
             Grade = grade,
             EnhancementLevel = 0,
             IsS = isS,
+            Slot = slot,
+            WeaponSubType = weaponSubType,
             SubStats = "[]",
             SlotIndex = -1,
             CreatedAt = DateTime.UtcNow,
@@ -100,12 +107,13 @@ public class GachaService
     {
         Id = entry.Id.ToString(),
         Name = entry.TemplateId,
-        Slot = "",
+        Slot = entry.Slot,
         Grade = entry.Grade,
         IsS = entry.IsS,
         Level = entry.EnhancementLevel,
         PromoteCount = 0,
         MergeLevel = 0,
+        WeaponSubType = entry.WeaponSubType,
         SubStats = new List<SubStatDeltaData>(),
     };
 

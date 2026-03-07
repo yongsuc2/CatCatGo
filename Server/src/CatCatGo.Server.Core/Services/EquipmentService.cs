@@ -181,6 +181,8 @@ public class EquipmentService
             TemplateId = materials[0].TemplateId,
             Grade = nextGrade,
             EnhancementLevel = 0,
+            Slot = materials[0].Slot,
+            WeaponSubType = materials[0].WeaponSubType,
             SubStats = mergedSubStats,
             SlotIndex = -1,
             CreatedAt = DateTime.UtcNow,
@@ -237,6 +239,8 @@ public class EquipmentService
                     TemplateId = batch[0].TemplateId,
                     Grade = nextGrade,
                     EnhancementLevel = 0,
+                    Slot = batch[0].Slot,
+                    WeaponSubType = batch[0].WeaponSubType,
                     SubStats = mergedSubStats,
                     SlotIndex = -1,
                     CreatedAt = DateTime.UtcNow,
@@ -284,12 +288,13 @@ public class EquipmentService
         {
             Id = entry.Id.ToString(),
             Name = entry.TemplateId,
-            Slot = "",
+            Slot = entry.Slot,
             Grade = entry.Grade,
             IsS = entry.IsS,
             Level = entry.EnhancementLevel,
             PromoteCount = 0,
             MergeLevel = 0,
+            WeaponSubType = entry.WeaponSubType,
             SubStats = subStats,
         };
     }
