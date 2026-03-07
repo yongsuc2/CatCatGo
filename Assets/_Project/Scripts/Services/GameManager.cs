@@ -408,6 +408,16 @@ namespace CatCatGo.Services
             }
         }
 
+        public void DeleteAccountAsync(Action<bool> callback)
+        {
+            AuthApi.DeleteAccount(response =>
+            {
+                if (response.IsSuccess)
+                    ResetToNewGame();
+                callback(response.IsSuccess);
+            });
+        }
+
         public bool HasSave()
         {
             return SaveManagerSystem.HasSave();
