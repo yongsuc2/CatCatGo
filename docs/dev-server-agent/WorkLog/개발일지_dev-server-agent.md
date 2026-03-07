@@ -1,5 +1,35 @@
 # dev-server-agent 개발일지
 
+## 2026-03-08: 서버 코드 자체 검토
+
+### 작업 목표
+Server/ 전체 코드를 대상으로 API 불일치, 보안 문제, 중복 코드, DB 스키마 정합성을 검토
+
+### 검토 범위
+- Controller 15개, Service 13개, Model 16개, Interface 12개, Shared DTO 전체
+
+### 발견 항목
+
+**버그 2건:**
+1. `ShopService.ConsumeAsync` (`ShopService.cs:97-108`) — `purchase.Status = "CONSUMED"` 설정 후 DB 저장 호출 누락, 중복 소비 가능
+2. `BattleVerifier` (`BattleVerifier.cs:11`, `Program.cs:53`) — 인메모리 Dictionary가 Scoped DI와 불일치, StartBattle 세션을 Report에서 찾을 수 없음
+
+**보안 이슈 3건:**
+1. `ResourceController` Spend API가 클라이언트에 임의 Type/Amount 노출
+2. Webhook 엔드포인트(RTDN/S2S) 서명 검증 없음 (현재 stub)
+3. `ResourceService.SpendMultipleAsync` Race Condition (트랜잭션 없음)
+
+**중복 코드 4건:**
+1. `GetAccountId()` — 14개 컨트롤러 동일 코드
+2. `ToActionResult<T>` — 9개 컨트롤러 동일 코드
+3. `ToEquipmentDeltaData` — EquipmentService/GachaService 중복
+4. dungeonType→rewardType 매핑 — ContentService 내 중복
+
+### 산출물
+- `docs/dev-server-agent/Todo/서버_코드_검토_Todo.md` — 발견 항목별 수정 방안 포함 Todo 리스트 작성
+
+---
+
 ## 2026-03-08: TalentService milestone delta key 형식 수정
 
 ### 버그 원인
