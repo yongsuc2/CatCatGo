@@ -10,6 +10,7 @@ using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Meta;
 using CatCatGo.Domain.Data;
 using CatCatGo.Infrastructure;
+using CatCatGo.Network;
 
 namespace CatCatGo.Services
 {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CatCatGo.Infrastructure
+namespace CatCatGo.Network
 {
     public class StateDelta
     {
