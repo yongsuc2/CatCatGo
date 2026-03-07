@@ -47,6 +47,7 @@ namespace CatCatGo.Presentation.Components
 
         public void Show(string message)
         {
+            gameObject.SetActive(true);
             if (_activeCoroutine != null)
                 StopCoroutine(_activeCoroutine);
             _activeCoroutine = StartCoroutine(ShowCoroutine(message));
@@ -56,7 +57,6 @@ namespace CatCatGo.Presentation.Components
         {
             _text.text = message;
             _canvasGroup.alpha = 1f;
-            gameObject.SetActive(true);
 
             yield return new WaitForSeconds(DisplayDuration);
 
