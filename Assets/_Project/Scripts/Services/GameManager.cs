@@ -95,35 +95,16 @@ namespace CatCatGo.Services
             set => State.ChapterTreasureSystem = value;
         }
 
-        public BattleManager BattleManagerService
-        {
-            get => State.BattleManagerService;
-            set => State.BattleManagerService = value;
-        }
-
-        public Forge ForgeService
-        {
-            get => State.ForgeService;
-            set => State.ForgeService = value;
-        }
-
-        public EquipmentManager EquipmentManagerService
-        {
-            get => State.EquipmentManagerService;
-            set => State.EquipmentManagerService = value;
-        }
-
-        public PetManager PetManagerService
-        {
-            get => State.PetManagerService;
-            set => State.PetManagerService = value;
-        }
-
         public AttendanceSystem AttendanceSystem
         {
             get => State.AttendanceSystem;
             set => State.AttendanceSystem = value;
         }
+
+        public BattleManager BattleManagerService;
+        public Forge ForgeService;
+        public EquipmentManager EquipmentManagerService;
+        public PetManager PetManagerService;
 
         public SeededRandom Rng;
         public SaveManager SaveManagerSystem;
@@ -146,6 +127,11 @@ namespace CatCatGo.Services
         private void Initialize()
         {
             State = new GameState();
+
+            BattleManagerService = new BattleManager();
+            ForgeService = new Forge();
+            EquipmentManagerService = new EquipmentManager();
+            PetManagerService = new PetManager();
 
             Rng = new SeededRandom(Environment.TickCount);
             SaveManagerSystem = new SaveManager();
@@ -368,6 +354,10 @@ namespace CatCatGo.Services
         {
             SaveManagerSystem.DeleteSave();
             State.Reset();
+            BattleManagerService = new BattleManager();
+            ForgeService = new Forge();
+            EquipmentManagerService = new EquipmentManager();
+            PetManagerService = new PetManager();
             Rng = new SeededRandom(Environment.TickCount);
             InitNewGame();
         }

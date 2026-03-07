@@ -10,8 +10,6 @@ using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Meta;
 using CatCatGo.Domain.Data;
 using CatCatGo.Infrastructure;
-using CatCatGo.Network;
-using GameResources = CatCatGo.Domain.Entities.Resources;
 
 namespace CatCatGo.Services
 {
@@ -32,10 +30,6 @@ namespace CatCatGo.Services
         public DailyRoutineScheduler RoutineScheduler;
 
         public ChapterTreasure ChapterTreasureSystem;
-        public BattleManager BattleManagerService;
-        public Forge ForgeService;
-        public EquipmentManager EquipmentManagerService;
-        public PetManager PetManagerService;
         public AttendanceSystem AttendanceSystem;
 
         public GameState()
@@ -54,10 +48,6 @@ namespace CatCatGo.Services
             EventManagerSystem = new EventManager();
             RoutineScheduler = new DailyRoutineScheduler();
             ChapterTreasureSystem = new ChapterTreasure();
-            BattleManagerService = new BattleManager();
-            ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
-            PetManagerService = new PetManager();
             AttendanceSystem = new AttendanceSystem();
         }
 
@@ -75,10 +65,6 @@ namespace CatCatGo.Services
             EventManagerSystem = new EventManager();
             RoutineScheduler = new DailyRoutineScheduler();
             ChapterTreasureSystem = new ChapterTreasure();
-            BattleManagerService = new BattleManager();
-            ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
-            PetManagerService = new PetManager();
             AttendanceSystem = new AttendanceSystem();
         }
 
