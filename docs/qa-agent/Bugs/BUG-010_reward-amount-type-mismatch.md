@@ -1,7 +1,7 @@
 # BUG-010: 서버 RewardData.Amount(double)와 클라이언트 RewardResourceData.Amount(int) 타입 불일치
 
 ## 상태
-Fixed
+Closed
 
 ## 심각도
 Major

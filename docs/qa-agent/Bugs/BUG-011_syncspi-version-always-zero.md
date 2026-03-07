@@ -1,7 +1,7 @@
 # BUG-011: SyncApi.Sync()에서 SaveSyncRequest.Version 미설정 (항상 0)
 
 ## 상태
-Fixed
+Closed
 
 ## 심각도
 Minor

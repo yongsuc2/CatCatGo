@@ -1,7 +1,7 @@
 # BUG-009: ProductDto StartAt/EndAt nullable 불일치
 
 ## 상태
-Fixed
+Closed
 
 ## 심각도
 Minor
