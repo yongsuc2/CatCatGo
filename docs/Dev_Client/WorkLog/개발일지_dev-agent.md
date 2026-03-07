@@ -61,3 +61,20 @@ Unity Editor 메뉴 `Tools/Resource Validator`에서 실행 가능한 리소스 
 - `Assets/_Project/Scripts/Domain/Content/CatacombDungeon.cs`
 - `Assets/_Project/Data/Json/dungeon.data.json`
 - `Assets/Resources/_Project/Data/Json/dungeon.data.json`
+
+### 컴파일 에러 해결: asmdef 참조 + BattleManagerTests 수정
+
+**원인**: Newtonsoft.Json을 사용하는 코드가 Services/Tests 어셈블리에 있으나 asmdef에 참조가 누락되어 컴파일 실패. BattleManagerTests에서 `List<T>.Length` (배열 전용) 대신 `List<T>.Count`를 사용해야 하는 오류.
+
+**수정 항목**:
+- `CatCatGo.Services.asmdef`: `com.unity.nuget.newtonsoft-json` 참조 추가
+- `CatCatGo.Tests.Editor.asmdef`: `com.unity.nuget.newtonsoft-json` 참조 추가 + `precompiledReferences`에 `Newtonsoft.Json.dll` 추가 (overrideReferences=true일 때 필수)
+- `BattleManagerTests.cs`: `unit.PassiveSkills.Length` -> `unit.PassiveSkills.Count` (List 타입은 Count 프로퍼티 사용)
+
+**누락 .meta 파일 추가**:
+- 이전 커밋에서 .cs 파일은 추가했으나 Unity .meta 파일이 누락된 10개 파일 보완
+
+**파일**:
+- `Assets/_Project/Scripts/Services/CatCatGo.Services.asmdef`
+- `Assets/_Project/Tests/Editor/CatCatGo.Tests.Editor.asmdef`
+- `Assets/_Project/Tests/Editor/Services/BattleManagerTests.cs`

@@ -79,7 +79,7 @@ namespace CatCatGo.Tests.Services
                 new SkillTag[0], new HeritageRoute[0], effect);
 
             var unit = _manager.CreatePlayerUnit(player, new ActiveSkill[0], new[] { passive });
-            Assert.IsTrue(unit.PassiveSkills.Length >= 1);
+            Assert.IsTrue(unit.PassiveSkills.Count >= 1);
         }
     }
 }
