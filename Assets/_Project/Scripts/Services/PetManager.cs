@@ -11,20 +11,6 @@ namespace CatCatGo.Services
 {
     public class PetManager
     {
-        public Stats GetTotalPassiveBonus(List<Pet> pets)
-        {
-            float rate = PetTable.InactiveBonusRate;
-            var total = Stats.Zero;
-            foreach (var pet in pets)
-            {
-                var bonus = Stats.Create(
-                    atk: (int)Math.Floor(pet.GetGlobalBonus().Atk * rate),
-                    maxHp: (int)Math.Floor(pet.GetGlobalBonus().MaxHp * rate));
-                total = total.Add(bonus);
-            }
-            return total;
-        }
-
         public Pet HatchEgg(SeededRandom rng)
         {
             var template = PetTable.GetRandomTemplate(rng);

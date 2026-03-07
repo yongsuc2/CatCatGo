@@ -381,13 +381,17 @@ namespace CatCatGo.Services
             if (!Enum.TryParse<SlotType>(data.Slot, out var slot)) return null;
             if (!Enum.TryParse<EquipmentGrade>(data.Grade, out var grade)) return null;
 
+            WeaponSubType? weaponSubType = data.WeaponSubType != null
+                && Enum.TryParse<WeaponSubType>(data.WeaponSubType, out var wst)
+                ? wst : (WeaponSubType?)null;
+
             var subStats = data.SubStats?.Select(s => new SubStat(s.Stat, s.Value)).ToList()
                 ?? new List<SubStat>();
 
             return new Equipment(
                 data.Id, data.Name, slot, grade, data.IsS,
                 data.Level, data.PromoteCount, null,
-                null, data.MergeLevel, subStats);
+                weaponSubType, data.MergeLevel, subStats);
         }
 
         private Pet DeserializePetDelta(PetDeltaData data)

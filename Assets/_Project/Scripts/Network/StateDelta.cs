@@ -58,6 +58,7 @@ namespace CatCatGo.Network
         public int Level;
         public int PromoteCount;
         public int MergeLevel;
+        public string WeaponSubType;
         public List<SubStatDeltaData> SubStats;
     }
 

@@ -1,5 +1,43 @@
 # 개발일지 - dev-agent
 
+## 2026-03-08 (18) - 클라이언트 코드 자체 검토
+
+### 개요
+
+기획서(SystemDesign) 대비 구현 코드 검토, 중복 코드 검출, 서버-클라이언트 동기화 버그 탐색, 컴파일/런타임 에러 가능성 확인.
+
+### 발견 및 수정
+
+| 항목 | 내용 | 조치 |
+|------|------|------|
+| PetManager 죽은 코드 | `GetTotalPassiveBonus()` 호출처 없음. `Player.ComputePetBonus()`가 동일 역할 수행 | 메서드 삭제 |
+| WeaponSubType 서버 동기화 누락 | `EquipmentDeltaData`에 `WeaponSubType` 필드 없음 + `DeserializeEquipmentDelta()`에서 파싱하지 않아 무기 종류 정보 유실 | `StateDelta.cs`에 필드 추가, `GameState.cs`에서 `Enum.TryParse` 파싱 후 Equipment 생성자에 전달 |
+
+### 미수정 항목 (Todo 등록)
+
+| 항목 | 우선순위 | 사유 |
+|------|---------|------|
+| Battle.RunToCompletion maxTurns DEFEAT 로그 누락 | 저 | UI 표시 편의성 문제, 기능 정상 동작 |
+| EquipmentSlot.Unequip SlotLevel 초기화 미수행 | 저 | Equip 시 덮어쓰므로 실질적 영향 없음 |
+| 펫 뽑기 PityCount 미증가 | 중 | 기획서상 펫 뽑기는 천장 시스템 없음으로 의도된 동작 |
+
+### 검토 범위
+
+- 기획서 10개 문서 대비 구현 대조 (전투, 성장, 장비, 스킬, 스테이지, 가챠, 재화, 펫, 모험)
+- 중복 코드 검출 (PetManager vs Player 유사 로직 → 죽은 코드로 판명)
+- StateDelta 기반 서버 동기화 데이터 무결성
+
+### 변경 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Services/PetManager.cs` | `GetTotalPassiveBonus()` 삭제 |
+| `Assets/_Project/Scripts/Network/StateDelta.cs` | `EquipmentDeltaData`에 `WeaponSubType` 필드 추가 |
+| `Assets/_Project/Scripts/Services/GameState.cs` | `DeserializeEquipmentDelta()`에서 `WeaponSubType` 파싱 및 전달 |
+| `docs/dev-agent/Todo/자체검토_Todo.md` | 검토 결과 Todo 문서 생성 |
+
+---
+
 ## 2026-03-07 (17) - 클라이언트 로그 시스템 보강
 
 ### 개요
