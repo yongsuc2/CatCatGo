@@ -229,7 +229,16 @@ namespace CatCatGo.Services
                 return null;
 
             Player.Resources.Spend(ResourceType.GEMS, cost);
-            return EquipmentChestSystem.Pull(Rng);
+            var result = EquipmentChestSystem.Pull(Rng);
+            if (result != null)
+            {
+                if (result.Equipment != null)
+                    Player.AddToInventory(result.Equipment);
+                foreach (var r in result.Resources)
+                    Player.Resources.Add(r.Type, r.Amount);
+                SaveGame();
+            }
+            return result;
         }
 
         public List<PullResult> PullGacha10()
@@ -239,7 +248,19 @@ namespace CatCatGo.Services
                 return null;
 
             Player.Resources.Spend(ResourceType.GEMS, cost);
-            return EquipmentChestSystem.Pull10(Rng);
+            var results = EquipmentChestSystem.Pull10(Rng);
+            if (results != null)
+            {
+                foreach (var result in results)
+                {
+                    if (result.Equipment != null)
+                        Player.AddToInventory(result.Equipment);
+                    foreach (var r in result.Resources)
+                        Player.Resources.Add(r.Type, r.Amount);
+                }
+                SaveGame();
+            }
+            return results;
         }
 
         public void UpdateQuestProgress(string missionId, int amount = 1)

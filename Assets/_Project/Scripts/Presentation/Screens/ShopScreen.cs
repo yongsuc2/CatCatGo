@@ -421,15 +421,6 @@ namespace CatCatGo.Presentation.Screens
                 Debug.Log($"[ShopScreen] PullGacha10 result: {(results == null ? "null" : results.Count.ToString())}");
                 if (results == null) return;
 
-                foreach (var result in results)
-                {
-                    if (result.Equipment != null)
-                        Game.Player.AddToInventory(result.Equipment);
-                    foreach (var r in result.Resources)
-                        Game.Player.Resources.Add(r.Type, r.Amount);
-                }
-
-                Game.SaveGame();
                 UI.Refresh();
                 UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
                 {
@@ -443,12 +434,6 @@ namespace CatCatGo.Presentation.Screens
                 Debug.Log($"[ShopScreen] PullGacha result: {(result == null ? "null" : "ok")}");
                 if (result == null) return;
 
-                if (result.Equipment != null)
-                    Game.Player.AddToInventory(result.Equipment);
-                foreach (var r in result.Resources)
-                    Game.Player.Resources.Add(r.Type, r.Amount);
-
-                Game.SaveGame();
                 UI.Refresh();
                 UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
                 {
