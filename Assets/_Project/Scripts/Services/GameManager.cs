@@ -470,12 +470,19 @@ namespace CatCatGo.Services
 
         private void OnApiFailed(string errorCode)
         {
-            _consecutiveFailures++;
-
             string toastMessage = ErrorCodeMessages.GetMessage(errorCode);
             if (toastMessage != null)
                 EventBus.Publish(new ErrorToastEvent { Message = toastMessage });
 
+            if (!string.IsNullOrEmpty(errorCode))
+            {
+                // 서버가 정상 응답했으나 비즈니스 로직 실패 (INSUFFICIENT_GOLD 등)
+                // 네트워크는 정상이므로 실패 카운터 리셋
+                _consecutiveFailures = 0;
+                return;
+            }
+
+            _consecutiveFailures++;
             if (_consecutiveFailures >= MaxConsecutiveFailures && _networkMode == NetworkMode.ONLINE)
             {
                 SetNetworkMode(NetworkMode.OFFLINE);
