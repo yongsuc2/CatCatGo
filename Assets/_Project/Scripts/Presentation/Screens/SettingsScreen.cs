@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CatCatGo.Network;
+using CatCatGo.Services;
 using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Utils;
 
@@ -9,21 +11,19 @@ namespace CatCatGo.Presentation.Screens
 {
     public class SettingsScreen : BaseScreen
     {
-        private TextMeshProUGUI _lastSaveText;
-        private Button _saveButton;
-        private Button _loadButton;
-        private Button _deleteButton;
-        private Button _exportButton;
-        private Button _importButton;
-        private Button _debugButton;
+        private TextMeshProUGUI _accountIdText;
+        private TextMeshProUGUI _deviceIdText;
+        private TextMeshProUGUI _connectionStatusText;
+        private TextMeshProUGUI _statusMessageText;
 
-        private RectTransform _exportPanel;
-        private TextMeshProUGUI _exportText;
-        private TMP_InputField _importInput;
+        private Button _deleteAccountButton;
+        private Button _debugButton;
 
         private RectTransform _confirmPanel;
         private TextMeshProUGUI _confirmMessage;
         private Action _confirmAction;
+
+        private bool _isRequestPending;
 
         private void Awake()
         {
@@ -35,7 +35,6 @@ namespace CatCatGo.Presentation.Screens
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);
             var scrollRt = scrollGo.GetComponent<RectTransform>();
-
             if (scrollRt == null) scrollRt = scrollGo.AddComponent<RectTransform>();
             UIManager.StretchFull(scrollRt);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
@@ -45,7 +44,6 @@ namespace CatCatGo.Presentation.Screens
             var viewportGo = new GameObject("Viewport");
             viewportGo.transform.SetParent(scrollGo.transform, false);
             var viewportRt = viewportGo.GetComponent<RectTransform>();
-
             if (viewportRt == null) viewportRt = viewportGo.AddComponent<RectTransform>();
             UIManager.StretchFull(viewportRt);
             viewportGo.AddComponent<RectMask2D>();
@@ -53,7 +51,6 @@ namespace CatCatGo.Presentation.Screens
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
             var contentRt = contentGo.GetComponent<RectTransform>();
-
             if (contentRt == null) contentRt = contentGo.AddComponent<RectTransform>();
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
@@ -73,129 +70,46 @@ namespace CatCatGo.Presentation.Screens
             scrollRect.content = contentRt;
             scrollRect.viewport = viewportRt;
 
-            var headerGo = new GameObject("Header");
-            headerGo.transform.SetParent(contentGo.transform, false);
-            var headerLe = headerGo.AddComponent<LayoutElement>();
-            headerLe.preferredHeight = 36;
-            var headerText = headerGo.AddComponent<TextMeshProUGUI>();
-            headerText.text = "\uc124\uc815";
-            headerText.fontSize = 32;
-            headerText.color = ColorPalette.Text;
-            headerText.alignment = TextAlignmentOptions.Center;
-            headerText.raycastTarget = false;
-
-            var saveTimeGo = new GameObject("SaveTime");
-            saveTimeGo.transform.SetParent(contentGo.transform, false);
-            var saveTimeLe = saveTimeGo.AddComponent<LayoutElement>();
-            saveTimeLe.preferredHeight = 28;
-            _lastSaveText = saveTimeGo.AddComponent<TextMeshProUGUI>();
-            _lastSaveText.fontSize = 22;
-            _lastSaveText.color = ColorPalette.TextDim;
-            _lastSaveText.alignment = TextAlignmentOptions.Center;
-            _lastSaveText.raycastTarget = false;
-
-            _saveButton = CreateSettingsButton(contentGo.transform, "\uc800\uc7a5", ColorPalette.ButtonPrimary, OnSave);
-            _loadButton = CreateSettingsButton(contentGo.transform, "\ubd88\ub7ec\uc624\uae30", ColorPalette.ButtonPrimary, OnLoad);
-            _deleteButton = CreateSettingsButton(contentGo.transform, "\uc800\uc7a5 \uc0ad\uc81c", ColorPalette.Hp, () => ShowConfirm("\uc815\ub9d0 \uc800\uc7a5\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?", OnDelete));
+            // Header
+            CreateLabel(contentGo.transform, "Header", "\uc124\uc815", 32, ColorPalette.Text, TextAlignmentOptions.Center, 36);
 
             CreateSeparator(contentGo.transform);
 
-            _exportButton = CreateSettingsButton(contentGo.transform, "\ub0b4\ubcf4\ub0b4\uae30 (Base64)", ColorPalette.ButtonSecondary, OnExport);
+            // Account Info Section
+            CreateLabel(contentGo.transform, "AccountSection", "\uacc4\uc815 \uc815\ubcf4", 26, ColorPalette.Gold, TextAlignmentOptions.Left, 30);
 
-            var exportPanelGo = new GameObject("ExportPanel");
-            exportPanelGo.transform.SetParent(contentGo.transform, false);
-            _exportPanel = exportPanelGo.GetComponent<RectTransform>();
-
-            if (_exportPanel == null) _exportPanel = exportPanelGo.AddComponent<RectTransform>();
-            var exportPanelLe = exportPanelGo.AddComponent<LayoutElement>();
-            exportPanelLe.preferredHeight = 100;
-            exportPanelGo.AddComponent<Image>().color = ColorPalette.CardLight;
-
-            var exportLayout = exportPanelGo.AddComponent<VerticalLayoutGroup>();
-            exportLayout.spacing = 4;
-            exportLayout.childForceExpandWidth = true;
-            exportLayout.childForceExpandHeight = true;
-            exportLayout.padding = new RectOffset(8, 8, 8, 8);
-
-            var exportTextGo = new GameObject("ExportText");
-            exportTextGo.transform.SetParent(exportPanelGo.transform, false);
-            _exportText = exportTextGo.AddComponent<TextMeshProUGUI>();
-            _exportText.fontSize = 16;
-            _exportText.color = ColorPalette.Text;
-            _exportText.alignment = TextAlignmentOptions.TopLeft;
-            _exportText.raycastTarget = true;
-            _exportText.textWrappingMode = TextWrappingModes.Normal;
-            _exportText.overflowMode = TextOverflowModes.Ellipsis;
-            _exportPanel.gameObject.SetActive(false);
+            _accountIdText = CreateLabel(contentGo.transform, "AccountId", "", 20, ColorPalette.TextDim, TextAlignmentOptions.Left, 24);
+            _deviceIdText = CreateLabel(contentGo.transform, "DeviceId", "", 20, ColorPalette.TextDim, TextAlignmentOptions.Left, 24);
+            _connectionStatusText = CreateLabel(contentGo.transform, "ConnectionStatus", "", 20, ColorPalette.TextDim, TextAlignmentOptions.Left, 24);
 
             CreateSeparator(contentGo.transform);
 
-            var importLabelGo = new GameObject("ImportLabel");
-            importLabelGo.transform.SetParent(contentGo.transform, false);
-            var importLabelLe = importLabelGo.AddComponent<LayoutElement>();
-            importLabelLe.preferredHeight = 24;
-            var importLabel = importLabelGo.AddComponent<TextMeshProUGUI>();
-            importLabel.text = "\uac00\uc838\uc624\uae30 (Base64 \ubd99\uc5ec\ub123\uae30)";
-            importLabel.fontSize = 22;
-            importLabel.color = ColorPalette.TextDim;
-            importLabel.alignment = TextAlignmentOptions.Left;
-            importLabel.raycastTarget = false;
+            // Status message
+            _statusMessageText = CreateLabel(contentGo.transform, "StatusMessage", "", 20, ColorPalette.Heal, TextAlignmentOptions.Center, 24);
+            _statusMessageText.gameObject.SetActive(false);
 
-            var importFieldGo = new GameObject("ImportField");
-            importFieldGo.transform.SetParent(contentGo.transform, false);
-            var importFieldLe = importFieldGo.AddComponent<LayoutElement>();
-            importFieldLe.preferredHeight = 80;
-            importFieldGo.AddComponent<Image>().color = ColorPalette.CardLight;
-
-            var inputTextArea = new GameObject("TextArea");
-            inputTextArea.transform.SetParent(importFieldGo.transform, false);
-            var inputTextAreaRt = inputTextArea.GetComponent<RectTransform>();
-
-            if (inputTextAreaRt == null) inputTextAreaRt = inputTextArea.AddComponent<RectTransform>();
-            UIManager.StretchFull(inputTextAreaRt);
-            inputTextAreaRt.offsetMin = new Vector2(8, 4);
-            inputTextAreaRt.offsetMax = new Vector2(-8, -4);
-
-            var inputTextGo = new GameObject("Text");
-            inputTextGo.transform.SetParent(inputTextArea.transform, false);
-            var inputText = inputTextGo.AddComponent<TextMeshProUGUI>();
-            inputText.fontSize = 16;
-            inputText.color = ColorPalette.Text;
-            inputText.alignment = TextAlignmentOptions.TopLeft;
-            inputText.textWrappingMode = TextWrappingModes.Normal;
-            var inputTextRt = inputTextGo.GetComponent<RectTransform>();
-            UIManager.StretchFull(inputTextRt);
-
-            var placeholderGo = new GameObject("Placeholder");
-            placeholderGo.transform.SetParent(inputTextArea.transform, false);
-            var placeholder = placeholderGo.AddComponent<TextMeshProUGUI>();
-            placeholder.text = "Base64 \ubb38\uc790\uc5f4\uc744 \uc785\ub825\ud558\uc138\uc694...";
-            placeholder.fontSize = 16;
-            placeholder.color = ColorPalette.TextDim;
-            placeholder.alignment = TextAlignmentOptions.TopLeft;
-            placeholder.fontStyle = FontStyles.Italic;
-            var placeholderRt = placeholderGo.GetComponent<RectTransform>();
-            UIManager.StretchFull(placeholderRt);
-
-            _importInput = importFieldGo.AddComponent<TMP_InputField>();
-            _importInput.textViewport = inputTextAreaRt;
-            _importInput.textComponent = inputText;
-            _importInput.placeholder = placeholder;
-            _importInput.lineType = TMP_InputField.LineType.MultiLineNewline;
-
-            _importButton = CreateSettingsButton(contentGo.transform, "\uac00\uc838\uc624\uae30 \ud655\uc778", ColorPalette.ButtonPrimary, () => ShowConfirm("\uac00\uc838\uc628 \ub370\uc774\ud130\ub85c \ub36e\uc5b4\uc501\ub2c8\ub2e4. \uacc4\uc18d?", OnImport));
+            // Delete Account Button
+            _deleteAccountButton = CreateSettingsButton(contentGo.transform, "\uacc4\uc815 \ud0c8\ud1f4", ColorPalette.Hp,
+                () => ShowConfirm("\uc815\ub9d0 \uacc4\uc815\uc744 \ud0c8\ud1f4\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?\n\ubaa8\ub4e0 \ub370\uc774\ud130\uac00 \uc0ad\uc81c\ub418\uace0 \uc0c8 \uacc4\uc815\uc73c\ub85c \uc2dc\uc791\ud569\ub2c8\ub2e4.", OnDeleteAccount));
 
             CreateSeparator(contentGo.transform);
 
-            _debugButton = CreateSettingsButton(contentGo.transform, "\ub514\ubc84\uadf8 \ud654\uba74", ColorPalette.ButtonSecondary, () => UI.ShowScreen(ScreenType.Debug));
+            // Debug Button
+            _debugButton = CreateSettingsButton(contentGo.transform, "\ub514\ubc84\uadf8 \ud654\uba74", ColorPalette.ButtonSecondary,
+                () => UI.ShowScreen(ScreenType.Debug));
 
+            // Confirm Panel
+            BuildConfirmPanel(contentGo.transform);
+        }
+
+        private void BuildConfirmPanel(Transform parent)
+        {
             var confirmPanelGo = new GameObject("ConfirmPanel");
-            confirmPanelGo.transform.SetParent(contentGo.transform, false);
+            confirmPanelGo.transform.SetParent(parent, false);
             _confirmPanel = confirmPanelGo.GetComponent<RectTransform>();
-
             if (_confirmPanel == null) _confirmPanel = confirmPanelGo.AddComponent<RectTransform>();
             var confirmLe = confirmPanelGo.AddComponent<LayoutElement>();
-            confirmLe.preferredHeight = 80;
+            confirmLe.preferredHeight = 100;
             confirmPanelGo.AddComponent<Image>().color = new Color(0.3f, 0.1f, 0.1f, 1f);
 
             var confirmLayout = confirmPanelGo.AddComponent<VerticalLayoutGroup>();
@@ -207,9 +121,9 @@ namespace CatCatGo.Presentation.Screens
             var confirmMsgGo = new GameObject("Message");
             confirmMsgGo.transform.SetParent(confirmPanelGo.transform, false);
             var confirmMsgLe = confirmMsgGo.AddComponent<LayoutElement>();
-            confirmMsgLe.preferredHeight = 24;
+            confirmMsgLe.preferredHeight = 48;
             _confirmMessage = confirmMsgGo.AddComponent<TextMeshProUGUI>();
-            _confirmMessage.fontSize = 22;
+            _confirmMessage.fontSize = 20;
             _confirmMessage.color = ColorPalette.Hp;
             _confirmMessage.alignment = TextAlignmentOptions.Center;
             _confirmMessage.raycastTarget = false;
@@ -260,6 +174,21 @@ namespace CatCatGo.Presentation.Screens
             _confirmPanel.gameObject.SetActive(false);
         }
 
+        private TextMeshProUGUI CreateLabel(Transform parent, string name, string text, int fontSize, Color color, TextAlignmentOptions alignment, float height)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var le = go.AddComponent<LayoutElement>();
+            le.preferredHeight = height;
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.fontSize = fontSize;
+            tmp.color = color;
+            tmp.alignment = alignment;
+            tmp.raycastTarget = false;
+            return tmp;
+        }
+
         private Button CreateSettingsButton(Transform parent, string label, Color color, Action onClick)
         {
             var go = new GameObject("Btn_" + label);
@@ -302,56 +231,92 @@ namespace CatCatGo.Presentation.Screens
             _confirmPanel.gameObject.SetActive(true);
         }
 
-        private void OnSave()
+        private void ShowStatus(string message)
         {
-            Game.SaveGame();
-            UI.Refresh();
+            _statusMessageText.text = message;
+            _statusMessageText.gameObject.SetActive(true);
         }
 
-        private void OnLoad()
+        private void OnDeleteAccount()
         {
-            Game.LoadGame();
-            UI.Refresh();
-        }
+            if (_isRequestPending) return;
+            _isRequestPending = true;
+            _deleteAccountButton.interactable = false;
+            ShowStatus("\uacc4\uc815 \ud0c8\ud1f4 \ucc98\ub9ac\uc911...");
 
-        private void OnDelete()
-        {
-            Game.ResetToNewGame();
-            UI.Refresh();
-        }
-
-        private void OnExport()
-        {
-            string encoded = Game.ExportSave();
-            _exportText.text = encoded;
-            _exportPanel.gameObject.SetActive(true);
-        }
-
-        private void OnImport()
-        {
-            if (_importInput == null || string.IsNullOrEmpty(_importInput.text)) return;
-            bool success = Game.ImportSave(_importInput.text);
-            if (success)
+            Game.DeleteAccountAsync(success =>
             {
-                _importInput.text = "";
-                UI.Refresh();
-            }
+                if (success)
+                {
+                    ShowStatus("\uacc4\uc815 \uc0ad\uc81c \uc644\ub8cc. \uc0c8 \uacc4\uc815 \ub4f1\ub85d\uc911...");
+                    AuthApi.AutoLogin((loginSuccess, isNew) =>
+                    {
+                        _isRequestPending = false;
+                        _deleteAccountButton.interactable = true;
+
+                        if (loginSuccess)
+                        {
+                            if (ServerSyncService.Instance != null)
+                                ServerSyncService.Instance.RetryConnection();
+                            ShowStatus("\uc0c8 \uacc4\uc815\uc73c\ub85c \uc2dc\uc791\ud569\ub2c8\ub2e4!");
+                        }
+                        else
+                        {
+                            ShowStatus("\uc0c8 \uacc4\uc815 \ub4f1\ub85d \uc2e4\ud328. \uc571\uc744 \uc7ac\uc2dc\uc791\ud574\uc8fc\uc138\uc694.");
+                        }
+                        UI.Refresh();
+                    });
+                }
+                else
+                {
+                    _isRequestPending = false;
+                    _deleteAccountButton.interactable = true;
+                    ShowStatus("\uacc4\uc815 \ud0c8\ud1f4 \uc2e4\ud328. \ub124\ud2b8\uc6cc\ud06c\ub97c \ud655\uc778\ud574\uc8fc\uc138\uc694.");
+                }
+            });
         }
 
         public override void Refresh()
         {
             if (Game == null) return;
 
-            long? lastSave = Game.GetLastSaveTime();
-            if (lastSave.HasValue && lastSave.Value > 0)
+            // Account ID
+            string accountId = "";
+            if (ApiClient.Instance != null)
+                accountId = ApiClient.Instance.TokenStore.AccountId ?? "";
+            _accountIdText.text = string.IsNullOrEmpty(accountId)
+                ? "\uacc4\uc815 ID: \ubbf8\ub85c\uadf8\uc778"
+                : $"\uacc4\uc815 ID: {accountId}";
+
+            // Device ID
+            string deviceId = AuthApi.GetDeviceId();
+            if (deviceId.Length > 16)
+                deviceId = deviceId.Substring(0, 16) + "...";
+            _deviceIdText.text = $"\ub514\ubc14\uc774\uc2a4 ID: {deviceId}";
+
+            // Connection Status
+            var syncState = ServerSyncService.Instance != null
+                ? ServerSyncService.Instance.State
+                : ConnectionState.Offline;
+            string stateText;
+            Color stateColor;
+            switch (syncState)
             {
-                var dt = DateTimeOffset.FromUnixTimeMilliseconds(lastSave.Value).LocalDateTime;
-                _lastSaveText.text = $"\ub9c8\uc9c0\ub9c9 \uc800\uc7a5: {dt:yyyy-MM-dd HH:mm:ss}";
+                case ConnectionState.Online:
+                    stateText = "\uc628\ub77c\uc778";
+                    stateColor = ColorPalette.Heal;
+                    break;
+                case ConnectionState.Connecting:
+                    stateText = "\uc5f0\uacb0\uc911...";
+                    stateColor = ColorPalette.Gold;
+                    break;
+                default:
+                    stateText = "\uc624\ud504\ub77c\uc778";
+                    stateColor = ColorPalette.Hp;
+                    break;
             }
-            else
-            {
-                _lastSaveText.text = "\uc800\uc7a5 \ub0b4\uc5ed \uc5c6\uc74c";
-            }
+            _connectionStatusText.text = $"\uc11c\ubc84 \uc0c1\ud0dc: {stateText}";
+            _connectionStatusText.color = stateColor;
         }
     }
 }

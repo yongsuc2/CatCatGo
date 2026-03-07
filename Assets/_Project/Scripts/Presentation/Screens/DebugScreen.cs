@@ -248,8 +248,8 @@ namespace CatCatGo.Presentation.Screens
 
             CreateDebugButton(contentGo.transform, "\uc800\uc7a5 \uc0ad\uc81c (\ub9ac\uc14b)", () =>
             {
-                Game.DeleteSave();
-                SetStatus("\uc800\uc7a5 \uc0ad\uc81c\ub428. \uc7ac\uc2dc\uc791 \ud544\uc694");
+                Game.ResetToNewGame();
+                SetStatus("\ub9ac\uc14b \uc644\ub8cc");
             });
         }
 
