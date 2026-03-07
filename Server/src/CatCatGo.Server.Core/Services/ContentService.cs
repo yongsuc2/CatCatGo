@@ -48,8 +48,7 @@ public class ContentService
             await _resourceService.GrantAsync(accountId, "POWER_STONE", 1, "TOWER_REWARD", progress.HighestStage.ToString());
             var stoneBalance = await _resourceService.GetBalanceAsync(accountId, "POWER_STONE");
             deltaBuilder.AddResource("POWER_STONE", (float)stoneBalance);
-            reward.Type = "POWER_STONE";
-            reward.Amount = 1;
+            reward = RewardData.From("POWER_STONE", 1);
         }
 
         var floor = (progress.HighestStage - 1) / 10 + 1;
@@ -101,8 +100,7 @@ public class ContentService
 
             var rewardBalance = await _resourceService.GetBalanceAsync(accountId, rewardType);
             deltaBuilder.AddResource(rewardType, (float)rewardBalance);
-            reward.Type = rewardType;
-            reward.Amount = 10;
+            reward = RewardData.From(rewardType, 10);
         }
 
         var clearedStages = new Dictionary<string, int> { { dungeonType, typeProgress.HighestStage } };
@@ -150,7 +148,7 @@ public class ContentService
             .Build();
 
         return ApiResponse<DungeonSweepResponse>.Ok(
-            new DungeonSweepResponse { Reward = new RewardData { Type = rewardType, Amount = 10 } },
+            new DungeonSweepResponse { Reward = RewardData.From(rewardType, 10) },
             delta);
     }
 
@@ -183,7 +181,7 @@ public class ContentService
         if (progress.HighestStage < 30)
             return ApiResponse<GoblinCartResponse>.Fail("INSUFFICIENT_ORE");
 
-        var goldReward = progress.HighestStage * 50.0;
+        var goldReward = progress.HighestStage * 50;
         progress.HighestStage = 0;
         progress.UpdatedAt = DateTime.UtcNow;
         await _contentRepo.UpsertProgressAsync(progress);
@@ -197,7 +195,7 @@ public class ContentService
             .Build();
 
         return ApiResponse<GoblinCartResponse>.Ok(
-            new GoblinCartResponse { Reward = new RewardData { Type = "GOLD", Amount = goldReward } },
+            new GoblinCartResponse { Reward = RewardData.From("GOLD", goldReward) },
             delta);
     }
 
@@ -236,11 +234,10 @@ public class ContentService
 
         if (!continueRun)
         {
-            var goldReward = currentFloor * 200.0;
+            var goldReward = currentFloor * 200;
             await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "CATACOMB_REWARD", currentFloor.ToString());
             progress.DailyRunsUsed = 0;
-            reward.Type = "GOLD";
-            reward.Amount = goldReward;
+            reward = RewardData.From("GOLD", goldReward);
         }
 
         progress.UpdatedAt = DateTime.UtcNow;
@@ -266,7 +263,7 @@ public class ContentService
         if (progress.DailyRunsUsed <= 0)
             return ApiResponse<CatacombEndResponse>.Fail("NO_ACTIVE_RUN");
 
-        var goldReward = progress.HighestStage * 200.0;
+        var goldReward = progress.HighestStage * 200;
         await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "CATACOMB_END_REWARD", progress.HighestStage.ToString());
 
         progress.DailyRunsUsed = 0;
@@ -280,7 +277,7 @@ public class ContentService
             .Build();
 
         return ApiResponse<CatacombEndResponse>.Ok(
-            new CatacombEndResponse { Reward = new RewardData { Type = "GOLD", Amount = goldReward } },
+            new CatacombEndResponse { Reward = RewardData.From("GOLD", goldReward) },
             delta);
     }
 
@@ -304,8 +301,18 @@ public class ContentService
 
 public class RewardData
 {
+    public List<RewardResourceData> Resources { get; set; } = new();
+
+    public static RewardData From(string type, int amount)
+    {
+        return new RewardData { Resources = new List<RewardResourceData> { new() { Type = type, Amount = amount } } };
+    }
+}
+
+public class RewardResourceData
+{
     public string Type { get; set; } = string.Empty;
-    public double Amount { get; set; }
+    public int Amount { get; set; }
 }
 
 public class TowerChallengeResponse
