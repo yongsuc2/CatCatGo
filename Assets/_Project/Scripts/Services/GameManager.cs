@@ -21,26 +21,109 @@ namespace CatCatGo.Services
     {
         public static GameManager Instance { get; private set; }
 
-        public Player Player;
-        public Chapter CurrentChapter;
+        public GameState State { get; private set; }
 
-        public Tower Tower;
-        public CatacombDungeon Catacomb;
-        public DailyDungeonManager DungeonManager;
-        public GoblinMiner GoblinMinerSystem;
+        public Player Player
+        {
+            get => State.Player;
+            set => State.Player = value;
+        }
 
-        public TreasureChest EquipmentChestSystem;
-        public Collection CollectionSystem;
-        public DailyResetSystem DailyResetSystem;
-        public EventManager EventManagerSystem;
-        public DailyRoutineScheduler RoutineScheduler;
+        public Chapter CurrentChapter
+        {
+            get => State.CurrentChapter;
+            set => State.CurrentChapter = value;
+        }
 
-        public ChapterTreasure ChapterTreasureSystem;
-        public BattleManager BattleManagerService;
-        public Forge ForgeService;
-        public EquipmentManager EquipmentManagerService;
-        public PetManager PetManagerService;
-        public AttendanceSystem AttendanceSystem;
+        public Tower Tower
+        {
+            get => State.Tower;
+            set => State.Tower = value;
+        }
+
+        public CatacombDungeon Catacomb
+        {
+            get => State.Catacomb;
+            set => State.Catacomb = value;
+        }
+
+        public DailyDungeonManager DungeonManager
+        {
+            get => State.DungeonManager;
+            set => State.DungeonManager = value;
+        }
+
+        public GoblinMiner GoblinMinerSystem
+        {
+            get => State.GoblinMinerSystem;
+            set => State.GoblinMinerSystem = value;
+        }
+
+        public TreasureChest EquipmentChestSystem
+        {
+            get => State.EquipmentChestSystem;
+            set => State.EquipmentChestSystem = value;
+        }
+
+        public Collection CollectionSystem
+        {
+            get => State.CollectionSystem;
+            set => State.CollectionSystem = value;
+        }
+
+        public DailyResetSystem DailyResetSystem
+        {
+            get => State.DailyResetSystem;
+            set => State.DailyResetSystem = value;
+        }
+
+        public EventManager EventManagerSystem
+        {
+            get => State.EventManagerSystem;
+            set => State.EventManagerSystem = value;
+        }
+
+        public DailyRoutineScheduler RoutineScheduler
+        {
+            get => State.RoutineScheduler;
+            set => State.RoutineScheduler = value;
+        }
+
+        public ChapterTreasure ChapterTreasureSystem
+        {
+            get => State.ChapterTreasureSystem;
+            set => State.ChapterTreasureSystem = value;
+        }
+
+        public BattleManager BattleManagerService
+        {
+            get => State.BattleManagerService;
+            set => State.BattleManagerService = value;
+        }
+
+        public Forge ForgeService
+        {
+            get => State.ForgeService;
+            set => State.ForgeService = value;
+        }
+
+        public EquipmentManager EquipmentManagerService
+        {
+            get => State.EquipmentManagerService;
+            set => State.EquipmentManagerService = value;
+        }
+
+        public PetManager PetManagerService
+        {
+            get => State.PetManagerService;
+            set => State.PetManagerService = value;
+        }
+
+        public AttendanceSystem AttendanceSystem
+        {
+            get => State.AttendanceSystem;
+            set => State.AttendanceSystem = value;
+        }
 
         public SeededRandom Rng;
         public SaveManager SaveManagerSystem;
@@ -62,26 +145,7 @@ namespace CatCatGo.Services
 
         private void Initialize()
         {
-            Player = new Player();
-            CurrentChapter = null;
-
-            Tower = new Tower();
-            Catacomb = new CatacombDungeon();
-            DungeonManager = new DailyDungeonManager();
-            GoblinMinerSystem = new GoblinMiner();
-
-            EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
-            CollectionSystem = new Collection();
-            DailyResetSystem = new DailyResetSystem();
-            EventManagerSystem = new EventManager();
-            RoutineScheduler = new DailyRoutineScheduler();
-            ChapterTreasureSystem = new ChapterTreasure();
-            BattleManagerService = new BattleManager();
-            ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
-            PetManagerService = new PetManager();
-
-            AttendanceSystem = new AttendanceSystem();
+            State = new GameState();
 
             Rng = new SeededRandom(Environment.TickCount);
             SaveManagerSystem = new SaveManager();
@@ -267,8 +331,8 @@ namespace CatCatGo.Services
 
         public bool SaveGame()
         {
-            var state = SaveSerializer.Serialize(this);
-            string json = JsonConvert.SerializeObject(state);
+            var saveState = SaveSerializer.Serialize(this);
+            string json = JsonConvert.SerializeObject(saveState);
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             var result = SaveManagerSystem.Save(dict);
 
@@ -285,8 +349,8 @@ namespace CatCatGo.Services
             try
             {
                 string json = JsonConvert.SerializeObject(result.Data.PlayerData);
-                var state = JsonConvert.DeserializeObject<SaveState>(json);
-                SaveSerializer.Deserialize(state, this);
+                var saveState = JsonConvert.DeserializeObject<SaveState>(json);
+                SaveSerializer.Deserialize(saveState, this);
                 return true;
             }
             catch
@@ -303,23 +367,7 @@ namespace CatCatGo.Services
         public void ResetToNewGame()
         {
             SaveManagerSystem.DeleteSave();
-            Player = new Player();
-            CurrentChapter = null;
-            Tower = new Tower();
-            Catacomb = new CatacombDungeon();
-            DungeonManager = new DailyDungeonManager();
-            GoblinMinerSystem = new GoblinMiner();
-            EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
-            CollectionSystem = new Collection();
-            DailyResetSystem = new DailyResetSystem();
-            EventManagerSystem = new EventManager();
-            RoutineScheduler = new DailyRoutineScheduler();
-            ChapterTreasureSystem = new ChapterTreasure();
-            BattleManagerService = new BattleManager();
-            ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
-            PetManagerService = new PetManager();
-            AttendanceSystem = new AttendanceSystem();
+            State.Reset();
             Rng = new SeededRandom(Environment.TickCount);
             InitNewGame();
         }
@@ -331,8 +379,8 @@ namespace CatCatGo.Services
 
         public string ExportSave()
         {
-            var state = SaveSerializer.Serialize(this);
-            string json = JsonConvert.SerializeObject(state);
+            var saveState = SaveSerializer.Serialize(this);
+            string json = JsonConvert.SerializeObject(saveState);
             return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
         }
 
@@ -341,8 +389,8 @@ namespace CatCatGo.Services
             try
             {
                 string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
-                var state = JsonConvert.DeserializeObject<SaveState>(json);
-                SaveSerializer.Deserialize(state, this);
+                var saveState = JsonConvert.DeserializeObject<SaveState>(json);
+                SaveSerializer.Deserialize(saveState, this);
                 return true;
             }
             catch

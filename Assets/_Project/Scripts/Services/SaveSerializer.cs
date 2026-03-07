@@ -199,7 +199,12 @@ namespace CatCatGo.Services
     {
         public static SaveState Serialize(GameManager game)
         {
-            var player = game.Player;
+            return Serialize(game.State);
+        }
+
+        public static SaveState Serialize(GameState state)
+        {
+            var player = state.Player;
 
             var equipmentSlots = new Dictionary<string, List<EquipmentData>>();
             var slotLevels = new Dictionary<string, List<int>>();
@@ -214,18 +219,18 @@ namespace CatCatGo.Services
             }
 
             var clearedStages = new Dictionary<string, int>();
-            foreach (var kv in game.DungeonManager.Dungeons)
+            foreach (var kv in state.DungeonManager.Dungeons)
             {
                 clearedStages[kv.Key.ToString()] = kv.Value.ClearedStage;
             }
 
             var collectionIds = new List<string>();
-            foreach (var entry in game.CollectionSystem.Entries.Values)
+            foreach (var entry in state.CollectionSystem.Entries.Values)
             {
                 if (entry.Acquired) collectionIds.Add(entry.Id);
             }
 
-            var events = game.EventManagerSystem.Events.Select(evt => new EventData
+            var events = state.EventManagerSystem.Events.Select(evt => new EventData
             {
                 Id = evt.Id,
                 Name = evt.Name,
@@ -271,32 +276,37 @@ namespace CatCatGo.Services
                 },
                 Tower = new TowerSaveData
                 {
-                    CurrentFloor = game.Tower.CurrentFloor,
-                    CurrentStage = game.Tower.CurrentStage,
+                    CurrentFloor = state.Tower.CurrentFloor,
+                    CurrentStage = state.Tower.CurrentStage,
                 },
-                Catacomb = new CatacombSaveData { HighestFloor = game.Catacomb.HighestFloor },
+                Catacomb = new CatacombSaveData { HighestFloor = state.Catacomb.HighestFloor },
                 Dungeons = new DungeonsSaveData
                 {
-                    TodayCount = game.DungeonManager.TodayCount,
+                    TodayCount = state.DungeonManager.TodayCount,
                     ClearedStages = clearedStages,
                 },
-                GoblinMiner = new GoblinMinerSaveData { OreCount = game.GoblinMinerSystem.OreCount },
-                EquipmentChest = new EquipmentChestSaveData { PityCount = game.EquipmentChestSystem.PityCount },
+                GoblinMiner = new GoblinMinerSaveData { OreCount = state.GoblinMinerSystem.OreCount },
+                EquipmentChest = new EquipmentChestSaveData { PityCount = state.EquipmentChestSystem.PityCount },
                 Collection = collectionIds,
-                DailyReset = new DailyResetSaveData { LastResetDate = game.DailyResetSystem.GetLastResetDate() },
+                DailyReset = new DailyResetSaveData { LastResetDate = state.DailyResetSystem.GetLastResetDate() },
                 Events = events,
                 Attendance = new AttendanceSaveData
                 {
-                    CheckedDays = game.AttendanceSystem.CheckedDays.ToList(),
-                    CycleStartDate = game.AttendanceSystem.CycleStartDate,
-                    LastCheckDate = game.AttendanceSystem.LastCheckDate,
+                    CheckedDays = state.AttendanceSystem.CheckedDays.ToList(),
+                    CycleStartDate = state.AttendanceSystem.CycleStartDate,
+                    LastCheckDate = state.AttendanceSystem.LastCheckDate,
                 },
             };
         }
 
         public static void Deserialize(SaveState data, GameManager game)
         {
-            var player = game.Player;
+            Deserialize(data, game.State);
+        }
+
+        public static void Deserialize(SaveState data, GameState state)
+        {
+            var player = state.Player;
 
             player.Talent = new Talent(
                 data.Player.Talent.AtkLevel,
@@ -364,38 +374,38 @@ namespace CatCatGo.Services
 
             player.ClaimedMilestones = new HashSet<string>(data.Player.ClaimedMilestones ?? new List<string>());
 
-            game.Tower.CurrentFloor = data.Tower.CurrentFloor;
-            game.Tower.CurrentStage = data.Tower.CurrentStage;
+            state.Tower.CurrentFloor = data.Tower.CurrentFloor;
+            state.Tower.CurrentStage = data.Tower.CurrentStage;
 
-            game.Catacomb.HighestFloor = data.Catacomb.HighestFloor;
+            state.Catacomb.HighestFloor = data.Catacomb.HighestFloor;
 
             if (data.Dungeons != null)
             {
-                game.DungeonManager.TodayCount = data.Dungeons.TodayCount;
+                state.DungeonManager.TodayCount = data.Dungeons.TodayCount;
                 if (data.Dungeons.ClearedStages != null)
                 {
                     foreach (var kv in data.Dungeons.ClearedStages)
                     {
                         if (Enum.TryParse<DungeonType>(kv.Key, out var dungeonType))
                         {
-                            if (game.DungeonManager.Dungeons.TryGetValue(dungeonType, out var dungeon))
+                            if (state.DungeonManager.Dungeons.TryGetValue(dungeonType, out var dungeon))
                                 dungeon.ClearedStage = kv.Value;
                         }
                     }
                 }
             }
 
-            game.GoblinMinerSystem.OreCount = data.GoblinMiner.OreCount;
+            state.GoblinMinerSystem.OreCount = data.GoblinMiner.OreCount;
 
             if (data.EquipmentChest != null)
-                game.EquipmentChestSystem.PityCount = data.EquipmentChest.PityCount;
+                state.EquipmentChestSystem.PityCount = data.EquipmentChest.PityCount;
 
             foreach (var id in data.Collection)
-                game.CollectionSystem.Acquire(id);
+                state.CollectionSystem.Acquire(id);
 
-            game.DailyResetSystem.SetLastResetDate(data.DailyReset.LastResetDate);
+            state.DailyResetSystem.SetLastResetDate(data.DailyReset.LastResetDate);
 
-            game.EventManagerSystem.Events = data.Events.Select(eventData =>
+            state.EventManagerSystem.Events = data.Events.Select(eventData =>
             {
                 var missions = eventData.Missions.Select(m => new EventMission
                 {
@@ -413,9 +423,9 @@ namespace CatCatGo.Services
 
             if (data.Attendance != null)
             {
-                game.AttendanceSystem.CheckedDays = data.Attendance.CheckedDays.ToArray();
-                game.AttendanceSystem.CycleStartDate = data.Attendance.CycleStartDate;
-                game.AttendanceSystem.LastCheckDate = data.Attendance.LastCheckDate;
+                state.AttendanceSystem.CheckedDays = data.Attendance.CheckedDays.ToArray();
+                state.AttendanceSystem.CycleStartDate = data.Attendance.CycleStartDate;
+                state.AttendanceSystem.LastCheckDate = data.Attendance.LastCheckDate;
             }
         }
 

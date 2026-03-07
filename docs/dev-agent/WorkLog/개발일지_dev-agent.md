@@ -1,5 +1,54 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (6) - Phase 1: 서버연동 기반 구축
+
+### 개요
+
+설계 문서(클라이언트_서버연동_설계_상세.md) Phase 1을 구현했다.
+기능 변경 없이 코드 구조만 변경. 오프라인 모드에서 기존 동작 100% 유지.
+
+### 신규 파일
+
+| 파일 | 설명 |
+|------|------|
+| `Assets/_Project/Scripts/Infrastructure/GameEvents.cs` | EventBus용 이벤트 struct 14개 + NetworkMode enum |
+| `Assets/_Project/Scripts/Network/StateDelta.cs` | StateDelta + 13개 하위 Delta 타입 (서버 응답 상태 변경분) |
+| `Assets/_Project/Scripts/Services/GameState.cs` | GameManager에서 상태 필드 추출, ApplyDelta/ApplyFullSync 구현 |
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `GameManager.cs` | 상태 필드를 GameState로 위임, 프로퍼티로 래핑하여 기존 접근 호환성 유지 |
+| `SaveSerializer.cs` | GameState 대응 Serialize/Deserialize 오버로드 추가, 기존 GameManager 메서드는 GameState 경유 |
+
+### 구조 변경 요약
+
+```
+[Before]
+GameManager ─── Player, Tower, Catacomb, DungeonManager, ... (직접 보유)
+
+[After]
+GameManager ─── GameState ─── Player, Tower, Catacomb, DungeonManager, ... (GameState가 보유)
+            └── Rng, SaveManagerSystem (GameManager에 잔류)
+            └── 프로퍼티로 기존 접근 경로 유지 (Game.Player → Game.State.Player)
+```
+
+### GameState.ApplyDelta 이벤트 발행 규칙
+
+설계 문서 Section 9에 따라 Delta 필드별 이벤트 매핑 구현:
+- Resources → ResourcesChangedEvent
+- Talent → TalentChangedEvent + PlayerStatsChangedEvent
+- Heritage → HeritageChangedEvent + PlayerStatsChangedEvent
+- Equipment 관련 → EquipmentChangedEvent / InventoryChangedEvent + PlayerStatsChangedEvent
+- Pet 관련 → PetChangedEvent + PlayerStatsChangedEvent
+- Tower/Catacomb/Dungeons → TowerChangedEvent / CatacombChangedEvent / DungeonChangedEvent
+- Mission → QuestChangedEvent
+- Attendance → AttendanceChangedEvent
+- ChapterSession → ChapterStateChangedEvent
+
+---
+
 ## 2026-03-07 (5) - 서버 서비스 단위 테스트 작성
 
 ### 개요
