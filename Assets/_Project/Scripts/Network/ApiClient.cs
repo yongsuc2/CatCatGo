@@ -153,7 +153,10 @@ namespace CatCatGo.Network
                     yield break;
                 }
 
-                Debug.Log($"[Net] {method} {endpoint} → {statusCode}");
+                if (statusCode >= 400)
+                    Debug.LogWarning($"[Net] {method} {endpoint} → {statusCode}");
+                else
+                    Debug.Log($"[Net] {method} {endpoint} → {statusCode}");
 
                 if (statusCode >= 200 && statusCode < 300)
                 {
