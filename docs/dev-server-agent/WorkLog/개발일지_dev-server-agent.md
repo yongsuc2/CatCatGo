@@ -9,8 +9,8 @@
 ### 변경 내용
 
 **1. Health Check Endpoint (Program.cs)**
-- `app.MapGet("/", () => Results.Ok())` 추가
-- `MapGet`은 HEAD 요청도 자동 처리하므로 클라이언트 ping 동작 호환
+- `app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok())` 추가
+- `MapGet`은 HEAD를 자동 처리하지 않아 405가 반환되므로 `MapMethods`로 GET/HEAD 명시적 처리
 
 **2. Register Race Condition (AuthService.cs)**
 - `CreateAsync` 호출을 try-catch로 감싸서 unique constraint 위반 시 기존 계정 재조회 후 반환
@@ -20,3 +20,7 @@
 ### 검증
 - `dotnet build`: 성공 (0 Warning, 0 Error)
 - `dotnet test`: 141개 테스트 전부 통과
+- `docker compose build && docker compose up -d`: 정상 기동
+- `HEAD /`: 200 OK
+- `GET /`: 200 OK
+- `POST /api/auth/register`: 정상 등록 및 중복 deviceId 기존 계정 반환 확인

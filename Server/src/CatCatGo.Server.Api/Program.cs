@@ -92,7 +92,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => Results.Ok());
+app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
 
 app.UseAuthentication();
 app.UseAuthorization();
