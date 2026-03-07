@@ -61,7 +61,8 @@ namespace CatCatGo.Network
             {
                 request.timeout = 5;
                 yield return request.SendWebRequest();
-                callback(request.result == UnityWebRequest.Result.Success);
+                callback(request.result == UnityWebRequest.Result.Success ||
+                        request.result == UnityWebRequest.Result.ProtocolError);
             }
         }
 
