@@ -9,11 +9,45 @@ public class TalentService
     private readonly ITalentRepository _talentRepo;
     private readonly ResourceService _resourceService;
 
-    private static readonly string[] Grades = { "TRAINEE", "ADVENTURER", "ELITE", "MASTER", "WARRIOR", "HERO" };
-    private const double BaseCost = 100;
-    private const double CostGrowth = 1.10;
+    private static readonly string[] Grades = { "DISCIPLE", "ADVENTURER", "ELITE", "MASTER", "WARRIOR", "HERO" };
     private const int MaxSubLevel = 10;
-    private const int LevelsPerSubGrade = 30;
+    private const int LevelsPerTier = 30;
+
+    private static readonly (double BaseCost, double CostGrowth, int Tiers)[] GradeConfigs =
+    {
+        (80, 1.10, 2),      // DISCIPLE
+        (130, 1.10, 5),     // ADVENTURER
+        (420, 1.10, 10),    // ELITE
+        (2600, 1.10, 17),   // MASTER
+        (19000, 1.10, 33),  // WARRIOR
+    };
+
+    private static readonly (int StartLevel, int EndLevel, double Cost)[] CostRanges = BuildCostRanges();
+
+    private static (int StartLevel, int EndLevel, double Cost)[] BuildCostRanges()
+    {
+        var ranges = new List<(int, int, double)>();
+        int cumLevel = 0;
+        foreach (var gc in GradeConfigs)
+        {
+            for (int tier = 1; tier <= gc.Tiers; tier++)
+            {
+                double cost = Math.Floor(gc.BaseCost * Math.Pow(gc.CostGrowth, tier - 1));
+                ranges.Add((cumLevel, cumLevel + LevelsPerTier, cost));
+                cumLevel += LevelsPerTier;
+            }
+        }
+        return ranges.ToArray();
+    }
+
+    private static double GetUpgradeCost(int totalLevel)
+    {
+        foreach (var r in CostRanges)
+        {
+            if (totalLevel < r.EndLevel) return r.Cost;
+        }
+        return CostRanges[^1].Cost;
+    }
 
     public TalentService(ITalentRepository talentRepo, ResourceService resourceService)
     {
@@ -52,8 +86,7 @@ public class TalentService
         if (subLevelInGrade >= MaxSubLevel - 1 && currentLevel > 0)
             return ApiResponse<object>.Fail("MAX_SUB_LEVEL_REACHED");
 
-        var tier = state.TotalLevel / LevelsPerSubGrade;
-        var cost = Math.Floor(BaseCost * Math.Pow(CostGrowth, tier));
+        var cost = GetUpgradeCost(state.TotalLevel);
 
         var spent = await _resourceService.SpendAsync(accountId, "GOLD", cost, "TALENT_UPGRADE");
         if (!spent)
@@ -100,8 +133,7 @@ public class TalentService
         var milestoneIndex = milestoneLevel / 10;
         if (milestoneIndex % 2 == 0)
         {
-            var tierVal = milestoneLevel / LevelsPerSubGrade;
-            var goldReward = Math.Floor(BaseCost * Math.Pow(CostGrowth, tierVal)) * 5;
+            var goldReward = GetUpgradeCost(milestoneLevel) * 3;
             await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "TALENT_MILESTONE", milestoneLevel.ToString());
             rewardType = "GOLD";
             rewardAmount = goldReward;
@@ -142,8 +174,7 @@ public class TalentService
             var milestoneIndex = milestone / 10;
             if (milestoneIndex % 2 == 0)
             {
-                var tierVal = milestone / LevelsPerSubGrade;
-                var goldReward = Math.Floor(BaseCost * Math.Pow(CostGrowth, tierVal)) * 5;
+                var goldReward = GetUpgradeCost(milestone) * 3;
                 await _resourceService.GrantAsync(accountId, "GOLD", goldReward, "TALENT_MILESTONE", milestone.ToString());
             }
         }
@@ -169,11 +200,11 @@ public class TalentService
         var hpInSub = state.HpLevel % MaxSubLevel;
         var defInSub = state.DefLevel % MaxSubLevel;
 
-        if (atkInSub == 0 && hpInSub == 0 && defInSub == 0 && state.TotalLevel > 0 && state.TotalLevel % LevelsPerSubGrade == 0)
+        if (atkInSub == 0 && hpInSub == 0 && defInSub == 0 && state.TotalLevel > 0 && state.TotalLevel % LevelsPerTier == 0)
         {
-            var subGradeTotal = state.TotalLevel / LevelsPerSubGrade;
+            var subGradeTotal = state.TotalLevel / LevelsPerTier;
             var gradeIndex = 0;
-            var subGradeSums = new[] { 3, 7, 12, 18, 25, 33 };
+            var subGradeSums = new[] { 2, 7, 17, 34, 67 };
             for (int i = 0; i < subGradeSums.Length; i++)
             {
                 if (subGradeTotal <= subGradeSums[i])
