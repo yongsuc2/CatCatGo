@@ -12,13 +12,16 @@ namespace CatCatGo.Server.Tests;
 public class AuthServiceTests
 {
     private readonly IAccountRepository _accountRepo;
+    private readonly IResourceRepository _resourceRepo;
     private readonly AuthService _sut;
     private const string JwtSecret = "test-secret-key-that-is-at-least-32-characters-long";
 
     public AuthServiceTests()
     {
         _accountRepo = Substitute.For<IAccountRepository>();
-        _sut = new AuthService(_accountRepo, JwtSecret, accessTokenMinutes: 60, refreshTokenDays: 30);
+        _resourceRepo = Substitute.For<IResourceRepository>();
+        var resourceService = new ResourceService(_resourceRepo);
+        _sut = new AuthService(_accountRepo, resourceService, JwtSecret, accessTokenMinutes: 60, refreshTokenDays: 30);
     }
 
     [Fact]

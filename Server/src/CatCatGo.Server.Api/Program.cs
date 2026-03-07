@@ -43,7 +43,9 @@ builder.Services.AddScoped<IReceiptVerifier, GooglePlayVerifier>();
 builder.Services.AddScoped<IReceiptVerifier, AppStoreVerifier>();
 
 builder.Services.AddScoped(sp => new AuthService(
-    sp.GetRequiredService<IAccountRepository>(), jwtSecret));
+    sp.GetRequiredService<IAccountRepository>(),
+    sp.GetRequiredService<ResourceService>(),
+    jwtSecret));
 builder.Services.AddScoped<SaveService>();
 builder.Services.AddScoped<ShopService>();
 builder.Services.AddScoped<ArenaService>();

@@ -13,14 +13,23 @@ namespace CatCatGo.Server.Core.Services;
 public class AuthService
 {
     private readonly IAccountRepository _accountRepo;
+    private readonly ResourceService _resourceService;
     private readonly string _jwtSecret;
     private readonly int _accessTokenMinutes;
     private readonly int _refreshTokenDays;
 
-    public AuthService(IAccountRepository accountRepo, string jwtSecret,
+    private static readonly Dictionary<string, double> InitialResources = new()
+    {
+        { "GOLD", 500 },
+        { "GEMS", 500 },
+        { "STAMINA", 100 },
+    };
+
+    public AuthService(IAccountRepository accountRepo, ResourceService resourceService, string jwtSecret,
         int accessTokenMinutes = 60, int refreshTokenDays = 30)
     {
         _accountRepo = accountRepo;
+        _resourceService = resourceService;
         _jwtSecret = jwtSecret;
         _accessTokenMinutes = accessTokenMinutes;
         _refreshTokenDays = refreshTokenDays;
@@ -48,6 +57,7 @@ public class AuthService
         try
         {
             await _accountRepo.CreateAsync(account);
+            await _resourceService.GrantMultipleAsync(account.Id, InitialResources, "ACCOUNT_INIT");
             return await GenerateTokenResponse(account, true);
         }
         catch (Exception)
