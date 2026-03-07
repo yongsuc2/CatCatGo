@@ -397,48 +397,50 @@ namespace CatCatGo.Presentation.Screens
             ExecuteEquipmentPull(true);
         }
 
+        private bool _isRequestPending;
+
         private void ExecuteEquipmentPull(bool isTenPull)
         {
-            Debug.Log($"[ShopScreen] ExecuteEquipmentPull called. isTenPull={isTenPull}");
-            if (Game == null || Game.Player == null)
-            {
-                Debug.Log("[ShopScreen] Game or Player is null!");
-                return;
-            }
+            if (_isRequestPending || Game == null || Game.Player == null) return;
 
             int cost = isTenPull ? GetEquipmentCost10() : GetEquipmentCost1();
             int gems = (int)Game.Player.Resources.Gems;
-            Debug.Log($"[ShopScreen] cost={cost}, gems={gems}");
             if (gems < cost)
             {
                 ShowInsufficientPopup(cost, gems);
                 return;
             }
 
+            _isRequestPending = true;
+
             if (isTenPull)
             {
-                var results = Game.PullGacha10();
-                Debug.Log($"[ShopScreen] PullGacha10 result: {(results == null ? "null" : results.Count.ToString())}");
-                if (results == null) return;
-
-                UI.Refresh();
-                UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
+                Game.PullGacha10Async(results =>
                 {
-                    Results = results,
-                    OnPullAgain = () => ExecuteEquipmentPull(true)
+                    _isRequestPending = false;
+                    if (results == null) return;
+
+                    UI.Refresh();
+                    UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
+                    {
+                        Results = results,
+                        OnPullAgain = () => ExecuteEquipmentPull(true)
+                    });
                 });
             }
             else
             {
-                var result = Game.PullGacha();
-                Debug.Log($"[ShopScreen] PullGacha result: {(result == null ? "null" : "ok")}");
-                if (result == null) return;
-
-                UI.Refresh();
-                UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
+                Game.PullGachaAsync(result =>
                 {
-                    Results = new List<PullResult> { result },
-                    OnPullAgain = () => ExecuteEquipmentPull(false)
+                    _isRequestPending = false;
+                    if (result == null) return;
+
+                    UI.Refresh();
+                    UI.ShowPopupFromType<GachaRewardPopup>(new GachaRewardPopupData
+                    {
+                        Results = new List<PullResult> { result },
+                        OnPullAgain = () => ExecuteEquipmentPull(false)
+                    });
                 });
             }
         }

@@ -239,14 +239,18 @@ namespace CatCatGo.Presentation.Screens
             }
         }
 
+        private bool _isRequestPending;
+
         private void OnClaimMilestone(string milestoneId)
         {
-            var result = Game.ClaimChapterTreasure(milestoneId);
-            if (result.IsOk())
+            if (_isRequestPending) return;
+            _isRequestPending = true;
+            Game.ClaimChapterTreasureAsync(milestoneId, result =>
             {
-                Game.SaveGame();
-                UI.Refresh();
-            }
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
     }
 }

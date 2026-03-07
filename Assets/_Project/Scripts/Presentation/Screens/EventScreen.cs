@@ -135,11 +135,17 @@ namespace CatCatGo.Presentation.Screens
             UIManager.StretchFull(claimTextGo.GetComponent<RectTransform>());
         }
 
+        private bool _isRequestPending;
+
         private void OnClaimToday()
         {
-            if (Game == null) return;
-            Game.ClaimAttendance();
-            UI.Refresh();
+            if (_isRequestPending || Game == null) return;
+            _isRequestPending = true;
+            Game.ClaimAttendanceAsync(result =>
+            {
+                _isRequestPending = false;
+                UI.Refresh();
+            });
         }
 
         public override void Refresh()

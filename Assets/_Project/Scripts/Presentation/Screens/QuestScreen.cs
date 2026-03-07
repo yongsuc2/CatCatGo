@@ -240,24 +240,36 @@ namespace CatCatGo.Presentation.Screens
             _claimAllButton.interactable = hasClaimable;
         }
 
+        private bool _isRequestPending;
+
         private void OnClaimMission(string missionId)
         {
+            if (_isRequestPending) return;
             var evt = GetCurrentEvent();
             if (evt == null) return;
 
-            var result = Game.ClaimQuestReward(evt.Id, missionId);
-            if (result.IsOk())
-                UI.Refresh();
+            _isRequestPending = true;
+            Game.ClaimQuestRewardAsync(evt.Id, missionId, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void OnClaimAll()
         {
+            if (_isRequestPending) return;
             var evt = GetCurrentEvent();
             if (evt == null) return;
 
-            var result = Game.ClaimAllQuestRewards(evt.Id);
-            if (result.IsOk())
-                UI.Refresh();
+            _isRequestPending = true;
+            Game.ClaimAllQuestRewardsAsync(evt.Id, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void CreateEmptyRow(string text)

@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using CatCatGo.Shared.Requests;
 using CatCatGo.Shared.Responses;
-using CatCatGo.Services;
 
 namespace CatCatGo.Network
 {
@@ -31,12 +30,7 @@ namespace CatCatGo.Network
 
         public static void ResetData(Action<ApiResponse<object>> callback)
         {
-            ApiClient.Instance.PostNoResponse("api/auth/reset-data", null, response =>
-            {
-                if (response.IsSuccess && GameManager.Instance != null)
-                    GameManager.Instance.ResetToNewGame();
-                callback(response);
-            });
+            ApiClient.Instance.PostNoResponse("api/auth/reset-data", null, callback);
         }
 
         public static void DeleteAccount(Action<ApiResponse<object>> callback)
@@ -58,8 +52,6 @@ namespace CatCatGo.Network
             if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
                 ApiClient.Instance.TokenStore.Clear();
-                if (GameManager.Instance != null)
-                    GameManager.Instance.ResetToNewGame();
                 callback(ApiResponse<object>.Success(null, (int)request.responseCode));
             }
             else

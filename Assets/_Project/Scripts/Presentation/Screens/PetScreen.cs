@@ -387,39 +387,57 @@ namespace CatCatGo.Presentation.Screens
             grid.constraintCount = 5;
         }
 
+        private bool _isRequestPending;
+
         private void OnHatchClicked()
         {
-            if (Game == null) return;
-            var result = Game.HatchPet();
-            if (result.IsFail()) return;
-            _selectedPet = result.Data;
-            UI.Refresh();
+            if (_isRequestPending || Game == null) return;
+            _isRequestPending = true;
+            Game.HatchPetAsync(result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+                _selectedPet = result.Data;
+                UI.Refresh();
+            });
         }
 
         private void OnDeployClicked()
         {
-            if (_selectedPet == null || Game == null) return;
-            var result = Game.DeployPet(_selectedPet.Id);
-            if (result.IsOk())
-                UI.Refresh();
+            if (_isRequestPending || _selectedPet == null || Game == null) return;
+            _isRequestPending = true;
+            Game.DeployPetAsync(_selectedPet.Id, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void OnFeedClicked()
         {
-            if (_selectedPet == null || Game == null) return;
-            var result = Game.FeedPet(_selectedPet.Id, 1);
-            if (result.IsOk())
-                UI.Refresh();
+            if (_isRequestPending || _selectedPet == null || Game == null) return;
+            _isRequestPending = true;
+            Game.FeedPetAsync(_selectedPet.Id, 1, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void OnMaxLevelClicked()
         {
-            if (_selectedPet == null || Game == null) return;
+            if (_isRequestPending || _selectedPet == null || Game == null) return;
             int food = (int)Game.Player.Resources.Get(ResourceType.PET_FOOD);
             if (food < 1) return;
-            var result = Game.FeedPet(_selectedPet.Id, food);
-            if (result.IsOk())
-                UI.Refresh();
+            _isRequestPending = true;
+            Game.FeedPetAsync(_selectedPet.Id, food, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void SelectPet(Pet pet)

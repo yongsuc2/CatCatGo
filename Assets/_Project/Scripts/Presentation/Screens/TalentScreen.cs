@@ -571,29 +571,43 @@ namespace CatCatGo.Presentation.Screens
             _rewardPopup.SetActive(false);
         }
 
+        private bool _isRequestPending;
+
         private void OnUpgradeClicked(StatType statType)
         {
-            if (Game == null || Game.Player == null) return;
-            var result = Game.TalentUpgrade(statType);
-            if (result.IsOk())
-                UI.Refresh();
+            if (_isRequestPending || Game == null || Game.Player == null) return;
+            _isRequestPending = true;
+            Game.TalentUpgradeAsync(statType, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void OnClaimAll()
         {
-            if (Game == null || Game.Player == null) return;
-            var result = Game.ClaimAllTalentMilestones();
-            if (result.IsOk())
-                UI.Refresh();
+            if (_isRequestPending || Game == null || Game.Player == null) return;
+            _isRequestPending = true;
+            Game.ClaimAllTalentMilestonesAsync(result =>
+            {
+                _isRequestPending = false;
+                if (result.IsOk())
+                    UI.Refresh();
+            });
         }
 
         private void ClaimMilestone(int level, string rewardType, int rewardAmount)
         {
-            if (Game == null || Game.Player == null) return;
-            var result = Game.ClaimTalentMilestone(level);
-            if (result.IsFail()) return;
-            ShowRewardPopup(rewardType, rewardAmount);
-            UI.Refresh();
+            if (_isRequestPending || Game == null || Game.Player == null) return;
+            _isRequestPending = true;
+            Game.ClaimTalentMilestoneAsync(level, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+                ShowRewardPopup(rewardType, rewardAmount);
+                UI.Refresh();
+            });
         }
 
         private void ShowRewardPopup(string rewardType, int rewardAmount)

@@ -1,5 +1,48 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (10) - Phase 6: Screen Async 전환 + 이중 요청 방지
+
+### 개요
+
+8개 Screen 파일에서 GameManager 동기 메서드 호출을 Async 메서드 호출로 전환. 이중 요청 방지(`_isRequestPending`) 패턴 적용.
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `TalentScreen.cs` | OnUpgradeClicked, OnClaimAll, ClaimMilestone → Async 전환 |
+| `EquipmentScreen.cs` | OnEquipClicked, OnSellClicked, OnUpgradeClicked, OnUnequipClicked, OnBulkMergeClicked, OnMergeClicked → Async 전환 |
+| `PetScreen.cs` | OnHatchClicked, OnDeployClicked, OnFeedClicked, OnMaxLevelClicked → Async 전환 |
+| `ShopScreen.cs` | ExecuteEquipmentPull → PullGachaAsync/PullGacha10Async 전환 |
+| `ContentScreen.cs` | Tower/Dungeon/Sweep/GoblinMine/Cart/CatacombStart/Battle/End → 8개 인라인 Async 전환 |
+| `QuestScreen.cs` | OnClaimMission, OnClaimAll → Async 전환 |
+| `EventScreen.cs` | OnClaimToday → ClaimAttendanceAsync 전환 |
+| `ChapterTreasureScreen.cs` | OnClaimMilestone → Async 전환 + SaveGame() 직접 호출 제거 |
+| `AuthApi.cs` | using CatCatGo.Services 제거, GameManager 직접 참조 제거 (순환 참조 수정) |
+
+### 이중 요청 방지 패턴
+
+```csharp
+private bool _isRequestPending;
+
+private void OnAction()
+{
+    if (_isRequestPending) return;
+    _isRequestPending = true;
+    Game.ActionAsync(params, result => {
+        _isRequestPending = false;
+        if (result.IsOk()) UI.Refresh();
+    });
+}
+```
+
+### 부수 수정
+
+- ChapterTreasureScreen: `Game.SaveGame()` 직접 호출 제거 (Async 메서드 내부에서 처리)
+- AuthApi.cs: Network → Services 순환 참조 방지를 위해 GameManager.Instance 직접 참조 제거
+
+---
+
 ## 2026-03-07 (9) - Phase 4-5: GameManager ONLINE 분기 추가
 
 ### 개요

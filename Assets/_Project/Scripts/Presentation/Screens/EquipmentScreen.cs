@@ -994,26 +994,34 @@ namespace CatCatGo.Presentation.Screens
             ShowDetail(equipment);
         }
 
+        private bool _isRequestPending;
+
         private void OnEquipClicked()
         {
-            if (_selectedEquipment == null || _selectedIsEquipped) return;
-
-            var result = Game.EquipItem(_selectedEquipment.Id);
-            if (result.IsFail()) return;
-            _selectedEquipment = null;
-            _detailPanel.gameObject.SetActive(false);
-            UI.Refresh();
+            if (_isRequestPending || _selectedEquipment == null || _selectedIsEquipped) return;
+            _isRequestPending = true;
+            Game.EquipItemAsync(_selectedEquipment.Id, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+                _selectedEquipment = null;
+                _detailPanel.gameObject.SetActive(false);
+                UI.Refresh();
+            });
         }
 
         private void OnSellClicked()
         {
-            if (_selectedEquipment == null || _selectedIsEquipped) return;
-
-            var result = Game.SellEquipment(_selectedEquipment.Id);
-            if (result.IsFail()) return;
-            _selectedEquipment = null;
-            _detailPanel.gameObject.SetActive(false);
-            UI.Refresh();
+            if (_isRequestPending || _selectedEquipment == null || _selectedIsEquipped) return;
+            _isRequestPending = true;
+            Game.SellEquipmentAsync(_selectedEquipment.Id, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+                _selectedEquipment = null;
+                _detailPanel.gameObject.SetActive(false);
+                UI.Refresh();
+            });
         }
 
         private void OnDetailCancelClicked()
@@ -1059,48 +1067,63 @@ namespace CatCatGo.Presentation.Screens
 
         private void OnUpgradeClicked()
         {
-            if (_selectedEquipment == null || !_selectedIsEquipped) return;
-
-            var result = Game.UpgradeEquipment(_selectedEquipment.Id);
-            if (result.IsOk())
+            if (_isRequestPending || _selectedEquipment == null || !_selectedIsEquipped) return;
+            _isRequestPending = true;
+            var captured = _selectedEquipment;
+            Game.UpgradeEquipmentAsync(_selectedEquipment.Id, result =>
             {
-                UI.Refresh();
-                ShowDetail(_selectedEquipment);
-            }
+                _isRequestPending = false;
+                if (result.IsOk())
+                {
+                    UI.Refresh();
+                    ShowDetail(captured);
+                }
+            });
         }
 
         private void OnUnequipClicked()
         {
-            if (_selectedEquipment == null || !_selectedIsEquipped) return;
-
-            var result = Game.UnequipItem(_selectedSlotType, _selectedSlotIndex);
-            if (result.IsFail()) return;
-            _selectedEquipment = null;
-            _detailPanel.gameObject.SetActive(false);
-            UI.Refresh();
+            if (_isRequestPending || _selectedEquipment == null || !_selectedIsEquipped) return;
+            _isRequestPending = true;
+            Game.UnequipItemAsync(_selectedSlotType, _selectedSlotIndex, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+                _selectedEquipment = null;
+                _detailPanel.gameObject.SetActive(false);
+                UI.Refresh();
+            });
         }
 
         private void OnBulkMergeClicked()
         {
-            if (Game == null) return;
-
-            var result = Game.BulkForge();
-            if (result.IsOk() && result.Data.MergedCount > 0)
+            if (_isRequestPending || Game == null) return;
+            _isRequestPending = true;
+            Game.BulkForgeAsync(result =>
             {
-                UI.Refresh();
-                RefreshForge();
-            }
+                _isRequestPending = false;
+                if (result.IsOk() && result.Data.MergedCount > 0)
+                {
+                    UI.Refresh();
+                    RefreshForge();
+                }
+            });
         }
 
         private void OnMergeClicked(List<Equipment> group)
         {
+            if (_isRequestPending) return;
+            _isRequestPending = true;
             var ids = group.ConvertAll(eq => eq.Id);
-            var result = Game.ForgeEquipment(ids);
-            if (result.IsOk())
+            Game.ForgeEquipmentAsync(ids, result =>
             {
-                UI.Refresh();
-                RefreshForge();
-            }
+                _isRequestPending = false;
+                if (result.IsOk())
+                {
+                    UI.Refresh();
+                    RefreshForge();
+                }
+            });
         }
 
         public override void Refresh()

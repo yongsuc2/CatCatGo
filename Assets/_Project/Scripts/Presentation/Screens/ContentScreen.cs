@@ -275,6 +275,8 @@ namespace CatCatGo.Presentation.Screens
                 Destroy(_subContent.GetChild(i).gameObject);
         }
 
+        private bool _isRequestPending;
+
         private void BuildTowerSub()
         {
             _subTitle.text = "\ud0d1";
@@ -286,20 +288,25 @@ namespace CatCatGo.Presentation.Screens
 
             CreateActionButton(_subContent, $"\ub3c4\uc804 (\ud1a0\ud070 1\uac1c)", () =>
             {
-                var result = Game.TowerChallenge();
-                if (result.IsFail()) return;
-
-                string rewardStr = "";
-                if (result.Data.Advanced && result.Data.Reward != null)
+                if (_isRequestPending) return;
+                _isRequestPending = true;
+                Game.TowerChallengeAsync(result =>
                 {
-                    foreach (var r in result.Data.Reward.Resources)
-                        rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                }
+                    _isRequestPending = false;
+                    if (result.IsFail()) return;
 
-                _resultText.text = result.Data.BattleState == BattleState.VICTORY
-                    ? $"\uc2b9\ub9ac! {rewardStr}"
-                    : "\ud328\ubc30...";
-                ShowSubPanel(ContentView.Tower);
+                    string rewardStr = "";
+                    if (result.Data.Advanced && result.Data.Reward != null)
+                    {
+                        foreach (var r in result.Data.Reward.Resources)
+                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                    }
+
+                    _resultText.text = result.Data.BattleState == BattleState.VICTORY
+                        ? $"\uc2b9\ub9ac! {rewardStr}"
+                        : "\ud328\ubc30...";
+                    ShowSubPanel(ContentView.Tower);
+                });
             });
         }
 
@@ -325,36 +332,47 @@ namespace CatCatGo.Presentation.Screens
                 CreateInfoRow(_subContent, $"{name} - \ud074\ub9ac\uc5b4: {dungeon.ClearedStage}  \ub2e4\uc74c: {dungeon.GetNextStage()}");
 
                 var capturedType = type;
+                var capturedName = name;
                 CreateActionButton(_subContent, $"{name} \uc804\ud22c", () =>
                 {
-                    var result = Game.DungeonChallenge(capturedType);
-                    if (result.IsFail()) { _resultText.text = result.Message; return; }
-
-                    string rewardStr = "";
-                    if (result.Data.Reward != null)
+                    if (_isRequestPending) return;
+                    _isRequestPending = true;
+                    Game.DungeonChallengeAsync(capturedType, result =>
                     {
-                        foreach (var r in result.Data.Reward.Resources)
-                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                    }
+                        _isRequestPending = false;
+                        if (result.IsFail()) { _resultText.text = result.Message; return; }
 
-                    _resultText.text = result.Data.BattleState == BattleState.VICTORY
-                        ? $"\uc2b9\ub9ac! {rewardStr}"
-                        : "\ud328\ubc30...";
-                    ShowSubPanel(ContentView.Dungeon);
+                        string rewardStr = "";
+                        if (result.Data.Reward != null)
+                        {
+                            foreach (var r in result.Data.Reward.Resources)
+                                rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                        }
+
+                        _resultText.text = result.Data.BattleState == BattleState.VICTORY
+                            ? $"\uc2b9\ub9ac! {rewardStr}"
+                            : "\ud328\ubc30...";
+                        ShowSubPanel(ContentView.Dungeon);
+                    });
                 });
 
                 if (dungeon.ClearedStage > 0)
                 {
                     CreateActionButton(_subContent, $"{name} \uc18c\ud0d5", () =>
                     {
-                        var sweepResult = Game.DungeonSweep(capturedType);
-                        if (sweepResult.IsFail()) { _resultText.text = sweepResult.Message; return; }
+                        if (_isRequestPending) return;
+                        _isRequestPending = true;
+                        Game.DungeonSweepAsync(capturedType, sweepResult =>
+                        {
+                            _isRequestPending = false;
+                            if (sweepResult.IsFail()) { _resultText.text = sweepResult.Message; return; }
 
-                        string rewardStr = "";
-                        foreach (var r in sweepResult.Data.Reward.Resources)
-                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                        _resultText.text = $"\uc18c\ud0d5 \uc644\ub8cc! {rewardStr}";
-                        ShowSubPanel(ContentView.Dungeon);
+                            string rewardStr = "";
+                            foreach (var r in sweepResult.Data.Reward.Resources)
+                                rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                            _resultText.text = $"\uc18c\ud0d5 \uc644\ub8cc! {rewardStr}";
+                            ShowSubPanel(ContentView.Dungeon);
+                        });
                     });
                 }
             }
@@ -370,24 +388,34 @@ namespace CatCatGo.Presentation.Screens
 
             CreateActionButton(_subContent, $"\ucc44\uad74 (\uace1\uad2d\uc774 1\uac1c)", () =>
             {
-                var result = Game.GoblinMine();
-                if (result.IsFail()) { _resultText.text = result.Message; return; }
-                _resultText.text = $"\uad11\uc11d +{result.Data.OreGained}  (\ucd1d: {result.Data.TotalOre})";
-                ShowSubPanel(ContentView.GoblinMine);
+                if (_isRequestPending) return;
+                _isRequestPending = true;
+                Game.GoblinMineAsync(result =>
+                {
+                    _isRequestPending = false;
+                    if (result.IsFail()) { _resultText.text = result.Message; return; }
+                    _resultText.text = $"\uad11\uc11d +{result.Data.OreGained}  (\ucd1d: {result.Data.TotalOre})";
+                    ShowSubPanel(ContentView.GoblinMine);
+                });
             });
 
             if (miner.CanUseCart())
             {
                 CreateActionButton(_subContent, "\uc218\ub808 \ubcf4\ub0b4\uae30 (30 \uad11\uc11d)", () =>
                 {
-                    var result = Game.GoblinCart();
-                    if (result.IsFail()) { _resultText.text = result.Message; return; }
+                    if (_isRequestPending) return;
+                    _isRequestPending = true;
+                    Game.GoblinCartAsync(result =>
+                    {
+                        _isRequestPending = false;
+                        if (result.IsFail()) { _resultText.text = result.Message; return; }
 
-                    string rewardStr = "";
-                    foreach (var r in result.Data.Resources)
-                        rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                    _resultText.text = $"\uc218\ub808 \ubcf4\uc0c1: {rewardStr}";
-                    ShowSubPanel(ContentView.GoblinMine);
+                        string rewardStr = "";
+                        foreach (var r in result.Data.Resources)
+                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                        _resultText.text = $"\uc218\ub808 \ubcf4\uc0c1: {rewardStr}";
+                        ShowSubPanel(ContentView.GoblinMine);
+                    });
                 });
             }
         }
@@ -403,42 +431,57 @@ namespace CatCatGo.Presentation.Screens
             {
                 CreateActionButton(_subContent, "\ub3c4\uc804 \uc2dc\uc791", () =>
                 {
-                    var result = Game.CatacombStart();
-                    if (result.IsFail()) return;
-                    ShowSubPanel(ContentView.Catacomb);
+                    if (_isRequestPending) return;
+                    _isRequestPending = true;
+                    Game.CatacombStartAsync(result =>
+                    {
+                        _isRequestPending = false;
+                        if (result.IsFail()) return;
+                        ShowSubPanel(ContentView.Catacomb);
+                    });
                 });
             }
             else
             {
                 CreateActionButton(_subContent, "\ub2e4\uc74c \uc804\ud22c", () =>
                 {
-                    var result = Game.CatacombBattle();
-                    if (result.IsFail()) return;
+                    if (_isRequestPending) return;
+                    _isRequestPending = true;
+                    Game.CatacombBattleAsync(result =>
+                    {
+                        _isRequestPending = false;
+                        if (result.IsFail()) return;
 
-                    if (!result.Data.ContinueRun)
-                    {
-                        string rewardStr = "";
-                        foreach (var r in result.Data.Reward.Resources)
-                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                        _resultText.text = $"\ud328\ubc30. \ubcf4\uc0c1: {rewardStr}";
-                    }
-                    else
-                    {
-                        _resultText.text = $"\uc2b9\ub9ac! \uce35: {result.Data.CurrentFloor}  \uc804\ud22c: {result.Data.BattleIndex}/{catacomb.BattlesPerFloor}";
-                    }
-                    ShowSubPanel(ContentView.Catacomb);
+                        if (!result.Data.ContinueRun)
+                        {
+                            string rewardStr = "";
+                            foreach (var r in result.Data.Reward.Resources)
+                                rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                            _resultText.text = $"\ud328\ubc30. \ubcf4\uc0c1: {rewardStr}";
+                        }
+                        else
+                        {
+                            _resultText.text = $"\uc2b9\ub9ac! \uce35: {result.Data.CurrentFloor}  \uc804\ud22c: {result.Data.BattleIndex}/{catacomb.BattlesPerFloor}";
+                        }
+                        ShowSubPanel(ContentView.Catacomb);
+                    });
                 });
 
                 CreateActionButton(_subContent, "\ud0d0\ud5d8 \uc885\ub8cc", () =>
                 {
-                    var result = Game.CatacombEnd();
-                    if (result.IsFail()) return;
+                    if (_isRequestPending) return;
+                    _isRequestPending = true;
+                    Game.CatacombEndAsync(result =>
+                    {
+                        _isRequestPending = false;
+                        if (result.IsFail()) return;
 
-                    string rewardStr = "";
-                    foreach (var r in result.Data.Resources)
-                        rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                    _resultText.text = $"\ud0d0\ud5d8 \uc885\ub8cc. \ubcf4\uc0c1: {rewardStr}";
-                    ShowSubPanel(ContentView.Catacomb);
+                        string rewardStr = "";
+                        foreach (var r in result.Data.Resources)
+                            rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
+                        _resultText.text = $"\ud0d0\ud5d8 \uc885\ub8cc. \ubcf4\uc0c1: {rewardStr}";
+                        ShowSubPanel(ContentView.Catacomb);
+                    });
                 });
             }
         }
