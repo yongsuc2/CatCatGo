@@ -1,4 +1,5 @@
 using System;
+using CatCatGo.Domain.Data;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Infrastructure;
@@ -7,8 +8,7 @@ namespace CatCatGo.Domain.Content
 {
     public class GoblinMiner
     {
-        private const int OrePerMine = 1;
-        private const int CartThreshold = 30;
+        private static GoblinMinerConfig Cfg => DungeonDataTable.GoblinMiner;
 
         public int OreCount;
 
@@ -22,24 +22,25 @@ namespace CatCatGo.Domain.Content
             if (pickaxeCount < 1)
                 return Result.Fail<MineResult>("No pickaxes");
 
-            OreCount += OrePerMine;
-            return Result.Ok(new MineResult { OreGained = OrePerMine });
+            OreCount += Cfg.OrePerMine;
+            return Result.Ok(new MineResult { OreGained = Cfg.OrePerMine });
         }
 
         public bool CanUseCart()
         {
-            return OreCount >= CartThreshold;
+            return OreCount >= Cfg.CartThreshold;
         }
 
         public Result<CartResult> UseCart(SeededRandom rng)
         {
             if (!CanUseCart())
-                return Result.Fail<CartResult>($"Need {CartThreshold} ore (have {OreCount})");
+                return Result.Fail<CartResult>($"Need {Cfg.CartThreshold} ore (have {OreCount})");
 
-            OreCount -= CartThreshold;
+            OreCount -= Cfg.CartThreshold;
 
-            int goldReward = rng.NextInt(200, 500);
-            int stoneReward = rng.NextInt(1, 3);
+            var cr = Cfg.CartReward;
+            int goldReward = rng.NextInt(cr.GoldMin, cr.GoldMax);
+            int stoneReward = rng.NextInt(cr.StoneMin, cr.StoneMax);
             var reward = Reward.FromResources(
                 new ResourceReward(ResourceType.GOLD, goldReward),
                 new ResourceReward(ResourceType.EQUIPMENT_STONE, stoneReward));
@@ -49,12 +50,12 @@ namespace CatCatGo.Domain.Content
 
         public float GetProgress()
         {
-            return Math.Min(1f, (float)OreCount / CartThreshold);
+            return Math.Min(1f, (float)OreCount / Cfg.CartThreshold);
         }
 
         public int GetOreNeeded()
         {
-            return Math.Max(0, CartThreshold - OreCount);
+            return Math.Max(0, Cfg.CartThreshold - OreCount);
         }
     }
 

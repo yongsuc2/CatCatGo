@@ -23,26 +23,6 @@ namespace CatCatGo.Presentation.Screens
             { StatType.DEF, "icon_def" },
         };
 
-        private static readonly Dictionary<StatType, string> STAT_NAME = new Dictionary<StatType, string>
-        {
-            { StatType.ATK, "\uacf5\uaca9\ub825" },
-            { StatType.HP, "\uccb4\ub825" },
-            { StatType.DEF, "\ubc29\uc5b4\ub825" },
-        };
-
-        private static readonly Dictionary<string, string> BONUS_STAT_LABEL = new Dictionary<string, string>
-        {
-            { "ATK", "\uacf5\uaca9\ub825" },
-            { "DEF", "\ubc29\uc5b4\ub825" },
-        };
-
-        private static readonly Dictionary<HeritageRoute, string> ROUTE_LABEL = new Dictionary<HeritageRoute, string>
-        {
-            { HeritageRoute.SKULL, "\ud574\uace8" },
-            { HeritageRoute.KNIGHT, "\uae30\uc0ac" },
-            { HeritageRoute.RANGER, "\ub808\uc778\uc800" },
-            { HeritageRoute.GHOST, "\uc720\ub839" },
-        };
 
         private TextMeshProUGUI _gradeText;
         private TextMeshProUGUI _subGradeProgressText;
@@ -411,7 +391,7 @@ namespace CatCatGo.Presentation.Screens
             var nameLe = nameGo.AddComponent<LayoutElement>();
             nameLe.preferredHeight = 28f;
             var nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-            nameTmp.text = STAT_NAME[statType];
+            nameTmp.text = TalentTable.GetStatLabel(statType);
             nameTmp.fontSize = 24f;
             nameTmp.color = ColorPalette.TextDim;
             nameTmp.alignment = TextAlignmentOptions.Center;
@@ -690,9 +670,7 @@ namespace CatCatGo.Presentation.Screens
             if (t.IsMainGrade)
                 return TalentTable.GetGradeLabel(t.Grade);
 
-            string statLabel;
-            if (!BONUS_STAT_LABEL.TryGetValue(t.BonusStat, out statLabel))
-                statLabel = t.BonusStat;
+            string statLabel = TalentTable.GetBonusStatLabel(t.BonusStat);
             return $"{statLabel}+{t.BonusAmount}";
         }
 
@@ -894,9 +872,7 @@ namespace CatCatGo.Presentation.Screens
             if (!unlocked) return;
 
             var heritage = Game.Player.Heritage;
-            string routeLabel;
-            if (!ROUTE_LABEL.TryGetValue(heritage.Route, out routeLabel))
-                routeLabel = heritage.Route.ToString();
+            string routeLabel = TalentTable.GetHeritageRouteLabel(heritage.Route);
 
             _heritageRouteText.text = $"\uacbd\ub85c: {routeLabel}";
             _heritageLevelText.text = $"\ub808\ubca8: {heritage.Level}";

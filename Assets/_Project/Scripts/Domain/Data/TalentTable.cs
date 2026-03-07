@@ -69,15 +69,9 @@ namespace CatCatGo.Domain.Data
         private static List<TransitionInfo> _mainTransitions;
         private static List<TransitionInfo> _allTransitions;
 
-        private static readonly Dictionary<TalentGrade, string> GradeLabels = new Dictionary<TalentGrade, string>
-        {
-            { TalentGrade.DISCIPLE, "\uc218\ub828\uc0dd" },
-            { TalentGrade.ADVENTURER, "\ubaa8\ud5d8\uac00" },
-            { TalentGrade.ELITE, "\uc815\uc608" },
-            { TalentGrade.MASTER, "\ub2ec\uc778" },
-            { TalentGrade.WARRIOR, "\uc804\uc0ac" },
-            { TalentGrade.HERO, "\uc601\uc6c5" },
-        };
+        private static Dictionary<TalentGrade, string> _gradeLabels;
+        private static Dictionary<StatType, string> _statLabels;
+        private static Dictionary<string, string> _heritageRouteLabels;
 
         private struct GradeConfig
         {
@@ -151,6 +145,36 @@ namespace CatCatGo.Domain.Data
             _milestoneInterval = mc["interval"].Value<int>();
             _goldCostMultiplier = mc["goldCostMultiplier"].Value<int>();
             _goldBoostPercent = mc["goldBoostPercent"].Value<int>();
+
+            _gradeLabels = new Dictionary<TalentGrade, string>();
+            var glData = data["gradeLabels"] as JObject;
+            if (glData != null)
+            {
+                foreach (var kv in glData)
+                {
+                    if (Enum.TryParse<TalentGrade>(kv.Key, out var g))
+                        _gradeLabels[g] = kv.Value.ToString();
+                }
+            }
+
+            _statLabels = new Dictionary<StatType, string>();
+            var slData = data["statLabels"] as JObject;
+            if (slData != null)
+            {
+                foreach (var kv in slData)
+                {
+                    if (Enum.TryParse<StatType>(kv.Key, out var st))
+                        _statLabels[st] = kv.Value.ToString();
+                }
+            }
+
+            _heritageRouteLabels = new Dictionary<string, string>();
+            var hrData = data["heritageRouteLabels"] as JObject;
+            if (hrData != null)
+            {
+                foreach (var kv in hrData)
+                    _heritageRouteLabels[kv.Key] = kv.Value.ToString();
+            }
 
             _subGradeRanges = BuildSubGradeRanges();
             _totalMaxLevel = _subGradeRanges[_subGradeRanges.Count - 1].EndLevel;
@@ -441,7 +465,27 @@ namespace CatCatGo.Domain.Data
         public static string GetGradeLabel(TalentGrade grade)
         {
             EnsureLoaded();
-            return GradeLabels.TryGetValue(grade, out var label) ? label : grade.ToString();
+            return _gradeLabels.TryGetValue(grade, out var label) ? label : grade.ToString();
+        }
+
+        public static string GetStatLabel(StatType statType)
+        {
+            EnsureLoaded();
+            return _statLabels.TryGetValue(statType, out var label) ? label : statType.ToString();
+        }
+
+        public static string GetBonusStatLabel(string bonusStat)
+        {
+            EnsureLoaded();
+            if (Enum.TryParse<StatType>(bonusStat, out var st) && _statLabels.TryGetValue(st, out var label))
+                return label;
+            return bonusStat;
+        }
+
+        public static string GetHeritageRouteLabel(HeritageRoute route)
+        {
+            EnsureLoaded();
+            return _heritageRouteLabels.TryGetValue(route.ToString(), out var label) ? label : route.ToString();
         }
 
         public static string GetSubGradeLabel(int totalLevel)

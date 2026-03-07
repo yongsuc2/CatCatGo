@@ -75,43 +75,29 @@ namespace CatCatGo.Domain.Entities
 
         public Stats ComputeStats()
         {
-            Stats stats = BaseStats;
+            return GetStatsBreakdown().Total;
+        }
 
-            stats = stats.Add(Talent.GetStats());
-            stats = stats.Add(TalentTable.GetStatBonus(Talent.GetTotalLevel()));
-
-            foreach (var slot in EquipmentSlots.Values)
-            {
-                stats = stats.Add(slot.GetTotalStats());
-            }
-
-            if (IsHeritageUnlocked())
-            {
-                stats = stats.Add(Heritage.GetPassiveBonus());
-            }
-
+        private Stats ComputePetBonus()
+        {
+            Stats pet = Stats.Zero;
             if (ActivePet != null)
             {
-                stats = stats.Add(ActivePet.GetGlobalBonus());
+                pet = pet.Add(ActivePet.GetGlobalBonus());
             }
-
-            foreach (var pet in OwnedPets)
+            float rate = PetTable.InactiveBonusRate;
+            foreach (var p in OwnedPets)
             {
-                if (pet != ActivePet)
+                if (p != ActivePet)
                 {
-                    var bonus = pet.GetGlobalBonus();
-                    float rate = PetTable.InactiveBonusRate;
-                    var passiveOnly = Stats.Create(
+                    var bonus = p.GetGlobalBonus();
+                    pet = pet.Add(Stats.Create(
                         atk: Mathf.FloorToInt(bonus.Atk * rate),
                         maxHp: Mathf.FloorToInt(bonus.MaxHp * rate)
-                    );
-                    stats = stats.Add(passiveOnly);
+                    ));
                 }
             }
-
-            stats = stats.WithHp(stats.MaxHp);
-
-            return stats;
+            return pet;
         }
 
         public StatsBreakdown GetStatsBreakdown()
@@ -127,24 +113,7 @@ namespace CatCatGo.Domain.Entities
             }
 
             Stats heritage = IsHeritageUnlocked() ? Heritage.GetPassiveBonus() : Stats.Zero;
-
-            Stats pet = Stats.Zero;
-            if (ActivePet != null)
-            {
-                pet = pet.Add(ActivePet.GetGlobalBonus());
-            }
-            foreach (var p in OwnedPets)
-            {
-                if (p != ActivePet)
-                {
-                    var bonus = p.GetGlobalBonus();
-                    float rate = PetTable.InactiveBonusRate;
-                    pet = pet.Add(Stats.Create(
-                        atk: Mathf.FloorToInt(bonus.Atk * rate),
-                        maxHp: Mathf.FloorToInt(bonus.MaxHp * rate)
-                    ));
-                }
-            }
+            Stats pet = ComputePetBonus();
 
             Stats total = baseStat.Add(talent).Add(grade).Add(equipment).Add(heritage).Add(pet);
             total = total.WithHp(total.MaxHp);

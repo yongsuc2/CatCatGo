@@ -1,3 +1,4 @@
+using CatCatGo.Domain.Data;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 
@@ -13,10 +14,6 @@ namespace CatCatGo.Domain.Entities
             PetGrade.LEGENDARY,
             PetGrade.IMMORTAL,
         };
-
-        private const int EXP_PER_FOOD = 10;
-        private const int EXP_PER_LEVEL = 100;
-        private const int STAT_PER_LEVEL = 2;
 
         public string Id { get; }
         public string Name { get; }
@@ -47,7 +44,7 @@ namespace CatCatGo.Domain.Entities
             }
 
             int oldLevel = Level;
-            Exp += foodAmount * EXP_PER_FOOD;
+            Exp += foodAmount * PetTable.Growth.ExpPerFood;
 
             while (Exp >= GetExpToNextLevel())
             {
@@ -60,7 +57,8 @@ namespace CatCatGo.Domain.Entities
 
         public int GetExpToNextLevel()
         {
-            return EXP_PER_LEVEL + (Level - 1) * 20;
+            var g = PetTable.Growth;
+            return g.BaseExpPerLevel + (Level - 1) * g.ExpPerLevelGrowth;
         }
 
         public Result<UpgradeGradeResult> UpgradeGrade()
@@ -82,9 +80,10 @@ namespace CatCatGo.Domain.Entities
 
         public Stats GetGlobalBonus()
         {
+            var g = PetTable.Growth;
             var levelBonus = Stats.Create(
-                atk: Level * STAT_PER_LEVEL,
-                maxHp: Level * STAT_PER_LEVEL * 2
+                atk: Level * g.StatPerLevel,
+                maxHp: Level * g.HpPerLevel
             );
             return BasePassiveBonus.Add(levelBonus);
         }

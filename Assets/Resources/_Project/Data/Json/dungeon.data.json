@@ -49,5 +49,14 @@
     "battlesPerFloor": 5,
     "goldPerFloor": 100,
     "baseEquipmentStone": 1
+  },
+  "goblinMiner": {
+    "orePerMine": 1,
+    "cartThreshold": 30,
+    "cartReward": {
+      "goldMin": 200,
+      "goldMax": 500,
+      "stoneMin": 1,
+      "stoneMax": 3
+    }
   }
-}

@@ -24,25 +24,13 @@ namespace CatCatGo.Domain.Data
         private static HashSet<string> _specialIds;
         private static string[] _familyIds;
 
-        private static readonly Dictionary<int, string> TierSuffix = new Dictionary<int, string>
-        {
-            { 1, "" }, { 2, " II" }, { 3, " III" }, { 4, " IV" },
-        };
-
         private static Dictionary<string, float> Td(string id, int tier)
         {
             return PassiveSkillTierData.GetTierData(id, tier) ?? new Dictionary<string, float>();
         }
 
-        private static string Pct(float v)
-        {
-            return $"{Math.Round(v * 100)}%";
-        }
-
-        private static float V(Dictionary<string, float> d, string key)
-        {
-            return d.TryGetValue(key, out var v) ? v : 0f;
-        }
+        private static string Pct(float v) => SkillRegistryHelper.Pct(v);
+        private static float V(Dictionary<string, float> d, string key) => SkillRegistryHelper.V(d, key);
 
         private static PassiveSkillFamilyDef[] BuildFamilies()
         {
@@ -231,9 +219,7 @@ namespace CatCatGo.Domain.Data
 
                 foreach (var tier in familyData.Keys.OrderBy(k => k))
                 {
-                    string suffix;
-                    TierSuffix.TryGetValue(tier, out suffix);
-                    if (suffix == null) suffix = "";
+                    string suffix = SkillRegistryHelper.GetTierSuffix(tier);
 
                     _allSkills.Add(new PassiveSkill(
                         family.Id,

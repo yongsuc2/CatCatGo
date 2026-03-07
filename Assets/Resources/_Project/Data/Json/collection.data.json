@@ -1,0 +1,14 @@
+{
+  "entries": [
+    { "id": "col_sword_1", "name": "Ancient Sword", "atk": 5, "def": 0, "maxHp": 0, "crit": 0 },
+    { "id": "col_shield_1", "name": "Iron Shield", "atk": 0, "def": 3, "maxHp": 0, "crit": 0 },
+    { "id": "col_ring_1", "name": "Mystic Ring", "atk": 3, "def": 0, "maxHp": 0, "crit": 0.01 },
+    { "id": "col_armor_1", "name": "Dragon Scale", "atk": 0, "def": 2, "maxHp": 50, "crit": 0 },
+    { "id": "col_gem_1", "name": "Star Gem", "atk": 2, "def": 0, "maxHp": 20, "crit": 0 },
+    { "id": "col_crown_1", "name": "Golden Crown", "atk": 8, "def": 0, "maxHp": 0, "crit": 0 },
+    { "id": "col_amulet_1", "name": "Shadow Amulet", "atk": 0, "def": 0, "maxHp": 0, "crit": 0.02 },
+    { "id": "col_boots_1", "name": "Wind Boots", "atk": 4, "def": 1, "maxHp": 0, "crit": 0 },
+    { "id": "col_cape_1", "name": "Phoenix Cape", "atk": 0, "def": 0, "maxHp": 80, "crit": 0 },
+    { "id": "col_orb_1", "name": "Thunder Orb", "atk": 6, "def": 0, "maxHp": 0, "crit": 0 }
+  ]
+}

@@ -533,8 +533,7 @@ namespace CatCatGo.Presentation.Screens
             _expBar.SetProgress(_selectedPet.Exp, expNeeded, $"{_selectedPet.Exp}/{expNeeded}");
 
             int food = (int)Game.Player.Resources.Get(ResourceType.PET_FOOD);
-            int expPerFood = 10;
-            int foodForNextLevel = Mathf.Max(1, Mathf.CeilToInt((float)(expNeeded - _selectedPet.Exp) / expPerFood));
+            int foodForNextLevel = Mathf.Max(1, Mathf.CeilToInt((float)(expNeeded - _selectedPet.Exp) / PetTable.Growth.ExpPerFood));
             _feedInfoText.text = $"먹이 {foodForNextLevel}개 → 레벨업";
 
             bool isActive = _selectedPet == Game.Player.ActivePet;
@@ -550,17 +549,17 @@ namespace CatCatGo.Presentation.Screens
 
         private int CalculateMaxReachableLevel(Pet pet, int foodAvailable)
         {
+            var g = PetTable.Growth;
             int level = pet.Level;
             int exp = pet.Exp;
-            int totalExpGain = foodAvailable * 10;
-            exp += totalExpGain;
+            exp += foodAvailable * g.ExpPerFood;
 
-            int expToNext = 100 + (level - 1) * 20;
+            int expToNext = g.BaseExpPerLevel + (level - 1) * g.ExpPerLevelGrowth;
             while (exp >= expToNext)
             {
                 exp -= expToNext;
                 level++;
-                expToNext = 100 + (level - 1) * 20;
+                expToNext = g.BaseExpPerLevel + (level - 1) * g.ExpPerLevelGrowth;
             }
 
             return level;

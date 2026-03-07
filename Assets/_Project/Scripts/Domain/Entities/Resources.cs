@@ -13,13 +13,11 @@ namespace CatCatGo.Domain.Entities
         private readonly int _staminaMax;
         private readonly int _staminaRegenPerMinute;
 
-        private const int STAMINA_MAX = 100;
-        private const int STAMINA_REGEN_PER_MINUTE = 1;
-
         public Resources()
         {
-            _staminaMax = STAMINA_MAX;
-            _staminaRegenPerMinute = STAMINA_REGEN_PER_MINUTE;
+            var cfg = BattleDataTable.Data.Stamina;
+            _staminaMax = cfg.Max;
+            _staminaRegenPerMinute = cfg.RegenPerMinute;
             InitDefaults();
         }
 

@@ -91,10 +91,6 @@ namespace CatCatGo.Presentation.Core
             Refresh();
         }
 
-        private void Update()
-        {
-        }
-
         private void SetupKoreanFallbackFont()
         {
             var defaultFont = TMP_Settings.defaultFontAsset;

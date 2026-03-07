@@ -1,6 +1,6 @@
-using System;
 using System.Linq;
 using CatCatGo.Domain.Data;
+using CatCatGo.Infrastructure;
 
 namespace CatCatGo.Domain.Meta
 {
@@ -13,7 +13,7 @@ namespace CatCatGo.Domain.Meta
         public AttendanceSystem()
         {
             CheckedDays = new bool[AttendanceDataTable.GetTotalDays()];
-            CycleStartDate = GetTodayString();
+            CycleStartDate = DateHelper.GetTodayString();
             LastCheckDate = "";
         }
 
@@ -28,7 +28,7 @@ namespace CatCatGo.Domain.Meta
 
         public bool CanCheckIn()
         {
-            return LastCheckDate != GetTodayString() && GetCurrentDay() < AttendanceDataTable.GetTotalDays();
+            return LastCheckDate != DateHelper.GetTodayString() && GetCurrentDay() < AttendanceDataTable.GetTotalDays();
         }
 
         public int CheckIn()
@@ -36,7 +36,7 @@ namespace CatCatGo.Domain.Meta
             if (!CanCheckIn()) return -1;
             int dayIndex = GetCurrentDay();
             CheckedDays[dayIndex] = true;
-            LastCheckDate = GetTodayString();
+            LastCheckDate = DateHelper.GetTodayString();
             return dayIndex + 1;
         }
 
@@ -48,14 +48,9 @@ namespace CatCatGo.Domain.Meta
         public void ResetCycle()
         {
             CheckedDays = new bool[AttendanceDataTable.GetTotalDays()];
-            CycleStartDate = GetTodayString();
+            CycleStartDate = DateHelper.GetTodayString();
             LastCheckDate = "";
         }
 
-        private string GetTodayString()
-        {
-            var now = DateTime.Now;
-            return $"{now.Year}-{now.Month}-{now.Day}";
-        }
     }
 }

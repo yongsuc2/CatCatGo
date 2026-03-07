@@ -1,6 +1,6 @@
-using System;
 using CatCatGo.Domain.Entities;
 using CatCatGo.Domain.Content;
+using CatCatGo.Infrastructure;
 
 namespace CatCatGo.Domain.Economy
 {
@@ -10,25 +10,19 @@ namespace CatCatGo.Domain.Economy
 
         public DailyResetSystem()
         {
-            _lastResetDate = GetTodayString();
+            _lastResetDate = DateHelper.GetTodayString();
         }
 
         public bool NeedsReset()
         {
-            return GetTodayString() != _lastResetDate;
+            return DateHelper.GetTodayString() != _lastResetDate;
         }
 
         public void PerformReset(Resources resources, DailyDungeonManager dungeonManager)
         {
             resources.DailyReset();
             dungeonManager.DailyResetAll();
-            _lastResetDate = GetTodayString();
-        }
-
-        private string GetTodayString()
-        {
-            var now = DateTime.Now;
-            return $"{now.Year}-{now.Month}-{now.Day}";
+            _lastResetDate = DateHelper.GetTodayString();
         }
 
         public string GetLastResetDate()

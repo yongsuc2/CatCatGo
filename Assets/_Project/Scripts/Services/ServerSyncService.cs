@@ -102,7 +102,6 @@ namespace CatCatGo.Services
             {
                 if (!response.IsSuccess || response.Data == null)
                 {
-                    // 404 = 서버에 저장 데이터 없음 (신규 계정) → 정상
                     onComplete(true);
                     return;
                 }

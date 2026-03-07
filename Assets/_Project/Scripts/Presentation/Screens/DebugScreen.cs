@@ -362,7 +362,7 @@ namespace CatCatGo.Presentation.Screens
             _logText.color = ColorPalette.Text;
             _logText.alignment = TextAlignmentOptions.TopLeft;
             _logText.raycastTarget = false;
-            _logText.enableWordWrapping = true;
+            _logText.textWrappingMode = TextWrappingModes.Normal;
             _logText.overflowMode = TextOverflowModes.Truncate;
             _logText.margin = new Vector4(8, 4, 8, 4);
         }

@@ -141,9 +141,5 @@ namespace CatCatGo.Domain.Content
             TodayCount = 0;
         }
 
-        public int GetTotalRemainingCount()
-        {
-            return GetRemainingCount();
-        }
     }
 }

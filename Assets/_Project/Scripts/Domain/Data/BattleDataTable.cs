@@ -45,6 +45,19 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("pickaxe")] public int Pickaxe;
     }
 
+    public class StaminaConfig
+    {
+        [JsonProperty("max")] public int Max;
+        [JsonProperty("regenPerMinute")] public int RegenPerMinute;
+    }
+
+    public class NewGameResourcesConfig
+    {
+        [JsonProperty("gold")] public int Gold;
+        [JsonProperty("gems")] public int Gems;
+        [JsonProperty("stamina")] public int Stamina;
+    }
+
     public class BattleData
     {
         [JsonProperty("damage")] public DamageConfig Damage;
@@ -54,6 +67,9 @@ namespace CatCatGo.Domain.Data
         [JsonProperty("maxTurns")] public int MaxTurns;
         [JsonProperty("playerBaseStats")] public PlayerBaseStatsConfig PlayerBaseStats;
         [JsonProperty("dailyReset")] public DailyResetConfig DailyReset;
+        [JsonProperty("stamina")] public StaminaConfig Stamina;
+        [JsonProperty("chapterStaminaCost")] public int ChapterStaminaCost;
+        [JsonProperty("newGameResources")] public NewGameResourcesConfig NewGameResources;
     }
 
     public static class BattleDataTable

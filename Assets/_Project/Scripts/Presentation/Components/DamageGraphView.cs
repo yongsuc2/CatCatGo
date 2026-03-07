@@ -24,10 +24,7 @@ namespace CatCatGo.Presentation.Components
             _barColor = barColor ?? ColorPalette.Hp;
 
             _root = gameObject.GetComponent<RectTransform>();
-            if (_root == null)
-                _root = gameObject.GetComponent<RectTransform>();
-
-                if (_root == null) _root = gameObject.AddComponent<RectTransform>();
+            if (_root == null) _root = gameObject.AddComponent<RectTransform>();
 
             var bg = gameObject.AddComponent<Image>();
             bg.color = ColorPalette.Card;

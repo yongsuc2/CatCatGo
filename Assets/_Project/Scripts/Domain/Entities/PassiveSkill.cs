@@ -24,14 +24,6 @@ namespace CatCatGo.Domain.Entities
 
     public class PassiveSkill : IHeritageSynergyProvider
     {
-        private static readonly Dictionary<int, SkillGrade> TierToGrade = new Dictionary<int, SkillGrade>
-        {
-            { 1, SkillGrade.NORMAL },
-            { 2, SkillGrade.LEGENDARY },
-            { 3, SkillGrade.MYTHIC },
-            { 4, SkillGrade.IMMORTAL },
-        };
-
         public readonly string Id;
         public readonly string Name;
         public readonly string Icon;
@@ -61,22 +53,16 @@ namespace CatCatGo.Domain.Entities
             Description = description;
         }
 
-        public SkillGrade Grade =>
-            TierToGrade.TryGetValue(Tier, out var g) ? g : SkillGrade.NORMAL;
+        public SkillGrade Grade => SkillGradeHelper.GetGradeForTier(Tier);
 
         public bool IsMaxTier()
         {
             return Tier >= 4;
         }
 
-        public bool IsSynergyWith(HeritageRoute route)
-        {
-            return System.Array.IndexOf(HeritageSynergy, route) >= 0;
-        }
-
         public bool HasHeritageSynergy(HeritageRoute route)
         {
-            return IsSynergyWith(route);
+            return System.Array.IndexOf(HeritageSynergy, route) >= 0;
         }
     }
 }

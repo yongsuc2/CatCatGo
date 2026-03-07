@@ -1,4 +1,5 @@
 {
+  "totalDays": 60,
   "survivalMilestones": [
     { "day": 15, "gold": 150, "gems": 10, "eqStone": 1, "pwStone": 0 },
     { "day": 25, "gold": 250, "gems": 25, "eqStone": 3, "pwStone": 0 },

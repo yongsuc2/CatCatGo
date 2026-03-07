@@ -35,6 +35,23 @@ namespace CatCatGo.Domain.Enums
         IMMORTAL,
     }
 
+    public static class SkillGradeHelper
+    {
+        private static readonly System.Collections.Generic.Dictionary<int, SkillGrade> TierToGrade =
+            new System.Collections.Generic.Dictionary<int, SkillGrade>
+            {
+                { 1, SkillGrade.NORMAL },
+                { 2, SkillGrade.LEGENDARY },
+                { 3, SkillGrade.MYTHIC },
+                { 4, SkillGrade.IMMORTAL },
+            };
+
+        public static SkillGrade GetGradeForTier(int tier)
+        {
+            return TierToGrade.TryGetValue(tier, out var g) ? g : SkillGrade.NORMAL;
+        }
+    }
+
     public enum EquipmentGrade
     {
         COMMON,

@@ -43,5 +43,11 @@
     "CRIT": "치명타",
     "HP": "체력"
   },
-  "inactiveBonusRate": 0.1
-}
+  "inactiveBonusRate": 0.1,
+  "growth": {
+    "expPerFood": 10,
+    "baseExpPerLevel": 100,
+    "expPerLevelGrowth": 20,
+    "statPerLevel": 2,
+    "hpPerLevel": 4
+  }

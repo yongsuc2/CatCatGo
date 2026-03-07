@@ -26,5 +26,24 @@
     "interval": 10,
     "goldCostMultiplier": 3,
     "goldBoostPercent": 2
+  },
+  "statLabels": {
+    "ATK": "\uacf5\uaca9\ub825",
+    "HP": "\uccb4\ub825",
+    "DEF": "\ubc29\uc5b4\ub825"
+  },
+  "gradeLabels": {
+    "DISCIPLE": "\uc218\ub828\uc0dd",
+    "ADVENTURER": "\ubaa8\ud5d8\uac00",
+    "ELITE": "\uc815\uc608",
+    "MASTER": "\ub2ec\uc778",
+    "WARRIOR": "\uc804\uc0ac",
+    "HERO": "\uc601\uc6c5"
+  },
+  "heritageRouteLabels": {
+    "SKULL": "\ud574\uace8",
+    "KNIGHT": "\uae30\uc0ac",
+    "RANGER": "\ub808\uc778\uc800",
+    "GHOST": "\uc720\ub839"
   }
 }

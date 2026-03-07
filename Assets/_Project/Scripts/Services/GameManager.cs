@@ -170,9 +170,10 @@ namespace CatCatGo.Services
 
         private void InitNewGame()
         {
-            Player.Resources.SetAmount(ResourceType.GOLD, 500);
-            Player.Resources.SetAmount(ResourceType.GEMS, 500);
-            Player.Resources.SetAmount(ResourceType.STAMINA, 100);
+            var cfg = BattleDataTable.Data.NewGameResources;
+            Player.Resources.SetAmount(ResourceType.GOLD, cfg.Gold);
+            Player.Resources.SetAmount(ResourceType.GEMS, cfg.Gems);
+            Player.Resources.SetAmount(ResourceType.STAMINA, cfg.Stamina);
             Player.Resources.DailyReset();
             EventManagerSystem.CreateDailyQuests();
             EventManagerSystem.CreateWeeklyQuests();
@@ -180,7 +181,7 @@ namespace CatCatGo.Services
 
         public void StartChapter(int chapterId, ChapterType type)
         {
-            int staminaCost = 5;
+            int staminaCost = BattleDataTable.Data.ChapterStaminaCost;
             if (!Player.Resources.CanAfford(ResourceType.STAMINA, staminaCost)) return;
             Player.Resources.Spend(ResourceType.STAMINA, staminaCost);
             CurrentChapter = new Chapter(chapterId, type, Rng.NextInt(0, 999999));
@@ -482,8 +483,6 @@ namespace CatCatGo.Services
 
             if (!string.IsNullOrEmpty(errorCode))
             {
-                // 서버가 정상 응답했으나 비즈니스 로직 실패 (INSUFFICIENT_GOLD 등)
-                // 네트워크는 정상이므로 실패 카운터 리셋
                 _consecutiveFailures = 0;
                 return;
             }

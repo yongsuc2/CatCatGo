@@ -29,6 +29,15 @@ namespace CatCatGo.Domain.Data
         public PetAbilityDef Ability;
     }
 
+    public class PetGrowthConfig
+    {
+        public int ExpPerFood;
+        public int BaseExpPerLevel;
+        public int ExpPerLevelGrowth;
+        public int StatPerLevel;
+        public int HpPerLevel;
+    }
+
     public static class PetTable
     {
         private static List<PetTemplateData> _templates;
@@ -36,6 +45,7 @@ namespace CatCatGo.Domain.Data
         private static Dictionary<PassiveType, string> _abilityLabels;
         private static Dictionary<StatType, string> _statLabels;
         private static float _inactiveBonusRate;
+        private static PetGrowthConfig _growth;
 
         private static void EnsureLoaded()
         {
@@ -99,6 +109,19 @@ namespace CatCatGo.Domain.Data
             }
 
             _inactiveBonusRate = data["inactiveBonusRate"]?.Value<float>() ?? 0.1f;
+
+            var g = data["growth"];
+            if (g != null)
+            {
+                _growth = new PetGrowthConfig
+                {
+                    ExpPerFood = g["expPerFood"].Value<int>(),
+                    BaseExpPerLevel = g["baseExpPerLevel"].Value<int>(),
+                    ExpPerLevelGrowth = g["expPerLevelGrowth"].Value<int>(),
+                    StatPerLevel = g["statPerLevel"].Value<int>(),
+                    HpPerLevel = g["hpPerLevel"].Value<int>(),
+                };
+            }
         }
 
         public static float InactiveBonusRate
@@ -174,6 +197,11 @@ namespace CatCatGo.Domain.Data
                 default:
                     return label;
             }
+        }
+
+        public static PetGrowthConfig Growth
+        {
+            get { EnsureLoaded(); return _growth; }
         }
 
         public static Dictionary<PetGrade, float> GradeMultipliers

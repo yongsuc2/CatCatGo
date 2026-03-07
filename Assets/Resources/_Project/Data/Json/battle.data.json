@@ -29,5 +29,14 @@
   "dailyReset": {
     "challengeToken": 5,
     "pickaxe": 10
+  },
+  "stamina": {
+    "max": 100,
+    "regenPerMinute": 1
+  },
+  "chapterStaminaCost": 5,
+  "newGameResources": {
+    "gold": 500,
+    "gems": 500,
+    "stamina": 100
   }
-}

@@ -150,10 +150,10 @@ namespace CatCatGo.Tests.Content
         public void ReportsTotalRemainingCount()
         {
             var manager = new DailyDungeonManager();
-            Assert.AreEqual(manager.DailyLimit, manager.GetTotalRemainingCount());
+            Assert.AreEqual(manager.DailyLimit, manager.GetRemainingCount());
 
             manager.ConsumeEntry();
-            Assert.AreEqual(manager.DailyLimit - 1, manager.GetTotalRemainingCount());
+            Assert.AreEqual(manager.DailyLimit - 1, manager.GetRemainingCount());
         }
     }
 }

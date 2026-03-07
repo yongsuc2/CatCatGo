@@ -22,6 +22,7 @@ namespace CatCatGo.Domain.Data
     {
         private static List<SurvivalMilestoneRow> _survivalMilestones;
         private static ClearMilestoneRow _clearMilestone;
+        private static int _totalDays;
 
         private class SurvivalMilestoneRow
         {
@@ -46,6 +47,8 @@ namespace CatCatGo.Domain.Data
 
             var data = JsonDataLoader.LoadJObject("chapter-treasure.data.json");
             if (data == null) return;
+
+            _totalDays = data["totalDays"]?.Value<int>() ?? 60;
 
             _survivalMilestones = new List<SurvivalMilestoneRow>();
             foreach (var m in data["survivalMilestones"])
@@ -77,7 +80,8 @@ namespace CatCatGo.Domain.Data
 
         public static int GetTotalDays(int chapterId)
         {
-            return 60;
+            EnsureLoaded();
+            return _totalDays;
         }
 
         public static int GetClearSentinelDay(int chapterId)

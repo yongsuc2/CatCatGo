@@ -87,12 +87,10 @@ namespace CatCatGo.Presentation.Screens
             scrollRect.content = contentRt;
             scrollRect.viewport = viewportRt;
 
-            // Header
             CreateLabel(contentGo.transform, "Header", "\uc124\uc815", 32, ColorPalette.Text, TextAlignmentOptions.Center, 36);
 
             CreateSeparator(contentGo.transform);
 
-            // Account Info Section
             CreateLabel(contentGo.transform, "AccountSection", "\uacc4\uc815 \uc815\ubcf4", 26, ColorPalette.Gold, TextAlignmentOptions.Left, 30);
 
             _accountIdText = CreateLabel(contentGo.transform, "AccountId", "", 20, ColorPalette.TextDim, TextAlignmentOptions.Left, 24);
@@ -101,21 +99,17 @@ namespace CatCatGo.Presentation.Screens
 
             CreateSeparator(contentGo.transform);
 
-            // Status message
             _statusMessageText = CreateLabel(contentGo.transform, "StatusMessage", "", 20, ColorPalette.Heal, TextAlignmentOptions.Center, 24);
             _statusMessageText.gameObject.SetActive(false);
 
-            // Delete Account Button
             _deleteAccountButton = CreateSettingsButton(contentGo.transform, "\uacc4\uc815 \ud0c8\ud1f4", ColorPalette.Hp,
                 () => ShowConfirm("\uc815\ub9d0 \uacc4\uc815\uc744 \ud0c8\ud1f4\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?\n\ubaa8\ub4e0 \ub370\uc774\ud130\uac00 \uc0ad\uc81c\ub418\uace0 \uc0c8 \uacc4\uc815\uc73c\ub85c \uc2dc\uc791\ud569\ub2c8\ub2e4.", OnDeleteAccount));
 
             CreateSeparator(contentGo.transform);
 
-            // Debug Button
             _debugButton = CreateSettingsButton(contentGo.transform, "\ub514\ubc84\uadf8 \ud654\uba74", ColorPalette.ButtonSecondary,
                 () => UI.ShowScreen(ScreenType.Debug));
 
-            // Confirm Panel
             BuildConfirmPanel(contentGo.transform);
         }
 
@@ -297,7 +291,6 @@ namespace CatCatGo.Presentation.Screens
         {
             if (Game == null) return;
 
-            // Account ID
             string accountId = "";
             if (ApiClient.Instance != null)
                 accountId = ApiClient.Instance.TokenStore.AccountId ?? "";
@@ -305,13 +298,11 @@ namespace CatCatGo.Presentation.Screens
                 ? "\uacc4\uc815 ID: \ubbf8\ub85c\uadf8\uc778"
                 : $"\uacc4\uc815 ID: {accountId}";
 
-            // Device ID
             string deviceId = AuthApi.GetDeviceId();
             if (deviceId.Length > 16)
                 deviceId = deviceId.Substring(0, 16) + "...";
             _deviceIdText.text = $"\ub514\ubc14\uc774\uc2a4 ID: {deviceId}";
 
-            // Connection Status
             var syncState = ServerSyncService.Instance != null
                 ? ServerSyncService.Instance.State
                 : ConnectionState.Offline;

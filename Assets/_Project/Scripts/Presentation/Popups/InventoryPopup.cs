@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CatCatGo.Domain.Data;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Services;
 using CatCatGo.Presentation.Core;
@@ -115,19 +116,19 @@ namespace CatCatGo.Presentation.Popups
             if (player == null) return;
 
             var res = player.Resources;
-            CreateResourceRow(contentGo.transform, "\uACE8\uB4DC", NumberFormatter.Format(res.Gold), ColorPalette.Gold);
-            CreateResourceRow(contentGo.transform, "\uBCF4\uC11D", NumberFormatter.Format(res.Gems), ColorPalette.Gems);
-            CreateResourceRow(contentGo.transform, "\uC2A4\uD0DC\uBBF8\uB098", $"{(int)res.Stamina}/{res.GetStaminaMax()}", ColorPalette.Stamina);
-            CreateResourceRow(contentGo.transform, "\uB3C4\uC804 \uD1A0\uD070", NumberFormatter.Format(res.ChallengeTokens), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uACE1\uAD2D\uC774", NumberFormatter.Format(res.Pickaxes), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uC7A5\uBE44\uC11D", NumberFormatter.Format(res.EquipmentStones), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uD30C\uC6CC \uC2A4\uD1A4", NumberFormatter.Format(res.PowerStones), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uD3AB \uC54C", NumberFormatter.Format(res.Get(ResourceType.PET_EGG)), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uD3AB \uC0AC\uB8CC", NumberFormatter.Format(res.Get(ResourceType.PET_FOOD)), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uC2A4\uCEEC \uC11C\uC801", NumberFormatter.Format(res.Get(ResourceType.SKULL_BOOK)), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uB098\uC774\uD2B8 \uC11C\uC801", NumberFormatter.Format(res.Get(ResourceType.KNIGHT_BOOK)), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uB808\uC778\uC800 \uC11C\uC801", NumberFormatter.Format(res.Get(ResourceType.RANGER_BOOK)), ColorPalette.Text);
-            CreateResourceRow(contentGo.transform, "\uACE0\uC2A4\uD2B8 \uC11C\uC801", NumberFormatter.Format(res.Get(ResourceType.GHOST_BOOK)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.GOLD), NumberFormatter.Format(res.Gold), ColorPalette.Gold);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.GEMS), NumberFormatter.Format(res.Gems), ColorPalette.Gems);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.STAMINA), $"{(int)res.Stamina}/{res.GetStaminaMax()}", ColorPalette.Stamina);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.CHALLENGE_TOKEN), NumberFormatter.Format(res.ChallengeTokens), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.PICKAXE), NumberFormatter.Format(res.Pickaxes), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.EQUIPMENT_STONE), NumberFormatter.Format(res.EquipmentStones), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.POWER_STONE), NumberFormatter.Format(res.PowerStones), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.PET_EGG), NumberFormatter.Format(res.Get(ResourceType.PET_EGG)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.PET_FOOD), NumberFormatter.Format(res.Get(ResourceType.PET_FOOD)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.SKULL_BOOK), NumberFormatter.Format(res.Get(ResourceType.SKULL_BOOK)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.KNIGHT_BOOK), NumberFormatter.Format(res.Get(ResourceType.KNIGHT_BOOK)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.RANGER_BOOK), NumberFormatter.Format(res.Get(ResourceType.RANGER_BOOK)), ColorPalette.Text);
+            CreateResourceRow(contentGo.transform, ResourceDataTable.GetLabel(ResourceType.GHOST_BOOK), NumberFormatter.Format(res.Get(ResourceType.GHOST_BOOK)), ColorPalette.Text);
         }
 
         private void CreateResourceRow(Transform parent, string label, string value, Color valueColor)

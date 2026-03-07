@@ -40,6 +40,21 @@ namespace CatCatGo.Domain.Data
         public int BaseEquipmentStone;
     }
 
+    public class GoblinMinerCartRewardConfig
+    {
+        public int GoldMin;
+        public int GoldMax;
+        public int StoneMin;
+        public int StoneMax;
+    }
+
+    public class GoblinMinerConfig
+    {
+        public int OrePerMine;
+        public int CartThreshold;
+        public GoblinMinerCartRewardConfig CartReward;
+    }
+
     public static class DungeonDataTable
     {
         private static int _dailyLimit;
@@ -47,6 +62,7 @@ namespace CatCatGo.Domain.Data
         private static DungeonStageScaling _stageScaling;
         private static TowerConfig _tower;
         private static CatacombConfig _catacomb;
+        private static GoblinMinerConfig _goblinMiner;
 
         private static void EnsureLoaded()
         {
@@ -106,6 +122,24 @@ namespace CatCatGo.Domain.Data
                 GoldPerFloor = cb["goldPerFloor"].Value<int>(),
                 BaseEquipmentStone = cb["baseEquipmentStone"].Value<int>(),
             };
+
+            var gm = data["goblinMiner"];
+            if (gm != null)
+            {
+                var cr = gm["cartReward"];
+                _goblinMiner = new GoblinMinerConfig
+                {
+                    OrePerMine = gm["orePerMine"].Value<int>(),
+                    CartThreshold = gm["cartThreshold"].Value<int>(),
+                    CartReward = new GoblinMinerCartRewardConfig
+                    {
+                        GoldMin = cr["goldMin"].Value<int>(),
+                        GoldMax = cr["goldMax"].Value<int>(),
+                        StoneMin = cr["stoneMin"].Value<int>(),
+                        StoneMax = cr["stoneMax"].Value<int>(),
+                    },
+                };
+            }
         }
 
         public static int DailyLimit
@@ -133,6 +167,11 @@ namespace CatCatGo.Domain.Data
         public static CatacombConfig Catacomb
         {
             get { EnsureLoaded(); return _catacomb; }
+        }
+
+        public static GoblinMinerConfig GoblinMiner
+        {
+            get { EnsureLoaded(); return _goblinMiner; }
         }
     }
 }
