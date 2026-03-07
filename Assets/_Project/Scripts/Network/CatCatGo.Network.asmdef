@@ -1,14 +1,9 @@
 {
-    "name": "CatCatGo.Presentation",
-    "rootNamespace": "CatCatGo.Presentation",
+    "name": "CatCatGo.Network",
+    "rootNamespace": "CatCatGo.Network",
     "references": [
-        "CatCatGo.Domain",
-        "CatCatGo.Services",
-        "CatCatGo.Infrastructure",
-        "CatCatGo.Network",
         "CatCatGo.Shared",
-        "Unity.TextMeshPro",
-        "Unity.InputSystem"
+        "com.unity.nuget.newtonsoft-json"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

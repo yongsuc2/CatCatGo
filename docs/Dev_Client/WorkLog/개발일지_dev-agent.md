@@ -1,5 +1,64 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (2) - 서버 연동 클라이언트 네트워크 레이어 구현
+
+### 개요
+
+서버에 구현된 API(인증, 세이브 동기화, 아레나, 상점, 전투 검증)에 대응하는 클라이언트 네트워크 레이어를 구현했다.
+오프라인 폴백을 지원하여 서버 없이도 기존 로컬 게임 플레이가 유지된다.
+
+### 신규 어셈블리
+
+**CatCatGo.Shared** (`Assets/_Project/Scripts/Shared/`)
+- 서버 Shared DTO를 Unity C#9 호환 형태로 포팅
+- 요청: `AuthRequests`, `SaveSyncRequest`, `PurchaseRequest`, `BattleRequests`, `ArenaRequests`
+- 응답: `LoginResponse`, `SaveSyncResponse`, `ArenaResponses`, `BattleResponses`, `ShopResponses`
+- `noEngineReferences: true` - 순수 C# DTO, Unity 의존성 없음
+
+**CatCatGo.Network** (`Assets/_Project/Scripts/Network/`)
+- `ApiClient`: `UnityWebRequest` 기반 HTTP 클라이언트, JWT 토큰 자동 갱신, 리트라이, 오프라인 감지
+- `TokenStore`: JWT 토큰 `PlayerPrefs` 기반 영속 저장
+- `ServerConfig`: `ScriptableObject` 기반 서버 설정 (BaseUrl, 타임아웃, 리트라이 횟수)
+- `ApiResponse<T>`: 성공/실패/오프라인 3-state 응답 래퍼
+- API 래퍼: `AuthApi`, `SaveApi`, `ArenaApi`, `ShopApi`, `BattleApi`
+
+### Services 레이어 변경
+
+**ServerSyncService** (`Assets/_Project/Scripts/Services/ServerSyncService.cs`)
+- 앱 시작 시 기기 기반 자동 로그인 (실패 시 자동 회원가입)
+- 로컬 세이브 저장 시 서버 동기화 플래그 설정, 120초 간격 자동 동기화
+- 서버 세이브가 로컬보다 최신이면 서버 데이터로 복원
+- 아레나(매칭/결과/랭킹), 상점(카탈로그/구매검증), 전투(세션등록/결과리포트) API 호출 메서드 제공
+- 앱 백그라운드 진입 시 보류 중인 세이브 동기화
+
+**GameManager.SaveGame()** 수정
+- 로컬 저장 성공 시 `ServerSyncService.MarkSaveDirty()` 호출하여 서버 동기화 트리거
+
+**GameBootstrap** 수정
+- `ApiClient`, `ServerSyncService` MonoBehaviour 자동 생성 추가
+
+### asmdef 참조 변경
+
+| 어셈블리 | 추가된 참조 |
+|----------|-------------|
+| CatCatGo.Services | CatCatGo.Network, CatCatGo.Shared |
+| CatCatGo.Presentation | CatCatGo.Network, CatCatGo.Shared |
+| CatCatGo.Editor | CatCatGo.Network, CatCatGo.Shared |
+| CatCatGo.Tests.Editor | CatCatGo.Network, CatCatGo.Shared |
+
+### 오프라인 폴백 설계
+
+- `ApiClient.IsOnline`: 30초 주기 서버 ping으로 연결 상태 감지
+- `ServerSyncService.State`: Offline/Connecting/Online 3-state 관리
+- 모든 서버 API 호출에 오프라인 시 로컬 폴백 경로 제공
+- 기존 로컬 세이브 시스템(`SaveManager`)은 변경 없이 유지
+
+### 검증
+
+- Unity batch mode 컴파일: 에러 0건, 경고 0건 (return code 0)
+
+---
+
 ## 2026-03-07
 
 ### 리소스 참조 검증 Editor 도구 추가
