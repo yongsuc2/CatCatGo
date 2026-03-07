@@ -78,6 +78,18 @@ namespace CatCatGo.Services
             set => State.HeroChestSystem = value;
         }
 
+        public TreasureChest PetChestSystem
+        {
+            get => State.PetChestSystem;
+            set => State.PetChestSystem = value;
+        }
+
+        public TreasureChest BasicPetChestSystem
+        {
+            get => State.BasicPetChestSystem;
+            set => State.BasicPetChestSystem = value;
+        }
+
         public TreasureChest GetChestSystem(ChestType type)
         {
             switch (type)
@@ -85,6 +97,8 @@ namespace CatCatGo.Services
                 case ChestType.EQUIPMENT: return EquipmentChestSystem;
                 case ChestType.ADVENTURER: return AdventurerChestSystem;
                 case ChestType.HERO: return HeroChestSystem;
+                case ChestType.PET: return PetChestSystem;
+                case ChestType.BASIC_PET: return BasicPetChestSystem;
                 default: return null;
             }
         }
@@ -358,7 +372,7 @@ namespace CatCatGo.Services
                     template.MaxGrade,
                     1,
                     template.BasePassiveBonus);
-                Player.OwnedPets.Add(pet);
+                Player.AddPet(pet);
             }
             else if (rewardDef.Type == "EQUIPMENT_GACHA")
             {
@@ -704,15 +718,7 @@ namespace CatCatGo.Services
             if (eggs < 1) return Result.Fail<Pet>("Not enough eggs");
 
             Player.Resources.Spend(ResourceType.PET_EGG, 1);
-            var template = PetTable.GetRandomTemplate(Rng);
-            var pet = new Pet(
-                $"hatch_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{Rng.NextInt(0, 9999)}",
-                template.Name,
-                template.Tier,
-                PetGrade.COMMON,
-                template.MaxGrade,
-                1,
-                template.BasePassiveBonus);
+            var pet = PetManagerService.HatchEgg(Rng);
             Player.AddPet(pet);
 
             if (Player.ActivePet == null)
@@ -1187,7 +1193,7 @@ namespace CatCatGo.Services
         {
             if (_networkMode == NetworkMode.OFFLINE) { callback(PullChest(chestType)); return; }
 
-            GachaApi.Pull(response =>
+            GachaApi.Pull(chestType.ToString(), response =>
             {
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
@@ -1205,7 +1211,7 @@ namespace CatCatGo.Services
         {
             if (_networkMode == NetworkMode.OFFLINE) { callback(PullChest10(chestType)); return; }
 
-            GachaApi.Pull10(response =>
+            GachaApi.Pull10(chestType.ToString(), response =>
             {
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {

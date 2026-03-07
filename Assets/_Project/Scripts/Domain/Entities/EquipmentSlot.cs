@@ -54,6 +54,8 @@ namespace CatCatGo.Domain.Entities
                 return Result.Fail<UnequipResult>("No equipment in this slot");
             }
             Equipped[index] = null;
+            SlotLevels[index] = 0;
+            SlotPromoteCounts[index] = 0;
             return Result.Ok(new UnequipResult { Equipment = equipment });
         }
 

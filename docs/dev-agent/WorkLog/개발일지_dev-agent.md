@@ -1,5 +1,54 @@
 # 개발일지 - dev-agent
 
+## 2026-03-08 (19) - 클라이언트 코드 버그 수정 + 리팩토링
+
+### 개요
+
+기획서 대비 구현 불일치 버그 수정 7건, 코드 리팩토링 3건 수행. 자체검토 Todo 항목 해소 포함.
+
+### 버그 수정 (7건)
+
+| ID | 파일 | 내용 | 수정 |
+|----|------|------|------|
+| B-1 | `PetScreen.cs` | 레벨업 프리뷰에 하드코딩 수치 사용 (`Level * 2 * 2`, `Level * 2`) | `PetTable.Growth.HpPerLevel` / `StatPerLevel` 참조로 변경 |
+| B-2 | `GachaApi.cs` | `Pull()` / `Pull10()`에서 chestType을 `"EQUIPMENT"`로 하드코딩 | `string chestType` 파라미터 추가, 호출부 수정 |
+| B-3 | `GameManager.cs` | `PullChestAsync` / `PullChest10Async`에서 chest type을 서버에 전달하지 않음 | `chestType.ToString()` 전달 |
+| B-4 | `GameManager.cs` | `GetChestSystem()`에 PET/BASIC_PET case 누락 | PET → PetChestSystem, BASIC_PET → BasicPetChestSystem 매핑 추가 |
+| B-5 | `EquipmentSlot.cs` | `Unequip()` 시 SlotLevels/SlotPromoteCounts 미초기화 (자체검토 FI-3) | `SlotLevels[index] = 0`, `SlotPromoteCounts[index] = 0` 추가 |
+| B-6 | `Battle.cs` | `RunToCompletion()` maxTurns 초과 시 DEATH 로그 누락 (자체검토 FI-2) | DEFEAT 설정 시 `BattleLogType.DEATH` 로그 추가 |
+| B-7 | `GameManager.cs` | `ClaimAttendance()`에서 `Player.OwnedPets.Add()` 직접 호출 (AddPet 우회) | `Player.AddPet(pet)` 사용으로 변경 |
+
+### 리팩토링 (3건)
+
+| ID | 파일 | 내용 |
+|----|------|------|
+| R-1 | `GameManager.cs` | `HatchPet()`의 인라인 Pet 생성 로직을 `PetManagerService.HatchEgg(Rng)` 호출로 통합 |
+| R-2 | `BattleManager.cs` | `GetPetAbilitySkill()`에서 비효율적 ID 파싱 검색 제거, Name 기반 검색으로 단순화 |
+| R-3 | `GameState.cs` | PetChestSystem/BasicPetChestSystem 필드 추가 및 생성자/Reset() 초기화 |
+
+### 자체검토 Todo 해소
+
+| ID | 상태 |
+|----|------|
+| FI-2 | 완료 (B-6에서 수정) |
+| FI-3 | 완료 (B-5에서 수정) |
+| FI-4 | 해당없음 (기획서상 펫 뽑기 천장 시스템 없음) |
+
+### 변경 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Presentation/Screens/PetScreen.cs` | 레벨업 프리뷰 하드코딩 제거 |
+| `Assets/_Project/Scripts/Network/GachaApi.cs` | chestType 파라미터 추가 |
+| `Assets/_Project/Scripts/Services/GameManager.cs` | 가챠 API 연동 수정, 펫 시스템 프로퍼티 추가, ClaimAttendance/HatchPet 수정 |
+| `Assets/_Project/Scripts/Services/GameState.cs` | PetChestSystem/BasicPetChestSystem 추가 |
+| `Assets/_Project/Scripts/Domain/Entities/EquipmentSlot.cs` | Unequip 슬롯 초기화 수정 |
+| `Assets/_Project/Scripts/Domain/Battle/Battle.cs` | RunToCompletion DEATH 로그 추가 |
+| `Assets/_Project/Scripts/Services/BattleManager.cs` | GetPetAbilitySkill 단순화 |
+| `docs/dev-agent/Todo/자체검토_Todo.md` | Todo 상태 업데이트 |
+
+---
+
 ## 2026-03-08 (18) - 클라이언트 코드 자체 검토
 
 ### 개요

@@ -481,6 +481,15 @@ namespace CatCatGo.Domain.Battle
             if (State == BattleState.IN_PROGRESS)
             {
                 State = BattleState.DEFEAT;
+                Log.Add(new BattleLogEntry
+                {
+                    Turn = TurnCount,
+                    Type = BattleLogType.DEATH,
+                    Source = "",
+                    Target = Player.Name,
+                    Value = 0,
+                    Message = $"{Player.Name} defeated (turn limit)",
+                });
             }
 
             return BuildTurnResult();

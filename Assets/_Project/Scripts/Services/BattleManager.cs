@@ -15,13 +15,12 @@ namespace CatCatGo.Services
             var pet = player.ActivePet;
             if (pet == null) return null;
 
-            var template = PetTable.GetTemplate(pet.Id.Replace("attendance_pet_", ""));
-            var templateByName = template ?? PetTable.GetAllTemplates().FirstOrDefault(t => t.Name == pet.Name);
-            if (templateByName == null) return null;
+            var template = PetTable.GetAllTemplates().FirstOrDefault(t => t.Name == pet.Name);
+            if (template == null) return null;
 
-            var ab = templateByName.Ability;
+            var ab = template.Ability;
             float val = PetTable.GetAbilityValue(ab, pet.Grade);
-            string desc = PetTable.GetAbilityDescription(templateByName.Id, pet.Grade);
+            string desc = PetTable.GetAbilityDescription(template.Id, pet.Grade);
             return AbilityToPassiveSkill(ab, val, $"pet_ability_{pet.Id}", desc);
         }
 

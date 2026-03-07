@@ -521,13 +521,8 @@ namespace CatCatGo.Presentation.Screens
             }
             _abilityText.text = string.IsNullOrEmpty(abilityDesc) ? "" : $"특수능력: {abilityDesc}";
 
-            int nextLevelHp = (_selectedPet.Level + 1) * 2 * 2;
-            int currentLevelHp = _selectedPet.Level * 2 * 2;
-            int nextLevelAtk = (_selectedPet.Level + 1) * 2;
-            int currentLevelAtk = _selectedPet.Level * 2;
-            int hpGain = nextLevelHp - currentLevelHp;
-            int atkGain = nextLevelAtk - currentLevelAtk;
-            _levelUpPreviewText.text = $"레벨업 시: HP +{hpGain}, ATK +{atkGain}";
+            var g = PetTable.Growth;
+            _levelUpPreviewText.text = $"레벨업 시: HP +{g.HpPerLevel}, ATK +{g.StatPerLevel}";
 
             int expNeeded = _selectedPet.GetExpToNextLevel();
             _expBar.SetProgress(_selectedPet.Exp, expNeeded, $"{_selectedPet.Exp}/{expNeeded}");

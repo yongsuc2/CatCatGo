@@ -27,6 +27,8 @@ namespace CatCatGo.Services
         public TreasureChest EquipmentChestSystem;
         public TreasureChest AdventurerChestSystem;
         public TreasureChest HeroChestSystem;
+        public TreasureChest PetChestSystem;
+        public TreasureChest BasicPetChestSystem;
         public Collection CollectionSystem;
         public DailyResetSystem DailyResetSystem;
         public EventManager EventManagerSystem;
@@ -48,6 +50,8 @@ namespace CatCatGo.Services
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
             AdventurerChestSystem = new TreasureChest(ChestType.ADVENTURER);
             HeroChestSystem = new TreasureChest(ChestType.HERO);
+            PetChestSystem = new TreasureChest(ChestType.PET);
+            BasicPetChestSystem = new TreasureChest(ChestType.BASIC_PET);
             CollectionSystem = new Collection();
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
@@ -67,6 +71,8 @@ namespace CatCatGo.Services
             EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
             AdventurerChestSystem = new TreasureChest(ChestType.ADVENTURER);
             HeroChestSystem = new TreasureChest(ChestType.HERO);
+            PetChestSystem = new TreasureChest(ChestType.PET);
+            BasicPetChestSystem = new TreasureChest(ChestType.BASIC_PET);
             CollectionSystem = new Collection();
             DailyResetSystem = new DailyResetSystem();
             EventManagerSystem = new EventManager();
@@ -188,6 +194,7 @@ namespace CatCatGo.Services
             if (delta.ClearedChapterMax.HasValue)
             {
                 Player.ClearedChapterMax = delta.ClearedChapterMax.Value;
+                chapterChanged = true;
             }
 
             if (delta.BestSurvivalDays != null)
