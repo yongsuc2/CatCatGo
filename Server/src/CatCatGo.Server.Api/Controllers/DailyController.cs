@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CatCatGo.Server.Core.Services;
+using CatCatGo.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,13 +26,12 @@ public class DailyController : ControllerBase
         return Ok(result);
     }
 
-    /// POST /api/daily/attendance/claim
     [HttpPost("attendance/claim")]
     public async Task<IActionResult> ClaimAttendance()
     {
         var accountId = GetAccountId();
         var result = await _dailyService.ClaimAttendanceAsync(accountId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
     [HttpGet("quest")]
@@ -42,23 +42,24 @@ public class DailyController : ControllerBase
         return Ok(result);
     }
 
-    /// POST /api/daily/quest/claim
     [HttpPost("quest/claim")]
     public async Task<IActionResult> ClaimQuest([FromBody] QuestClaimRequest request)
     {
         var accountId = GetAccountId();
         var result = await _dailyService.ClaimQuestAsync(accountId, request.EventId, request.MissionId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/daily/quest/claim-all
     [HttpPost("quest/claim-all")]
     public async Task<IActionResult> ClaimAllQuests([FromBody] QuestClaimAllRequest request)
     {
         var accountId = GetAccountId();
         var result = await _dailyService.ClaimAllQuestsAsync(accountId, request.EventId);
-        return Ok(result);
+        return ToActionResult(result);
     }
+
+    private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+        result.Success ? Ok(result) : BadRequest(result);
 
     private Guid GetAccountId()
     {

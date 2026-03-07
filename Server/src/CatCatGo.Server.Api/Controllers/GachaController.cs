@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CatCatGo.Server.Core.Services;
+using CatCatGo.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,22 +18,20 @@ public class GachaController : ControllerBase
         _gachaService = gachaService;
     }
 
-    /// POST /api/gacha/pull
     [HttpPost("pull")]
     public async Task<IActionResult> Pull([FromBody] GachaPullRequest request)
     {
         var accountId = GetAccountId();
         var result = await _gachaService.PullAsync(accountId, request.Count);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/gacha/pull10
     [HttpPost("pull10")]
     public async Task<IActionResult> Pull10()
     {
         var accountId = GetAccountId();
         var result = await _gachaService.Pull10Async(accountId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
     [HttpGet("pity")]
@@ -42,6 +41,9 @@ public class GachaController : ControllerBase
         var result = await _gachaService.GetPityAsync(accountId);
         return Ok(result);
     }
+
+    private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+        result.Success ? Ok(result) : BadRequest(result);
 
     private Guid GetAccountId()
     {

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CatCatGo.Server.Core.Services;
+using CatCatGo.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,59 +18,56 @@ public class EquipmentController : ControllerBase
         _equipmentService = equipmentService;
     }
 
-    /// POST /api/equipment/upgrade (was /enhance)
     [HttpPost("upgrade")]
     public async Task<IActionResult> Upgrade([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.UpgradeAsync(accountId, request.EquipmentId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/equipment/equip
     [HttpPost("equip")]
     public async Task<IActionResult> Equip([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.EquipAsync(accountId, request.EquipmentId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/equipment/unequip
     [HttpPost("unequip")]
     public async Task<IActionResult> Unequip([FromBody] UnequipRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.UnequipAsync(accountId, request.SlotType, request.SlotIndex);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/equipment/sell
     [HttpPost("sell")]
     public async Task<IActionResult> Sell([FromBody] EquipmentIdRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.SellAsync(accountId, request.EquipmentId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/equipment/forge
     [HttpPost("forge")]
     public async Task<IActionResult> Forge([FromBody] ForgeRequest request)
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.ForgeAsync(accountId, request.EquipmentIds);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/equipment/bulk-forge
     [HttpPost("bulk-forge")]
     public async Task<IActionResult> BulkForge()
     {
         var accountId = GetAccountId();
         var result = await _equipmentService.BulkForgeAsync(accountId);
-        return Ok(result);
+        return ToActionResult(result);
     }
+
+    private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+        result.Success ? Ok(result) : BadRequest(result);
 
     private Guid GetAccountId()
     {

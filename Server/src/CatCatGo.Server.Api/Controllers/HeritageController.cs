@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CatCatGo.Server.Core.Services;
+using CatCatGo.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +18,12 @@ public class HeritageController : ControllerBase
         _heritageService = heritageService;
     }
 
-    /// POST /api/heritage/upgrade
     [HttpPost("upgrade")]
     public async Task<IActionResult> Upgrade([FromBody] HeritageUpgradeRequest request)
     {
         var accountId = GetAccountId();
         var result = await _heritageService.UpgradeAsync(accountId, request.Route);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
     [HttpGet("status")]
@@ -33,6 +33,9 @@ public class HeritageController : ControllerBase
         var result = await _heritageService.GetStatusAsync(accountId);
         return Ok(result);
     }
+
+    private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+        result.Success ? Ok(result) : BadRequest(result);
 
     private Guid GetAccountId()
     {

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CatCatGo.Server.Core.Services;
+using CatCatGo.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,32 +18,32 @@ public class PetController : ControllerBase
         _petService = petService;
     }
 
-    /// POST /api/pet/hatch (was /upgrade for pet gacha)
     [HttpPost("hatch")]
     public async Task<IActionResult> Hatch()
     {
         var accountId = GetAccountId();
         var result = await _petService.HatchAsync(accountId);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/pet/feed
     [HttpPost("feed")]
     public async Task<IActionResult> Feed([FromBody] PetFeedRequest request)
     {
         var accountId = GetAccountId();
         var result = await _petService.FeedAsync(accountId, request.PetId, request.Amount);
-        return Ok(result);
+        return ToActionResult(result);
     }
 
-    /// POST /api/pet/deploy (was /equip)
     [HttpPost("deploy")]
     public async Task<IActionResult> Deploy([FromBody] PetIdRequest request)
     {
         var accountId = GetAccountId();
         var result = await _petService.DeployAsync(accountId, request.PetId);
-        return Ok(result);
+        return ToActionResult(result);
     }
+
+    private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+        result.Success ? Ok(result) : BadRequest(result);
 
     private Guid GetAccountId()
     {
