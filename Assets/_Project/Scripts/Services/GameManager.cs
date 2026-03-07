@@ -1143,7 +1143,7 @@ namespace CatCatGo.Services
                 OnApiSuccess();
                 ApplyServerDelta(response.Data.Delta);
                 var data = response.Data.Data;
-                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEATED;
+                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEAT;
                 Reward reward = ConvertRewardData(data?.Reward);
                 callback(Result.Ok(new TowerActionResult
                 {
@@ -1169,7 +1169,7 @@ namespace CatCatGo.Services
                 OnApiSuccess();
                 ApplyServerDelta(response.Data.Delta);
                 var data = response.Data.Data;
-                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEATED;
+                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEAT;
                 callback(Result.Ok(new DungeonChallengeResult
                 {
                     BattleState = battleState,

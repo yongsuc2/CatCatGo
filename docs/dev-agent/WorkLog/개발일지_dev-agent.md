@@ -1,5 +1,26 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (13) - 서버 연동 후 컴파일 에러 3건 수정
+
+### 개요
+
+서버/클라이언트 연동(Phase 1~8) 완료 후 발생한 Unity 컴파일 에러 3건을 수정했다.
+
+### 수정 내용
+
+| 파일 | 행 | 에러 | 수정 |
+|------|-----|------|------|
+| `ServerSyncService.cs` | 79 | CS1622: 코루틴에서 return 사용 불가 | `return;` → `yield break;` |
+| `GameManager.cs` | 1146 | CS0117: BattleState.DEFEATED 존재하지 않음 | `BattleState.DEFEATED` → `BattleState.DEFEAT` |
+| `GameManager.cs` | 1172 | CS0117: BattleState.DEFEATED 존재하지 않음 | `BattleState.DEFEATED` → `BattleState.DEFEAT` |
+
+### 검증
+
+- Unity batch mode 컴파일: ExitCode 0 (에러 0건)
+- 서버 dotnet build: 0 Error, 1 Warning (기존 CS0109 warning, 본 작업 무관)
+
+---
+
 ## 2026-03-07 (12) - Phase 8: 안정화 - 에러 처리 UX + 모드 전환 + 동기화
 
 ### 개요

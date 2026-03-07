@@ -76,7 +76,7 @@ namespace CatCatGo.Services
             if (!authSuccess)
             {
                 SetState(ConnectionState.Offline);
-                return;
+                yield break;
             }
 
             bool syncComplete = false;
