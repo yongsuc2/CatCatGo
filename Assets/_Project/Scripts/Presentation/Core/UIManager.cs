@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.TextCore.LowLevel;
 using TMPro;
 using CatCatGo.Services;
+using CatCatGo.Infrastructure;
 using CatCatGo.Presentation.Components;
 using CatCatGo.Presentation.Screens;
 using CatCatGo.Presentation.Utils;
@@ -29,6 +30,7 @@ namespace CatCatGo.Presentation.Core
 
         private ResourceBarView _resourceBar;
         private NavBarView _navBar;
+        private ToastView _toastView;
 
         private Dictionary<ScreenType, BaseScreen> _screens = new Dictionary<ScreenType, BaseScreen>();
         private ScreenType _activeScreenType = ScreenType.Main;
@@ -48,7 +50,39 @@ namespace CatCatGo.Presentation.Core
             BuildCanvasHierarchy();
             CreateResourceBar();
             CreateNavBar();
+            CreateToastView();
             RegisterScreens();
+            SubscribeEvents();
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            EventBus.Subscribe<ErrorToastEvent>(OnErrorToast);
+            EventBus.Subscribe<NetworkModeChangedEvent>(OnNetworkModeChanged);
+        }
+
+        private void UnsubscribeEvents()
+        {
+            EventBus.Unsubscribe<ErrorToastEvent>(OnErrorToast);
+            EventBus.Unsubscribe<NetworkModeChangedEvent>(OnNetworkModeChanged);
+        }
+
+        private void OnErrorToast(ErrorToastEvent e)
+        {
+            ShowToast(e.Message);
+        }
+
+        private void OnNetworkModeChanged(NetworkModeChangedEvent e)
+        {
+            string message = e.Mode == NetworkMode.ONLINE
+                ? "\uc11c\ubc84\uc5d0 \ub2e4\uc2dc \uc5f0\uacb0\ub418\uc5c8\uc2b5\ub2c8\ub2e4."
+                : "\uc11c\ubc84 \uc5f0\uacb0\uc774 \ub04a\uc5b4\uc84c\uc2b5\ub2c8\ub2e4. \uc624\ud504\ub77c\uc778 \ubaa8\ub4dc\ub85c \uc804\ud658\ud569\ub2c8\ub2e4.";
+            ShowToast(message);
         }
 
         private void Start()
@@ -156,6 +190,21 @@ namespace CatCatGo.Presentation.Core
         {
             _navBar = _navBarArea.gameObject.AddComponent<NavBarView>();
             _navBar.Initialize();
+        }
+
+        private void CreateToastView()
+        {
+            var toastGo = new GameObject("Toast");
+            toastGo.transform.SetParent(_safeAreaContainer, false);
+            toastGo.transform.SetAsLastSibling();
+            _toastView = toastGo.AddComponent<ToastView>();
+            _toastView.Initialize();
+        }
+
+        public void ShowToast(string message)
+        {
+            if (_toastView != null)
+                _toastView.Show(message);
         }
 
         private void RegisterScreens()

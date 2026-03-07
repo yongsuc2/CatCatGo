@@ -19,6 +19,11 @@ namespace CatCatGo.Infrastructure
         public NetworkMode Mode;
     }
 
+    public struct ErrorToastEvent
+    {
+        public string Message;
+    }
+
     public enum NetworkMode
     {
         ONLINE,

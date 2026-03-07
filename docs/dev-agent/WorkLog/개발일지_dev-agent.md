@@ -1,5 +1,60 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (12) - Phase 8: 안정화 - 에러 처리 UX + 모드 전환 + 동기화
+
+### 개요
+
+서버/클라이언트 연동 안정화. 에러 처리 UX(토스트 알림), ONLINE/OFFLINE 전환 알림, ServerSyncService를 SyncApi 기반으로 완성.
+
+### 신규 파일
+
+| 파일 | 설명 |
+|------|------|
+| `ErrorCodeMessages.cs` | 14개 에러코드 -> 한국어 메시지 매핑 (INSUFFICIENT_GOLD 등) |
+| `ToastView.cs` | 토스트 UI 컴포넌트 (2.5초 표시 + 0.5초 페이드) |
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `GameEvents.cs` | `ErrorToastEvent` struct 추가 |
+| `GameManager.cs` | `OnApiFailed(string errorCode)` 오버로드 - ErrorCodeMessages 조회 후 `EventBus.Publish(ErrorToastEvent)`. UIManager 직접 참조 제거 (순환 참조 방지) |
+| `UIManager.cs` | `ErrorToastEvent` / `NetworkModeChangedEvent` EventBus 구독. `ShowToast()` 메서드 + `CreateToastView()`. OnDestroy에서 구독 해제 |
+| `ServerSyncService.cs` | SaveApi -> SyncApi 전환. InitializeConnection: AutoLogin 후 SyncApi.GetFull -> GameState.ApplyFullSync. SyncSaveToServer: SyncApi.Push 사용, push rejected 시 LoadFullSync. TryLoadServerSave -> LoadFullSync(SyncApi.GetFull 기반) |
+
+### 순환 참조 해결
+
+Services -> Presentation 순환 참조 문제를 EventBus 패턴으로 해결:
+- GameManager(Services)에서 `EventBus.Publish(new ErrorToastEvent)` 발행
+- UIManager(Presentation)에서 `EventBus.Subscribe<ErrorToastEvent>` 구독
+- Infrastructure의 EventBus를 매개로 양 레이어가 독립 유지
+
+### NetworkMode 전환 토스트
+
+UIManager에서 `NetworkModeChangedEvent` 구독:
+- ONLINE 전환 시: "서버에 다시 연결되었습니다."
+- OFFLINE 전환 시: "서버 연결이 끊어졌습니다. 오프라인 모드로 전환합니다."
+
+### ServerSyncService 동기화 흐름
+
+```
+[초기 연결]
+AutoLogin -> SyncApi.GetFull -> GameState.ApplyFullSync -> ONLINE
+
+[세이브 푸시]
+SyncApi.Push(json, timestamp)
+  -> Accepted: 완료
+  -> Rejected: SyncApi.GetFull -> 서버 상태로 교체
+
+[앱 백그라운드]
+pendingSave -> SyncSaveToServer 즉시 호출
+
+[앱 포그라운드 + OFFLINE]
+RetryConnection -> InitializeConnection 재시도
+```
+
+---
+
 ## 2026-03-07 (11) - Phase 7: 챕터 세션 API 연동
 
 ### 개요

@@ -73,17 +73,64 @@ namespace CatCatGo.Services
             while (!authComplete)
                 yield return null;
 
-            SetState(authSuccess ? ConnectionState.Online : ConnectionState.Offline);
-
-            if (GameManager.Instance != null)
-                GameManager.Instance.SetNetworkMode(authSuccess
-                    ? Infrastructure.NetworkMode.ONLINE
-                    : Infrastructure.NetworkMode.OFFLINE);
-
-            if (authSuccess)
+            if (!authSuccess)
             {
-                TryLoadServerSave();
+                SetState(ConnectionState.Offline);
+                return;
             }
+
+            bool syncComplete = false;
+            bool syncSuccess = false;
+
+            LoadFullSync(success =>
+            {
+                syncSuccess = success;
+                syncComplete = true;
+            });
+
+            while (!syncComplete)
+                yield return null;
+
+            SetState(syncSuccess ? ConnectionState.Online : ConnectionState.Offline);
+        }
+
+        private void LoadFullSync(Action<bool> onComplete)
+        {
+            SyncApi.GetFull(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || response.Data.Data == null)
+                {
+                    onComplete(response.IsSuccess);
+                    return;
+                }
+
+                var serverData = response.Data.Data;
+                if (string.IsNullOrEmpty(serverData.SaveState))
+                {
+                    onComplete(true);
+                    return;
+                }
+
+                var game = GameManager.Instance;
+                if (game == null)
+                {
+                    onComplete(true);
+                    return;
+                }
+
+                try
+                {
+                    var serverState = JsonConvert.DeserializeObject<SaveState>(serverData.SaveState);
+                    game.State.ApplyFullSync(serverState);
+                    Debug.Log("[ServerSync] Full sync applied from server");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[ServerSync] Failed to parse server save: {ex.Message}");
+                }
+
+                onComplete(true);
+            });
         }
 
         public void MarkSaveDirty()
@@ -100,15 +147,23 @@ namespace CatCatGo.Services
 
             var saveState = SaveSerializer.Serialize(game);
             string json = JsonConvert.SerializeObject(saveState);
-            int version = 1;
+            long clientTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            SaveApi.Sync(json, version, response =>
+            SyncApi.Push(json, clientTimestamp, response =>
             {
-                if (response.IsSuccess)
+                if (response.IsSuccess && response.Data?.Data != null)
                 {
-                    _pendingSave = false;
-                    _lastSyncTime = Time.realtimeSinceStartup;
-                    Debug.Log("[ServerSync] Save synced to server");
+                    if (response.Data.Data.Accepted)
+                    {
+                        _pendingSave = false;
+                        _lastSyncTime = Time.realtimeSinceStartup;
+                        Debug.Log("[ServerSync] Save synced to server");
+                    }
+                    else
+                    {
+                        Debug.Log("[ServerSync] Push rejected, loading server state");
+                        LoadFullSync(_ => { });
+                    }
                 }
                 else if (response.IsOffline)
                 {
@@ -118,34 +173,6 @@ namespace CatCatGo.Services
                 else
                 {
                     Debug.LogWarning($"[ServerSync] Sync failed: {response.ErrorMessage}");
-                }
-            });
-        }
-
-        private void TryLoadServerSave()
-        {
-            SaveApi.Load(response =>
-            {
-                if (!response.IsSuccess || response.Data == null) return;
-
-                if (response.Data.Action == "LOAD" && !string.IsNullOrEmpty(response.Data.Data))
-                {
-                    var game = GameManager.Instance;
-                    if (game == null) return;
-
-                    long? localTime = game.GetLastSaveTime();
-                    if (localTime.HasValue && localTime.Value >= response.Data.ServerTimestamp) return;
-
-                    try
-                    {
-                        var serverState = JsonConvert.DeserializeObject<SaveState>(response.Data.Data);
-                        SaveSerializer.Deserialize(serverState, game);
-                        Debug.Log("[ServerSync] Loaded save from server");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning($"[ServerSync] Failed to parse server save: {ex.Message}");
-                    }
                 }
             });
         }
