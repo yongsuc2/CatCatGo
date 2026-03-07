@@ -1,17 +1,24 @@
 using System;
+using CatCatGo.Shared.Requests;
+using CatCatGo.Shared.Responses;
 
 namespace CatCatGo.Network
 {
     public static class SyncApi
     {
-        public static void GetFull(Action<ApiResponse<ServerResponse<SyncFullResponseData>>> callback)
+        public static void Load(Action<ApiResponse<SaveSyncResponse>> callback)
         {
-            ApiClient.Instance.Get("api/sync/full", callback);
+            ApiClient.Instance.Get("api/save", callback);
         }
 
-        public static void Push(string saveState, long clientTimestamp, Action<ApiResponse<ServerResponse<SyncPushResponseData>>> callback)
+        public static void Sync(string data, long clientTimestamp, Action<ApiResponse<SaveSyncResponse>> callback)
         {
-            ApiClient.Instance.Post("api/sync/push", new { saveState, clientTimestamp }, callback);
+            var request = new SaveSyncRequest
+            {
+                Data = data,
+                ClientTimestamp = clientTimestamp,
+            };
+            ApiClient.Instance.Post("api/save/sync", request, callback);
         }
     }
 }

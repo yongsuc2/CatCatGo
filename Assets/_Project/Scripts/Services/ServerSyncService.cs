@@ -96,16 +96,16 @@ namespace CatCatGo.Services
 
         private void LoadFullSync(Action<bool> onComplete)
         {
-            SyncApi.GetFull(response =>
+            SyncApi.Load(response =>
             {
-                if (!response.IsSuccess || response.Data == null || response.Data.Data == null)
+                if (!response.IsSuccess || response.Data == null)
                 {
-                    onComplete(response.IsSuccess);
+                    // 404 = 서버에 저장 데이터 없음 (신규 계정) → 정상
+                    onComplete(true);
                     return;
                 }
 
-                var serverData = response.Data.Data;
-                if (string.IsNullOrEmpty(serverData.SaveState))
+                if (string.IsNullOrEmpty(response.Data.Data))
                 {
                     onComplete(true);
                     return;
@@ -120,7 +120,7 @@ namespace CatCatGo.Services
 
                 try
                 {
-                    var serverState = JsonConvert.DeserializeObject<SaveState>(serverData.SaveState);
+                    var serverState = JsonConvert.DeserializeObject<SaveState>(response.Data.Data);
                     game.State.ApplyFullSync(serverState);
                     Debug.Log("[ServerSync] Full sync applied from server");
                 }
@@ -154,11 +154,11 @@ namespace CatCatGo.Services
             string json = JsonConvert.SerializeObject(saveState);
             long clientTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            SyncApi.Push(json, clientTimestamp, response =>
+            SyncApi.Sync(json, clientTimestamp, response =>
             {
-                if (response.IsSuccess && response.Data?.Data != null)
+                if (response.IsSuccess && response.Data != null)
                 {
-                    if (response.Data.Data.Accepted)
+                    if (response.Data.Action == "ACCEPTED")
                     {
                         _pendingSave = false;
                         _lastSyncTime = Time.realtimeSinceStartup;
@@ -166,7 +166,7 @@ namespace CatCatGo.Services
                     }
                     else
                     {
-                        Debug.Log("[ServerSync] Push rejected, loading server state");
+                        Debug.Log("[ServerSync] Server has newer data, loading server state");
                         LoadFullSync(_ => { });
                     }
                 }
