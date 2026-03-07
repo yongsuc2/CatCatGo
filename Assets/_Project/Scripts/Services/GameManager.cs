@@ -141,7 +141,6 @@ namespace CatCatGo.Services
 
         public BattleManager BattleManagerService;
         public Forge ForgeService;
-        public EquipmentManager EquipmentManagerService;
         public PetManager PetManagerService;
 
         public SeededRandom Rng;
@@ -177,7 +176,6 @@ namespace CatCatGo.Services
 
             BattleManagerService = new BattleManager();
             ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
             PetManagerService = new PetManager();
 
             Rng = new SeededRandom(Environment.TickCount);
@@ -363,15 +361,7 @@ namespace CatCatGo.Services
             }
             else if (rewardDef.Type == "PET")
             {
-                var template = PetTable.GetRandomTemplate(Rng);
-                pet = new Pet(
-                    $"attendance_pet_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{Rng.NextInt(0, 9999)}",
-                    template.Name,
-                    template.Tier,
-                    rewardDef.PetGrade ?? PetGrade.EPIC,
-                    template.MaxGrade,
-                    1,
-                    template.BasePassiveBonus);
+                pet = PetManagerService.HatchEgg(Rng, rewardDef.PetGrade ?? PetGrade.EPIC, "attendance_pet");
                 Player.AddPet(pet);
             }
             else if (rewardDef.Type == "EQUIPMENT_GACHA")
@@ -448,7 +438,6 @@ namespace CatCatGo.Services
             State.Reset();
             BattleManagerService = new BattleManager();
             ForgeService = new Forge();
-            EquipmentManagerService = new EquipmentManager();
             PetManagerService = new PetManager();
             Rng = new SeededRandom(Environment.TickCount);
             InitNewGame();

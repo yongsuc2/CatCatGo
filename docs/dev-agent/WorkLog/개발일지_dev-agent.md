@@ -1,5 +1,38 @@
 # 개발일지 - dev-agent
 
+## 2026-03-08 (20) - BUG-014 수정 + 죽은 코드 삭제 + 중복 제거
+
+### 개요
+
+BUG-014 (CollectionDataTable null safety) 수정, 죽은 코드 삭제 (EquipmentManager 전체, PetManager 미사용 메서드 4개), 중복 코드 제거 (GameState 생성자/Reset(), ClaimAttendance 인라인 Pet 생성).
+
+### 버그 수정 (1건)
+
+| ID | 파일 | 내용 | 수정 |
+|----|------|------|------|
+| BUG-014 | `CollectionDataTable.cs` | `EnsureLoaded()`에서 JSON 로드 실패 시 `_entries` 미초기화 + `data["entries"]` null 시 NRE | `data?["entries"]` null 체크 후 빈 리스트로 초기화하여 NRE 방지 |
+
+### 리팩토링 (4건)
+
+| ID | 파일 | 내용 |
+|----|------|------|
+| R-4 | `EquipmentManager.cs` 삭제 | 전체 클래스 호출처 없음 (죽은 코드) — 파일 + meta 삭제, GameManager 참조 제거 |
+| R-5 | `PetManager.cs` | 미사용 메서드 4개 삭제 (`FeedPet`, `TryUpgradeGrade`, `SelectBestPet`, `AutoFeedAll`), 미사용 using 정리 |
+| R-6 | `GameState.cs` | 생성자와 `Reset()` 완전 중복 → 생성자에서 `Reset()` 호출로 통합 |
+| R-7 | `GameManager.cs` | `ClaimAttendance()`의 인라인 Pet 생성을 `PetManagerService.HatchEgg()` 호출로 중복 제거 |
+
+### 변경 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Domain/Data/CollectionDataTable.cs` | null safety 강화 |
+| `Assets/_Project/Scripts/Services/EquipmentManager.cs` | 삭제 (죽은 코드) |
+| `Assets/_Project/Scripts/Services/GameManager.cs` | EquipmentManager 참조 제거, ClaimAttendance 중복 제거 |
+| `Assets/_Project/Scripts/Services/GameState.cs` | 생성자/Reset() 중복 제거 |
+| `Assets/_Project/Scripts/Services/PetManager.cs` | 미사용 메서드 삭제, HatchEgg에 grade/idPrefix 파라미터 추가 |
+
+---
+
 ## 2026-03-08 (19) - 클라이언트 코드 버그 수정 + 리팩토링
 
 ### 개요

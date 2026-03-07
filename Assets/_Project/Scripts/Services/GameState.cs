@@ -39,25 +39,7 @@ namespace CatCatGo.Services
 
         public GameState()
         {
-            Player = new Player();
-            CurrentChapter = null;
-
-            Tower = new Tower();
-            Catacomb = new CatacombDungeon();
-            DungeonManager = new DailyDungeonManager();
-            GoblinMinerSystem = new GoblinMiner();
-
-            EquipmentChestSystem = new TreasureChest(ChestType.EQUIPMENT);
-            AdventurerChestSystem = new TreasureChest(ChestType.ADVENTURER);
-            HeroChestSystem = new TreasureChest(ChestType.HERO);
-            PetChestSystem = new TreasureChest(ChestType.PET);
-            BasicPetChestSystem = new TreasureChest(ChestType.BASIC_PET);
-            CollectionSystem = new Collection();
-            DailyResetSystem = new DailyResetSystem();
-            EventManagerSystem = new EventManager();
-            RoutineScheduler = new DailyRoutineScheduler();
-            ChapterTreasureSystem = new ChapterTreasure();
-            AttendanceSystem = new AttendanceSystem();
+            Reset();
         }
 
         public void Reset()

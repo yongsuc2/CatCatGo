@@ -21,10 +21,15 @@ namespace CatCatGo.Domain.Data
             if (_entries != null) return;
 
             var data = JsonDataLoader.LoadJObject("collection.data.json");
-            if (data == null) return;
+            var entriesToken = data?["entries"];
+            if (entriesToken == null)
+            {
+                _entries = new List<CollectionEntryData>();
+                return;
+            }
 
             _entries = new List<CollectionEntryData>();
-            foreach (var e in data["entries"])
+            foreach (var e in entriesToken)
             {
                 _entries.Add(new CollectionEntryData
                 {
