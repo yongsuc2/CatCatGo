@@ -4,17 +4,18 @@
 
 ### 수행 작업
 - 최근 수정된 버그 3건에 대한 트러블슈팅 문서를 `/doc` skill 포맷으로 작성
+- 수정한 Agent의 문서 디렉토리에 배치 (버그 1, 3은 dev-agent, 버그 2는 dev-server-agent)
 
 ### 주요 변경사항
-- `docs/planning-agent/TroubleShooting/골드_비동기화_INSUFFICIENT_GOLD.md` (신규)
-  - 커밋 220d9e9d: SyncApi 스냅샷의 시간차로 인한 재화 잔고 불일치 문제
-- `docs/planning-agent/TroubleShooting/재능_milestone_key_불일치.md` (신규)
-  - 커밋 e8e98817: 서버 "10" vs 클라이언트 "LV_10" 키 형식 불일치
-- `docs/planning-agent/TroubleShooting/JSON_데이터_파일_truncation.md` (신규)
-  - 커밋 6455da43: battle/dungeon/pet JSON 파일의 닫는 중괄호 누락
+- `docs/dev-agent/TroubleShooting/골드_비동기화_INSUFFICIENT_GOLD.md` (신규)
+  - 커밋 220d9e9d: SyncApi 스냅샷의 시간차로 인한 재화 잔고 불일치 → ResourceApi + SyncResourceBalances 추가
+- `docs/dev-server-agent/TroubleShooting/재능_milestone_key_불일치.md` (신규)
+  - 커밋 e8e98817: 서버 delta key "10" vs 클라이언트 "LV_10" 형식 불일치 → 서버에서 $"LV_{level}" 형식으로 통일
+- `docs/dev-agent/TroubleShooting/JSON_데이터_파일_truncation.md` (신규)
+  - 커밋 6455da43: battle/dungeon/pet JSON 파일의 닫는 중괄호 누락 → 6개 파일 복원
 
 ### 이슈/메모
-- TroubleShooting 디렉토리가 미존재하여 신규 생성
+- dev-server-agent/TroubleShooting 디렉토리가 미존재하여 신규 생성
 
 ---
 
