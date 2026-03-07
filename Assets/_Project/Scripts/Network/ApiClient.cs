@@ -181,7 +181,22 @@ namespace CatCatGo.Network
                 else
                 {
                     string errorBody = request.downloadHandler?.text ?? "";
-                    callback(ApiResponse<T>.Fail(statusCode, $"HTTP {statusCode}: {errorBody}"));
+                    if (!string.IsNullOrEmpty(errorBody) && typeof(T) != typeof(object))
+                    {
+                        try
+                        {
+                            T data = JsonConvert.DeserializeObject<T>(errorBody);
+                            callback(ApiResponse<T>.FailWithData(data, statusCode, $"HTTP {statusCode}"));
+                        }
+                        catch
+                        {
+                            callback(ApiResponse<T>.Fail(statusCode, $"HTTP {statusCode}: {errorBody}"));
+                        }
+                    }
+                    else
+                    {
+                        callback(ApiResponse<T>.Fail(statusCode, $"HTTP {statusCode}: {errorBody}"));
+                    }
                 }
             }
         }

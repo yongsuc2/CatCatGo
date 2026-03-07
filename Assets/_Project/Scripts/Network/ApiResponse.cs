@@ -27,6 +27,11 @@ namespace CatCatGo.Network
             return new ApiResponse<T>(false, default, statusCode, errorMessage, false);
         }
 
+        public static ApiResponse<T> FailWithData(T data, int statusCode, string errorMessage)
+        {
+            return new ApiResponse<T>(false, data, statusCode, errorMessage, false);
+        }
+
         public static ApiResponse<T> Offline(string reason)
         {
             return new ApiResponse<T>(false, default, 0, reason, true);
