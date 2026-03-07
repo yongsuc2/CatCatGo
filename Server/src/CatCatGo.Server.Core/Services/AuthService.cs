@@ -23,6 +23,8 @@ public class AuthService
         { "GOLD", 500 },
         { "GEMS", 500 },
         { "STAMINA", 100 },
+        { "CHALLENGE_TOKEN", 5 },
+        { "PICKAXE", 10 },
     };
 
     public AuthService(IAccountRepository accountRepo, ResourceService resourceService, string jwtSecret,

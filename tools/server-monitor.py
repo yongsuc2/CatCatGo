@@ -30,7 +30,7 @@ NOISE_PATTERNS = [
     r"dbug: Microsoft\.EntityFrameworkCore",
     r"dbug: Microsoft\.Extensions\.Hosting",
     r"dbug: Microsoft\.AspNetCore\.DataProtection",
-    r"info: Microsoft\.AspNetCore\.DataProtection",
+    r"Microsoft\.AspNetCore\.DataProtection",
     r"info: Microsoft\.Hosting\.Lifetime",
     r"dbug: Microsoft\.Extensions\.Http",
     r"dbug: Microsoft\.AspNetCore\.Server\.Kestrel",
