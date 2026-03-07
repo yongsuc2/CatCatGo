@@ -13,12 +13,13 @@ namespace CatCatGo.Network
             ApiClient.Instance.Get("api/save", callback);
         }
 
-        public static void Sync(string data, long clientTimestamp, Action<ApiResponse<SaveSyncResponse>> callback)
+        public static void Sync(string data, long clientTimestamp, int version, Action<ApiResponse<SaveSyncResponse>> callback)
         {
             var request = new SaveSyncRequest
             {
                 Data = data,
                 ClientTimestamp = clientTimestamp,
+                Version = version,
                 Checksum = ComputeChecksum(data),
             };
             ApiClient.Instance.Post("api/save/sync", request, callback);

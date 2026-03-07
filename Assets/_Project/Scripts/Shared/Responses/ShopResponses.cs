@@ -21,8 +21,8 @@ namespace CatCatGo.Shared.Responses
         public int BonusGems;
         public string RewardsJson;
         public bool IsActive;
-        public long StartAt;
-        public long EndAt;
+        public long? StartAt;
+        public long? EndAt;
     }
 
     [Serializable]

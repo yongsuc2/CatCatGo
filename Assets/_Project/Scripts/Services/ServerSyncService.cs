@@ -26,6 +26,7 @@ namespace CatCatGo.Services
         private const float AutoSyncIntervalSeconds = 120f;
         private float _lastSyncTime;
         private bool _pendingSave;
+        private int _saveVersion;
 
         private void Awake()
         {
@@ -122,6 +123,7 @@ namespace CatCatGo.Services
                 {
                     var serverState = JsonConvert.DeserializeObject<SaveState>(response.Data.Data);
                     game.State.ApplyFullSync(serverState);
+                    _saveVersion = response.Data.Version;
                     Debug.Log("[ServerSync] Full sync applied from server");
                 }
                 catch (Exception ex)
@@ -154,7 +156,9 @@ namespace CatCatGo.Services
             string json = JsonConvert.SerializeObject(saveState);
             long clientTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            SyncApi.Sync(json, clientTimestamp, response =>
+            _saveVersion++;
+            int syncVersion = _saveVersion;
+            SyncApi.Sync(json, clientTimestamp, syncVersion, response =>
             {
                 if (response.IsSuccess && response.Data != null)
                 {
@@ -162,6 +166,7 @@ namespace CatCatGo.Services
                     {
                         _pendingSave = false;
                         _lastSyncTime = Time.realtimeSinceStartup;
+                        _saveVersion = response.Data.Version;
                         Debug.Log("[ServerSync] Save synced to server");
                     }
                     else
