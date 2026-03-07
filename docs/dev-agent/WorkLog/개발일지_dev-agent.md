@@ -1,5 +1,84 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (16) - 서버-클라이언트 연동 버그 수정 (BUG-008, BUG-009, BUG-011)
+
+### 개요
+
+qa-agent 버그 리뷰에서 발견된 Minor/Major 버그 3건을 수정했다.
+
+### 수정 내용
+
+**BUG-009: ProductDto StartAt/EndAt nullable 불일치**
+- `ShopResponses.cs`: `StartAt`, `EndAt` 타입을 `long` -> `long?`로 변경
+- 서버가 기간 한정이 아닌 상품에서 null을 보내는 것에 대응
+- 현재 이 필드를 사용하는 클라이언트 코드 없음 (향후 사용 시 안전)
+
+**BUG-011: SyncApi.Sync() Version 미설정**
+- `SyncApi.cs`: `Sync()` 메서드에 `int version` 파라미터 추가
+- `ServerSyncService.cs`: `_saveVersion` 필드 추가, LoadFullSync 시 서버 version 저장, SyncSaveToServer에서 version 전달 및 ACCEPTED 시 업데이트
+- `SaveApi.cs` 삭제: SyncApi와 완전 중복이며 아무 곳에서도 호출되지 않는 죽은 코드
+
+### 수정 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Shared/Responses/ShopResponses.cs` | StartAt/EndAt nullable 변경 |
+| `Assets/_Project/Scripts/Network/SyncApi.cs` | version 파라미터 추가 |
+| `Assets/_Project/Scripts/Services/ServerSyncService.cs` | _saveVersion 추적 로직 추가 |
+| `Assets/_Project/Scripts/Network/SaveApi.cs` | 삭제 (미사용 중복 코드) |
+
+---
+
+## 2026-03-07 (15) - BUG-008 ApiClient HTTP 400 body 역직렬화 수정
+
+### 개요
+
+서버 응답 패턴 통일(dev-server-agent)에 대응하여, ApiClient가 HTTP 4xx 응답의 body를 역직렬화하도록 수정했다. 서버가 `BadRequest(result)`로 에러를 반환하면 body에 `ServerResponse<T>` JSON이 포함되는데, 기존 코드는 이를 무시하고 Data를 null로 설정하여 ErrorCode가 유실되었다.
+
+### 수정 내용
+
+- `ApiResponse.cs`: `FailWithData(T data, int statusCode, string errorMessage)` 팩토리 메서드 추가
+- `ApiClient.cs`: HTTP 4xx 응답 시 body를 T로 역직렬화 시도, 성공하면 `FailWithData`로 Data 포함
+
+### 수정 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Network/ApiResponse.cs` | FailWithData 팩토리 메서드 추가 |
+| `Assets/_Project/Scripts/Network/ApiClient.cs` | HTTP 4xx body 역직렬화 로직 추가 |
+
+---
+
+## 2026-03-07 (14) - BUG-013 서버 비즈니스 에러 시 로컬 폴백 제거
+
+### 개요
+
+GameManager의 30여 개 Online API 메서드에서 서버가 비즈니스 에러(재화 부족 등)를 반환해도 로컬 폴백 로직을 실행하여 서버-클라이언트 상태 불일치가 발생하는 Critical 버그를 수정했다.
+
+### 수정 내용
+
+모든 Online API 메서드의 에러 분기에서 로컬 폴백(로컬 도메인 로직 실행)을 제거하고 `Result.Fail` 또는 `null`을 반환하도록 변경했다.
+
+수정 패턴:
+- `Result` 콜백 메서드: `callback(로컬메서드())` -> `callback(Result.Fail(errorCode))`
+- `Result<T>` 콜백 메서드: `callback(로컬메서드())` -> `callback(Result.Fail<T>(errorCode))`
+- 비-Result 콜백(PullGacha, Attendance): `callback(로컬메서드())` -> `callback(null)`
+
+영향받는 메서드 (30여 개): TalentUpgradeAsync, ClaimTalentMilestoneAsync, ClaimAllTalentMilestonesAsync, UpgradeEquipmentAsync, EquipItemAsync, UnequipItemAsync, SellEquipmentAsync, ForgeEquipmentAsync, BulkForgeAsync, HatchPetAsync, FeedPetAsync, DeployPetAsync, PullGachaAsync, PullGacha10Async, TowerChallengeAsync, DungeonChallengeAsync, DungeonSweepAsync, GoblinMineAsync, GoblinCartAsync, CatacombStartAsync, CatacombBattleAsync, CatacombEndAsync, ClaimQuestRewardAsync, ClaimAllQuestRewardsAsync, UpgradeHeritageAsync, ClaimChapterTreasureAsync, ClaimAttendanceAsync, ChapterStartAsync, ChapterAdvanceDayAsync, ChapterResolveEncounterAsync, ChapterSelectSkillAsync, ChapterRerollAsync, ChapterBattleResultAsync, ChapterAbandonAsync
+
+### 검증
+
+- 모든 UI 호출부에서 `result.IsFail()`/`result.IsOk()`/null 체크가 이미 구현되어 있음을 확인
+- 오프라인 분기(`_networkMode == NetworkMode.OFFLINE`)는 기존 로컬 실행을 유지
+
+### 수정 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Services/GameManager.cs` | 30여 개 Online API 메서드의 에러 분기에서 로컬 폴백 제거 |
+
+---
+
 ## 2026-03-07 (13) - 서버 연동 후 컴파일 에러 3건 수정
 
 ### 개요
