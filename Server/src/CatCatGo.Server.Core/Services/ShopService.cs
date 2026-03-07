@@ -93,4 +93,50 @@ public class ShopService
     {
         return await _purchaseRepo.GetByAccountIdAsync(accountId);
     }
+
+    public async Task<ConsumeResponse> ConsumeAsync(Guid accountId, string purchaseId)
+    {
+        var purchases = await _purchaseRepo.GetByAccountIdAsync(accountId);
+        var purchase = purchases.FirstOrDefault(p => p.Id.ToString() == purchaseId);
+        if (purchase == null)
+            return new ConsumeResponse { Success = false, Error = "PURCHASE_NOT_FOUND" };
+        if (purchase.Status == "CONSUMED")
+            return new ConsumeResponse { Success = false, Error = "ALREADY_CONSUMED" };
+
+        purchase.Status = "CONSUMED";
+        return new ConsumeResponse { Success = true };
+    }
+
+    public SubscriptionStatusResponse GetSubscriptionStatus(Guid accountId)
+    {
+        return new SubscriptionStatusResponse
+        {
+            IsActive = false,
+            ProductId = null,
+            ExpiresAt = null,
+        };
+    }
+
+    public Task HandleRtdnAsync(string notificationData)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task HandleS2SNotificationAsync(string notificationData)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public class ConsumeResponse
+{
+    public bool Success { get; set; }
+    public string? Error { get; set; }
+}
+
+public class SubscriptionStatusResponse
+{
+    public bool IsActive { get; set; }
+    public string? ProductId { get; set; }
+    public long? ExpiresAt { get; set; }
 }

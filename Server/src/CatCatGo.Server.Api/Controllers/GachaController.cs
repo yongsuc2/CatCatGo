@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CatCatGo.Server.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,25 +10,40 @@ namespace CatCatGo.Server.Api.Controllers;
 [Authorize]
 public class GachaController : ControllerBase
 {
-    [HttpPost("pull")]
-    public ActionResult Pull()
+    private readonly GachaService _gachaService;
+
+    public GachaController(GachaService gachaService)
     {
-        // TODO: 서버사이드 가챠 실행
-        // Domain 어셈블리의 TreasureChest + SeededRandom 재사용
-        return Ok(new { Message = "NOT_IMPLEMENTED" });
+        _gachaService = gachaService;
+    }
+
+    [HttpPost("pull")]
+    public async Task<IActionResult> Pull()
+    {
+        var accountId = GetAccountId();
+        var result = await _gachaService.PullAsync(accountId);
+        return Ok(result);
     }
 
     [HttpPost("pull10")]
-    public ActionResult Pull10()
+    public async Task<IActionResult> Pull10()
     {
-        // TODO: 서버사이드 10연차 실행
-        return Ok(new { Message = "NOT_IMPLEMENTED" });
+        var accountId = GetAccountId();
+        var result = await _gachaService.Pull10Async(accountId);
+        return Ok(result);
     }
 
     [HttpGet("pity")]
-    public ActionResult GetPity()
+    public async Task<IActionResult> GetPity()
     {
-        // TODO: 천장 카운터 조회
-        return Ok(new { PityCount = 0, Threshold = 180 });
+        var accountId = GetAccountId();
+        var result = await _gachaService.GetPityAsync(accountId);
+        return Ok(result);
+    }
+
+    private Guid GetAccountId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Guid.Parse(claim!);
     }
 }

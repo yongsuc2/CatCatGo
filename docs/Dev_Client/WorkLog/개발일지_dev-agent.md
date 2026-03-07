@@ -1,5 +1,52 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (3) - 서버 미구현 피쳐 34개 API 구현
+
+### 개요
+
+치트_검증_목록_상세.md에 설계된 48개 API 중 미구현 상태였던 34개 API를 구현했다.
+신규 서비스 9개 + 기존 서비스 확장 3개, 총 12개 서비스에 대한 전체 구현.
+
+### 신규 서비스 (9개)
+
+| 서비스 | API 수 | 엔드포인트 |
+|--------|--------|-----------|
+| ResourceService | 2 | POST /api/resource/spend, GET /api/resource/balance |
+| TalentService | 3 | POST /api/talent/upgrade, POST /api/talent/claim-milestone, GET /api/talent/status |
+| EquipmentService | 5 | POST /api/equipment/enhance, POST /api/equipment/forge, POST /api/equipment/equip, POST /api/equipment/unequip, POST /api/equipment/sell |
+| ChapterService | 8 | POST /api/chapter/start, POST /api/chapter/encounter, POST /api/chapter/encounter/resolve, POST /api/chapter/skill/select, POST /api/chapter/skill/reroll, POST /api/chapter/abandon, GET /api/chapter/state, POST /api/chapter/treasure/claim |
+| PetService | 3 | POST /api/pet/feed, POST /api/pet/upgrade, POST /api/pet/equip |
+| HeritageService | 2 | POST /api/heritage/upgrade, GET /api/heritage/status |
+| DailyService | 4 | POST /api/daily/attendance/claim, GET /api/daily/attendance, POST /api/daily/quest/claim, GET /api/daily/quest |
+| ContentService | 7 | POST /api/content/tower/challenge, POST /api/content/dungeon/enter, POST /api/content/dungeon/result, POST /api/content/travel/start, POST /api/content/travel/complete, POST /api/content/goblin/mine, POST /api/content/catacomb/run |
+
+### 기존 서비스 확장 (3개)
+
+| 서비스 | 신규 API 수 | 엔드포인트 |
+|--------|------------|-----------|
+| GachaService | 3 (스텁 -> 실제 구현) | POST /api/gacha/pull, POST /api/gacha/pull10, GET /api/gacha/pity |
+| ShopService | 4 | POST /api/shop/consume, GET /api/shop/subscription, POST /api/shop/rtdn, POST /api/shop/s2s-notification |
+| ArenaService | 3 | POST /api/arena/defense, GET /api/arena/season, POST /api/arena/retry |
+
+### 신규 DB 모델 (10개)
+
+ResourceBalance, ResourceLedger, TalentState, EquipmentEntry, ChapterSession, ChapterProgress, GachaPity, PetEntry, HeritageState, DailyAttendance, QuestProgress, ContentProgress
+
+### 신규 Repository 인터페이스 + 구현체 (8개)
+
+IResourceRepository, ITalentRepository, IEquipmentRepository, IChapterRepository, IGachaRepository, IPetRepository, IHeritageRepository, IDailyRepository, IContentRepository
+
+### 검증
+
+- `dotnet build`: 0 Warning, 0 Error
+
+### 미구현 항목
+
+- AntiCheatService (미들웨어/크론잡) -- 별도 인프라 작업 필요
+- BattleVerifier 전투 재현 -- Domain 어셈블리 서버 참조 필요
+
+---
+
 ## 2026-03-07 (2) - 서버 연동 클라이언트 네트워크 레이어 구현
 
 ### 개요
