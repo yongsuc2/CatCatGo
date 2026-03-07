@@ -44,6 +44,12 @@ echo "[Health Check]"
 STATUS=$($CURL -o /dev/null -w "%{http_code}" "$BASE_URL/")
 assert_status "GET /" 200 "$STATUS"
 
+HEALTH_BODY=$($CURL "$BASE_URL/health")
+STATUS=$($CURL -o /dev/null -w "%{http_code}" "$BASE_URL/health")
+assert_status "GET /health" 200 "$STATUS"
+assert_json_field "GET /health (has status)" "$HEALTH_BODY" "status"
+assert_json_field "GET /health (has checks)" "$HEALTH_BODY" "checks"
+
 # ─── Auth ───
 echo ""
 echo "[Auth]"

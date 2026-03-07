@@ -144,3 +144,62 @@ private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
 ### 검증
 - `dotnet build` — 0 Warning, 0 Error
 - `dotnet test` — 128개 테스트 전부 통과
+
+---
+
+## 2026-03-07: 서버 모니터링 미들웨어 및 도구 개선
+
+### 작업 목표
+서버 모니터링 인프라 강화: 요청 로깅, health check, 구조화된 로깅, 에러 핸들링
+
+### 변경 내용
+
+#### 1. Request/Response 로깅 미들웨어
+- `Middleware/RequestLoggingMiddleware.cs` 신규 생성
+- 모든 요청에 대해 HTTP 메서드, 경로, 상태코드, 소요시간(ms) 기록
+- 상태코드별 로그 레벨 분리: 5xx=Error, 4xx=Warning, 나머지=Information
+
+#### 2. Correlation ID 미들웨어
+- `Middleware/CorrelationIdMiddleware.cs` 신규 생성
+- `X-Correlation-Id` 헤더가 있으면 사용, 없으면 GUID 자동 생성
+- 응답 헤더에 correlation ID 반환
+- `ILogger.BeginScope`로 로그 스코프에 CorrelationId 포함
+
+#### 3. Health Check 엔드포인트 개선
+- `GET /health` 엔드포인트 추가 (Program.cs)
+- PostgreSQL 연결 상태 확인 (`CanConnectAsync`)
+- Redis 연결 상태 확인 (`PingAsync`)
+- 모두 정상이면 200 `{"status":"healthy","checks":{...}}`, 하나라도 실패하면 503 `{"status":"degraded",...}`
+
+#### 4. 에러 핸들링 미들웨어
+- `Middleware/ExceptionHandlingMiddleware.cs` 신규 생성
+- unhandled exception 발생 시 구조화된 JSON 에러 응답 반환
+- `ApiResponse.Fail("INTERNAL_ERROR", ...)` 포맷으로 클라이언트 파싱 일관성 유지
+- CorrelationId와 함께 에러 로그 기록
+
+#### 5. 구조화된 로깅 설정
+- `appsettings.json`: Production 환경 JSON 포맷 로깅 (UTC 타임스탬프, 스코프 포함)
+- `appsettings.Development.json`: 개발 환경 simple 포맷 (읽기 쉬운 형태, 스코프 포함)
+- 로그 레벨 세분화: Default=Warning, CatCatGo=Information (Dev에서는 Debug)
+
+### 변경 파일 목록
+
+**신규 (3개)**
+- `Server/src/CatCatGo.Server.Api/Middleware/CorrelationIdMiddleware.cs`
+- `Server/src/CatCatGo.Server.Api/Middleware/RequestLoggingMiddleware.cs`
+- `Server/src/CatCatGo.Server.Api/Middleware/ExceptionHandlingMiddleware.cs`
+
+**수정 (4개)**
+- `Server/src/CatCatGo.Server.Api/Program.cs` — 미들웨어 등록 + health check 엔드포인트
+- `Server/src/CatCatGo.Server.Api/appsettings.json` — 구조화된 로깅 설정
+- `Server/src/CatCatGo.Server.Api/appsettings.Development.json` — 개발 환경 로깅 설정
+- `Server/test-api.sh` — health check 테스트 추가
+
+### 미들웨어 파이프라인 순서
+```
+Request → CorrelationId → ExceptionHandling → RequestLogging → Auth → Controller
+```
+
+### 검증
+- `dotnet build` — 0 Error
+- `dotnet test` — 128개 테스트 전부 통과

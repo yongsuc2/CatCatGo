@@ -1,4 +1,5 @@
 using System.Text;
+using CatCatGo.Server.Api.Middleware;
 using CatCatGo.Server.Core.Interfaces;
 using CatCatGo.Server.Core.Services;
 using CatCatGo.Server.Infrastructure.Cache;
@@ -95,7 +96,43 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.MapMethods("/", new[] { "GET", "HEAD" }, () => Results.Ok());
+
+app.MapGet("/health", async (AppDbContext db, IConnectionMultiplexer redis) =>
+{
+    var checks = new Dictionary<string, string>();
+    var healthy = true;
+
+    try
+    {
+        await db.Database.CanConnectAsync();
+        checks["postgres"] = "ok";
+    }
+    catch
+    {
+        checks["postgres"] = "unavailable";
+        healthy = false;
+    }
+
+    try
+    {
+        var redisDb = redis.GetDatabase();
+        await redisDb.PingAsync();
+        checks["redis"] = "ok";
+    }
+    catch
+    {
+        checks["redis"] = "unavailable";
+        healthy = false;
+    }
+
+    var result = new { status = healthy ? "healthy" : "degraded", checks };
+    return healthy ? Results.Ok(result) : Results.Json(result, statusCode: 503);
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
