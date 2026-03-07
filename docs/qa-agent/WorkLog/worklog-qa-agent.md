@@ -95,3 +95,41 @@ consistency-report-v1, v2에서 인라인으로 기록된 BUG-001 ~ BUG-007을 `
 **Output**
 - docs/qa-agent/client-code-review-verification-report.md
 - docs/qa-agent/Bugs/BUG-014_collection-datatable-null-safety.md
+
+## 2026-03-08
+
+### 서버-클라이언트 연동 버그 리뷰 (BUG-008 ~ BUG-013, BUG-015)
+
+**Scope**
+- 서버-클라이언트 API 응답 패턴 통일 검증
+- Shared 모델 일치 여부 검증
+- 비즈니스 로직 연동 검증
+- 재능 마일스톤 delta key 형식 검증
+
+**Findings**
+- [BUG-008 Major] 서버 응답 패턴 이중화 -> ToActionResult() 적용으로 통일 -> Closed
+- [BUG-009 Minor] ProductDto StartAt/EndAt nullable 불일치 -> 클라이언트 long? 변경 -> Closed
+- [BUG-010 Major] RewardData.Amount double vs int 타입 불일치 -> 서버 래퍼 구조 통일 -> Closed
+- [BUG-011 Minor] SyncApi.Sync() Version 미설정 -> version 파라미터 추가, SaveApi 삭제 -> Closed
+- [BUG-012 Minor] ResourceApi/LinkSocialRequest 미구현 -> 미구현 사항으로 Closed
+- [BUG-013 Critical] 서버 에러 시 로컬 폴백 실행 -> Result.Fail 반환으로 변경 -> Closed
+- [BUG-015 Critical] 재능 마일스톤 delta key 형식 불일치 ("10" vs "LV_10") -> 서버 수정 -> Closed
+
+### 버그 리포트 최신화 자체 검토
+
+**Scope**: docs/qa-agent/Bugs/ 전체 (BUG-001 ~ BUG-015, 15건)
+
+**검토 결과:**
+- Closed 14건: 모두 실제 코드에서 수정 완료 확인 (코드 grep으로 직접 검증)
+- Open 1건 (BUG-014): CollectionDataTable null safety 미수정 확인 — Open 상태 정확
+- 버그 리포트 내 관련 파일 경로: 모두 유효 확인
+- 잘못된 상태의 버그 리포트: 없음
+
+**테스트 케이스 문서 현행화 확인:**
+- consistency-report-v1: 검증 시점(2026-03-07) 기준 정확 (이후 수정된 BUG 상태는 개별 버그 문서에서 추적)
+- consistency-report-v2: 동일 — 스냅샷 문서로서 정확
+
+**결론: 잘못된 내용 없음. 미래 작업을 Todo 리스트로 등록**
+
+**Output**
+- docs/qa-agent/Todo/qa-todo-list.md
