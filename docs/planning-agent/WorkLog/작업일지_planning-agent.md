@@ -1,5 +1,23 @@
 # Planning Agent 작업일지
 
+## 2026-03-08 트러블슈팅 문서 3건 작성
+
+### 수행 작업
+- 최근 수정된 버그 3건에 대한 트러블슈팅 문서를 `/doc` skill 포맷으로 작성
+
+### 주요 변경사항
+- `docs/planning-agent/TroubleShooting/골드_비동기화_INSUFFICIENT_GOLD.md` (신규)
+  - 커밋 220d9e9d: SyncApi 스냅샷의 시간차로 인한 재화 잔고 불일치 문제
+- `docs/planning-agent/TroubleShooting/재능_milestone_key_불일치.md` (신규)
+  - 커밋 e8e98817: 서버 "10" vs 클라이언트 "LV_10" 키 형식 불일치
+- `docs/planning-agent/TroubleShooting/JSON_데이터_파일_truncation.md` (신규)
+  - 커밋 6455da43: battle/dungeon/pet JSON 파일의 닫는 중괄호 누락
+
+### 이슈/메모
+- TroubleShooting 디렉토리가 미존재하여 신규 생성
+
+---
+
 ## 2026-03-07 밸런스 수치 하드코딩 제거 (데이터 테이블 참조 교체)
 
 ### 작업 배경
