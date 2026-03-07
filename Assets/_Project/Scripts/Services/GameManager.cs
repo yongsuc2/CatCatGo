@@ -912,7 +912,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(TalentUpgrade(statType));
+                    callback(Result.Fail<TalentUpgradeResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -930,7 +930,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimTalentMilestone(milestoneLevel));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -948,7 +948,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimAllTalentMilestones());
+                    callback(Result.Fail<int>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -967,7 +967,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(UpgradeEquipment(equipmentId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -985,7 +985,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(EquipItem(equipmentId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1003,7 +1003,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(UnequipItem(slotType, index));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1021,7 +1021,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(SellEquipment(equipmentId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1039,7 +1039,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ForgeEquipment(equipmentIds));
+                    callback(Result.Fail<ForgeResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1057,7 +1057,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(BulkForge());
+                    callback(Result.Fail<BulkForgeResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1076,7 +1076,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(HatchPet());
+                    callback(Result.Fail<Pet>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1097,7 +1097,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(FeedPet(petId, amount));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1115,7 +1115,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(DeployPet(petId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1133,7 +1133,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(PullGacha());
+                    callback(null);
                     return;
                 }
                 OnApiSuccess();
@@ -1151,7 +1151,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(PullGacha10());
+                    callback(null);
                     return;
                 }
                 OnApiSuccess();
@@ -1169,7 +1169,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(TowerChallenge());
+                    callback(Result.Fail<TowerActionResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1195,7 +1195,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(DungeonChallenge(type));
+                    callback(Result.Fail<DungeonChallengeResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1219,7 +1219,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(DungeonSweep(type));
+                    callback(Result.Fail<SweepResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1237,7 +1237,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(GoblinMine());
+                    callback(Result.Fail<GoblinMineResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1256,7 +1256,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(GoblinCart());
+                    callback(Result.Fail<Reward>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1274,7 +1274,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(CatacombStart());
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1292,7 +1292,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(CatacombBattle());
+                    callback(Result.Fail<CatacombRunResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1317,7 +1317,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(CatacombEnd());
+                    callback(Result.Fail<Reward>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1335,7 +1335,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimQuestReward(eventId, missionId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1353,7 +1353,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimAllQuestRewards(eventId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1371,7 +1371,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(UpgradeHeritage(route));
+                    callback(Result.Fail<HeritageUpgradeResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1389,7 +1389,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimChapterTreasure(milestoneId));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1407,7 +1407,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(ClaimAttendance());
+                    callback(null);
                     return;
                 }
                 OnApiSuccess();
@@ -1431,8 +1431,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    StartChapter(chapterId, type);
-                    callback(CurrentChapter != null ? Result.Ok() : Result.Fail("Failed to start chapter"));
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1462,10 +1461,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    var chapter = CurrentChapter;
-                    if (chapter == null) { callback(Result.Fail<ChapterAdvanceDayResult>("No active chapter")); return; }
-                    var enc = chapter.AdvanceDay();
-                    callback(Result.Ok(new ChapterAdvanceDayResult { Encounter = enc }));
+                    callback(Result.Fail<ChapterAdvanceDayResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1506,21 +1502,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    var chapter = CurrentChapter;
-                    if (chapter != null)
-                    {
-                        var result = chapter.ResolveEncounter(choiceIndex, chapter.SessionCurrentHp, chapter.SessionMaxHp);
-                        if (result?.Reward != null)
-                        {
-                            float goldMult = Player.GetGoldMultiplier();
-                            foreach (var r in result.Reward.Resources)
-                            {
-                                int amt = r.Type == ResourceType.GOLD ? Mathf.FloorToInt(r.Amount * goldMult) : r.Amount;
-                                Player.Resources.Add(r.Type, amt);
-                            }
-                        }
-                    }
-                    callback(Result.Ok());
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1554,21 +1536,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    var chapter = CurrentChapter;
-                    if (chapter != null)
-                    {
-                        var skill = EncounterGenerator.FindSkillById(skillId);
-                        if (skill != null)
-                        {
-                            int existing = chapter.SessionSkills.FindIndex(s => s.Id == skill.Id);
-                            if (existing >= 0)
-                                chapter.SessionSkills[existing] = skill;
-                            else
-                                chapter.SessionSkills.Add(skill);
-                            chapter.RecalcSessionMaxHp();
-                        }
-                    }
-                    callback(Result.Ok());
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1593,10 +1561,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    var chapter = CurrentChapter;
-                    if (chapter == null) { callback(Result.Fail<ChapterRerollResult>("No active chapter")); return; }
-                    var newEnc = chapter.RerollEncounter();
-                    callback(Result.Ok(new ChapterRerollResult { Encounter = newEnc }));
+                    callback(Result.Fail<ChapterRerollResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1619,7 +1584,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    callback(Result.Ok(new ChapterBattleResultResult { Verified = false }));
+                    callback(Result.Fail<ChapterBattleResultResult>(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
@@ -1654,12 +1619,7 @@ namespace CatCatGo.Services
                 if (!response.IsSuccess || response.Data == null || !response.Data.Success)
                 {
                     OnApiFailed(response.Data?.ErrorCode);
-                    var chapter = CurrentChapter;
-                    if (chapter != null)
-                        Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
-                    CurrentChapter = null;
-                    SaveGame();
-                    callback(Result.Ok());
+                    callback(Result.Fail(response.Data?.ErrorCode ?? "SERVER_ERROR"));
                     return;
                 }
                 OnApiSuccess();
