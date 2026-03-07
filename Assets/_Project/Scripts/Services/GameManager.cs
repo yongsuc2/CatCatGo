@@ -428,11 +428,11 @@ namespace CatCatGo.Services
             return Result.Ok();
         }
 
-        public Result ClaimAllTalentMilestones()
+        public Result<int> ClaimAllTalentMilestones()
         {
             var claimable = Player.Talent.GetClaimableMilestones(Player.ClaimedMilestones);
             if (claimable.Count == 0)
-                return Result.Fail("No claimable milestones");
+                return Result.Fail<int>("nothing to claim");
 
             foreach (var milestone in claimable)
             {
@@ -443,7 +443,7 @@ namespace CatCatGo.Services
             }
 
             SaveGame();
-            return Result.Ok();
+            return Result.Ok(claimable.Count);
         }
 
         public Result UpgradeEquipment(string equipmentId)
@@ -776,12 +776,15 @@ namespace CatCatGo.Services
             return Result.Ok();
         }
 
-        public Result<HeritageUpgradeResult> UpgradeHeritage(HeritageRoute route)
+        public Result<HeritageUpgradeResult> UpgradeHeritage(string route)
         {
             if (!Player.IsHeritageUnlocked())
                 return Result.Fail<HeritageUpgradeResult>("Heritage not unlocked");
 
-            if (Player.Heritage.Route != route)
+            if (!Enum.TryParse<HeritageRoute>(route, out var parsedRoute))
+                return Result.Fail<HeritageUpgradeResult>("Invalid route");
+
+            if (Player.Heritage.Route != parsedRoute)
                 return Result.Fail<HeritageUpgradeResult>("Wrong route");
 
             var bookType = Player.Heritage.GetRequiredBookType();
