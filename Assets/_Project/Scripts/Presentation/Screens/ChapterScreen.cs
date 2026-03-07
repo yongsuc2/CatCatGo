@@ -688,7 +688,7 @@ namespace CatCatGo.Presentation.Screens
                 if (state == BattleState.VICTORY)
                 {
                     chapter?.OnBossDefeated();
-                    if (chapter != null)
+                    if (chapter != null && !Game.IsOnline)
                     {
                         Game.Player.ClearedChapterMax = Mathf.Max(Game.Player.ClearedChapterMax, chapter.Id);
                         int clearGold = Mathf.FloorToInt(EncounterDataTable.GetChapterClearGold(chapter.Id) * Game.Player.GetGoldMultiplier());
@@ -702,7 +702,7 @@ namespace CatCatGo.Presentation.Screens
                     chapter?.OnBattleEnd(state);
                 }
 
-                if (chapter != null)
+                if (chapter != null && !Game.IsOnline)
                     Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, chapter.IsCompleted());
 
                 Game.CurrentChapter = null;
@@ -735,7 +735,7 @@ namespace CatCatGo.Presentation.Screens
 
             int goldRaw = chapter?.OnBattleEnd(state) ?? 0;
             int goldEarned = goldRaw > 0 ? Mathf.FloorToInt(goldRaw * Game.Player.GetGoldMultiplier()) : 0;
-            if (goldEarned > 0)
+            if (goldEarned > 0 && !Game.IsOnline)
                 Game.Player.Resources.Add(ResourceType.GOLD, goldEarned);
 
             Game.ChapterBattleResultAsync(_currentBattleSeed, resultStr, turnCount, playerRemainingHp, battleResult =>
@@ -757,7 +757,7 @@ namespace CatCatGo.Presentation.Screens
                         }
                     }
 
-                    if (chapter != null)
+                    if (chapter != null && !Game.IsOnline)
                         Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
 
                     Game.CurrentChapter = null;

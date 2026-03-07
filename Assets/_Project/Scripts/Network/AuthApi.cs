@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using CatCatGo.Shared.Requests;
 using CatCatGo.Shared.Responses;
+using CatCatGo.Services;
 
 namespace CatCatGo.Network
 {
@@ -52,6 +53,8 @@ namespace CatCatGo.Network
             if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
                 ApiClient.Instance.TokenStore.Clear();
+                if (GameManager.Instance != null)
+                    GameManager.Instance.ResetToNewGame();
                 callback(ApiResponse<object>.Success(null, (int)request.responseCode));
             }
             else

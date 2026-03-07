@@ -138,6 +138,11 @@ namespace CatCatGo.Services
             _pendingSave = true;
         }
 
+        public void ClearPendingSave()
+        {
+            _pendingSave = false;
+        }
+
         public void SyncSaveToServer()
         {
             if (State != ConnectionState.Online) return;

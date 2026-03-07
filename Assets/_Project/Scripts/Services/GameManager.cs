@@ -391,6 +391,21 @@ namespace CatCatGo.Services
             PetManagerService = new PetManager();
             Rng = new SeededRandom(Environment.TickCount);
             InitNewGame();
+
+            if (IsOnline)
+            {
+                var sync = ServerSyncService.Instance;
+                if (sync != null)
+                    sync.ClearPendingSave();
+
+                AuthApi.ResetData(response =>
+                {
+                    if (response.IsSuccess)
+                        Debug.Log("[GameManager] Server data reset successful");
+                    else
+                        Debug.LogWarning($"[GameManager] Server data reset failed: {response.ErrorMessage}");
+                });
+            }
         }
 
         public bool HasSave()
