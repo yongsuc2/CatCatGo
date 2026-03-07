@@ -1,5 +1,66 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (7) - Phase 3-1: GameManager 듀얼 모드 메서드 추가
+
+### 개요
+
+설계 문서 Phase 3 중 GameManager 듀얼 모드 분기 메서드를 추가했다.
+현재는 OFFLINE 모드만 구현 (기존 Screen 로직을 GameManager 메서드로 래핑).
+Screen 코드는 변경하지 않음 (Phase 3-2에서 변경 예정).
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `GameManager.cs` | 듀얼 모드 메서드 22개 추가 + 결과 타입 5개 추가 |
+
+### 추가된 메서드
+
+| 카테고리 | 메서드 | 반환 타입 |
+|----------|--------|-----------|
+| Talent | `TalentUpgrade(StatType)` | `Result<TalentUpgradeResult>` |
+| Talent | `ClaimTalentMilestone(int)` | `Result` |
+| Talent | `ClaimAllTalentMilestones()` | `Result` |
+| Equipment | `UpgradeEquipment(string)` | `Result` |
+| Equipment | `EquipItem(string)` | `Result` |
+| Equipment | `UnequipItem(SlotType, int)` | `Result` |
+| Equipment | `SellEquipment(string)` | `Result` |
+| Equipment | `ForgeEquipment(List<string>)` | `Result<ForgeResult>` |
+| Equipment | `BulkForge()` | `Result<BulkForgeResult>` |
+| Pet | `HatchPet()` | `Result<Pet>` |
+| Pet | `FeedPet(string, int)` | `Result` |
+| Pet | `DeployPet(string)` | `Result` |
+| Content | `TowerChallenge()` | `Result<TowerActionResult>` |
+| Content | `DungeonChallenge(DungeonType)` | `Result<DungeonChallengeResult>` |
+| Content | `DungeonSweep(DungeonType)` | `Result<SweepResult>` |
+| Content | `GoblinMine()` | `Result<GoblinMineResult>` |
+| Content | `GoblinCart()` | `Result<Reward>` |
+| Content | `CatacombStart()` | `Result` |
+| Content | `CatacombBattle()` | `Result<CatacombRunResult>` |
+| Content | `CatacombEnd()` | `Result<Reward>` |
+| Quest | `ClaimQuestReward(string, string)` | `Result` |
+| Quest | `ClaimAllQuestRewards(string)` | `Result` |
+| Heritage | `UpgradeHeritage(HeritageRoute)` | `Result<HeritageUpgradeResult>` |
+
+### 추가된 결과 타입
+
+| 타입 | 필드 |
+|------|------|
+| `BulkForgeResult` | MergedCount |
+| `TowerActionResult` | BattleState, Reward, Advanced |
+| `DungeonChallengeResult` | BattleState, Reward |
+| `GoblinMineResult` | OreGained, TotalOre |
+| `CatacombRunResult` | ContinueRun, Reward, CurrentFloor, BattleIndex |
+
+### 설계 원칙
+
+- 모든 메서드는 현재 OFFLINE 모드 로직 (기존 Screen 코드를 그대로 이동)
+- 각 메서드 끝에 `SaveGame()` 호출
+- 기존 GameManager 메서드(StartChapter, ChallengeDungeon, PullGacha 등) 유지
+- 도메인 타입과의 이름 충돌 방지: TowerActionResult (도메인 TowerChallengeResult), CatacombRunResult (도메인 CatacombBattleResult)
+
+---
+
 ## 2026-03-07 (6) - Phase 1: 서버연동 기반 구축
 
 ### 개요
