@@ -1,9 +1,10 @@
 {
   "equipment": {
     "costPerPull": 150,
+    "costCurrency": "GEMS",
     "pityThreshold": 180,
     "gradeWeights": [
-      { "grade": "COMMON", "weight": 243 },
+      { "grade": "COMMON", "weight": 260 },
       { "grade": "UNCOMMON", "weight": 81 },
       { "grade": "RARE", "weight": 27 },
       { "grade": "EPIC", "weight": 9 },
@@ -13,11 +14,43 @@
     "sRate": 0.02,
     "sEligibleGrades": ["EPIC", "LEGENDARY", "MYTHIC"]
   },
+  "adventurerChest": {
+    "costPerPull": 1,
+    "costCurrency": "SILVER_KEY",
+    "pityThreshold": 0,
+    "gradeWeights": [
+      { "grade": "COMMON", "weight": 3 },
+      { "grade": "UNCOMMON", "weight": 1 }
+    ],
+    "sRate": 0,
+    "sEligibleGrades": []
+  },
+  "heroChest": {
+    "costPerPull": 1,
+    "costCurrency": "GOLD_KEY",
+    "pityThreshold": 0,
+    "gradeWeights": [
+      { "grade": "UNCOMMON", "weight": 9 },
+      { "grade": "RARE", "weight": 3 },
+      { "grade": "EPIC", "weight": 1 }
+    ],
+    "sRate": 0,
+    "sEligibleGrades": []
+  },
   "pet": {
     "costPerPull": 298,
+    "costCurrency": "GEMS",
     "pityThreshold": 0,
     "eggAmount": 1,
     "foodMin": 1,
     "foodMax": 5
+  },
+  "basicPet": {
+    "costPerPull": 1,
+    "costCurrency": "PET_EGG",
+    "pityThreshold": 0,
+    "eggAmount": 1,
+    "foodMin": 0,
+    "foodMax": 2
   }
 }
