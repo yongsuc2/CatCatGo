@@ -94,6 +94,7 @@ namespace CatCatGo.Network
             }
 
             string url = _config.BaseUrl + "/" + endpoint;
+            Debug.Log($"[Net] {method} {url}");
             UnityWebRequest request;
 
             if (method == "GET")
@@ -125,6 +126,7 @@ namespace CatCatGo.Network
                     request.result == UnityWebRequest.Result.DataProcessingError)
                 {
                     IsOnline = false;
+                    Debug.LogWarning($"[Net] {method} {endpoint} FAILED: {request.error} (retry {retryCount}/{_config.MaxRetryCount})");
                     if (retryCount < _config.MaxRetryCount)
                     {
                         yield return new WaitForSeconds(_config.RetryDelaySeconds);
@@ -149,6 +151,8 @@ namespace CatCatGo.Network
                     callback(ApiResponse<T>.Fail(401, "Authentication failed after refresh"));
                     yield break;
                 }
+
+                Debug.Log($"[Net] {method} {endpoint} → {statusCode}");
 
                 if (statusCode >= 200 && statusCode < 300)
                 {

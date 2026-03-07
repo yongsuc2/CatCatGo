@@ -10,4 +10,6 @@ public interface IAccountRepository
     Task<Account?> GetByRefreshTokenAsync(string refreshToken);
     Task<Account> CreateAsync(Account account);
     Task UpdateAsync(Account account);
+    Task DeleteAsync(Guid id);
+    Task DeleteAllDataAsync(Guid accountId);
 }

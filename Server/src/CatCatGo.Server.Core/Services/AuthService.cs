@@ -115,6 +115,24 @@ public class AuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public async Task<bool> ResetDataAsync(Guid accountId)
+    {
+        var account = await _accountRepo.GetByIdAsync(accountId);
+        if (account == null) return false;
+
+        await _accountRepo.DeleteAllDataAsync(accountId);
+        return true;
+    }
+
+    public async Task<bool> DeleteAccountAsync(Guid accountId)
+    {
+        var account = await _accountRepo.GetByIdAsync(accountId);
+        if (account == null) return false;
+
+        await _accountRepo.DeleteAsync(accountId);
+        return true;
+    }
+
     private static string GenerateRefreshToken()
     {
         var bytes = new byte[64];

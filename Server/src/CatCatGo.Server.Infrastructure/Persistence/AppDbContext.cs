@@ -33,7 +33,7 @@ public class AppDbContext : DbContext
             entity.ToTable("accounts");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.DeviceId).IsUnique();
-            entity.HasIndex(e => new { e.SocialType, e.SocialId }).IsUnique().HasFilter("social_type IS NOT NULL");
+            entity.HasIndex(e => new { e.SocialType, e.SocialId }).IsUnique().HasFilter("\"SocialType\" IS NOT NULL");
         });
 
         modelBuilder.Entity<ServerSaveData>(entity =>

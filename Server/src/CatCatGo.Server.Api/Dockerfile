@@ -8,7 +8,7 @@ COPY src/CatCatGo.Server.Api/CatCatGo.Server.Api.csproj src/CatCatGo.Server.Api/
 RUN dotnet restore src/CatCatGo.Server.Api/CatCatGo.Server.Api.csproj
 
 COPY src/ src/
-RUN dotnet publish src/CatCatGo.Server.Api/CatCatGo.Server.Api.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish src/CatCatGo.Server.Api/CatCatGo.Server.Api.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app

@@ -28,6 +28,39 @@ namespace CatCatGo.Network
             return SystemInfo.deviceUniqueIdentifier;
         }
 
+        public static void ResetData(Action<ApiResponse<object>> callback)
+        {
+            ApiClient.Instance.PostNoResponse("api/auth/reset-data", null, callback);
+        }
+
+        public static void DeleteAccount(Action<ApiResponse<object>> callback)
+        {
+            ApiClient.Instance.StartCoroutine(DeleteAccountCoroutine(callback));
+        }
+
+        private static System.Collections.IEnumerator DeleteAccountCoroutine(Action<ApiResponse<object>> callback)
+        {
+            var url = ServerConfig.Instance.BaseUrl + "/api/auth/account";
+            var request = UnityEngine.Networking.UnityWebRequest.Delete(url);
+            request.downloadHandler = new UnityEngine.Networking.DownloadHandlerBuffer();
+            var token = ApiClient.Instance.TokenStore.AccessToken;
+            if (!string.IsNullOrEmpty(token))
+                request.SetRequestHeader("Authorization", "Bearer " + token);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            {
+                ApiClient.Instance.TokenStore.Clear();
+                callback(ApiResponse<object>.Success(null, (int)request.responseCode));
+            }
+            else
+            {
+                callback(ApiResponse<object>.Fail((int)request.responseCode, request.error));
+            }
+            request.Dispose();
+        }
+
         public static void AutoLogin(Action<bool, bool> onComplete)
         {
             string deviceId = GetDeviceId();
