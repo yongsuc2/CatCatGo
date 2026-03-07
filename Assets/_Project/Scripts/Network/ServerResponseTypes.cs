@@ -95,6 +95,57 @@ namespace CatCatGo.Network
         public int Amount;
     }
 
+    public class ChapterStartResponseData
+    {
+        public string SessionId;
+        public int Seed;
+    }
+
+    public class ChapterAdvanceDayResponseData
+    {
+        public EncounterDeltaData Encounter;
+        public string BattleRequired;
+        public int BattleSeed;
+        public string EnemyTemplateId;
+    }
+
+    public class EncounterDeltaData
+    {
+        public string Type;
+        public List<EncounterOptionDeltaData> Options;
+    }
+
+    public class EncounterOptionDeltaData
+    {
+        public string Label;
+        public string Description;
+        public string SkillId;
+        public RewardData Reward;
+    }
+
+    public class ChapterResolveEncounterResponseData
+    {
+        public RewardData Reward;
+    }
+
+    public class ChapterRerollResponseData
+    {
+        public EncounterDeltaData Encounter;
+    }
+
+    public class ChapterSelectSkillResponseData
+    {
+        public string SkillId;
+    }
+
+    public class ChapterBattleResultResponseData
+    {
+        public bool Verified;
+        public int GoldEarned;
+        public bool SessionEnded;
+        public bool IsVictory;
+    }
+
     public class SyncFullResponseData
     {
         public string SaveState;

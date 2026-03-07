@@ -1,5 +1,56 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (11) - Phase 7: 챕터 세션 API 연동
+
+### 개요
+
+챕터 시스템을 서버 세션 기반으로 전환. ChapterApi 7개 엔드포인트 생성, GameManager에 7개 Async 메서드 추가, ChapterScreen을 Async 콜백 패턴으로 전환.
+
+### 신규 파일
+
+| 파일 | 설명 |
+|------|------|
+| `ChapterApi.cs` | POST /api/chapter/* (7 메서드: start, advance-day, resolve-encounter, select-skill, reroll, battle-result, abandon) |
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `ServerResponseTypes.cs` | 챕터 응답 데이터 타입 7개 추가 (ChapterStartResponseData, ChapterAdvanceDayResponseData, EncounterDeltaData 등) |
+| `GameManager.cs` | `_chapterSessionId` 필드 + 7개 Chapter Async 메서드 + 3개 결과 타입 (ChapterAdvanceDayResult, ChapterRerollResult, ChapterBattleResultResult) |
+| `EncounterGenerator.cs` | `FindSkillById(string)` 정적 메서드 추가 (ActiveSkill/PassiveSkill 레지스트리 전체 검색) |
+| `ChapterScreen.cs` | 8개 메서드 Async 전환 + `_isRequestPending` + `_currentBattleSeed` + `ConvertServerEncounter` 헬퍼 |
+
+### ChapterScreen Async 전환 상세
+
+| 기존 메서드 | 전환 내용 |
+|-------------|-----------|
+| `StartChapter()` | `Game.ChapterStartAsync()` 콜백 래핑 |
+| `AdvanceDay()` | `Game.ChapterAdvanceDayAsync()` + BattleRequired/Encounter 분기 |
+| `SelectOption()` | `Game.ChapterResolveEncounterAsync()` |
+| `RerollEncounter()` | `Game.ChapterRerollAsync()` + ServerEncounter 변환 |
+| `SelectEliteReward()` | `Game.ChapterSelectSkillAsync()` |
+| `HandleBossBattleEnd()` | `Game.ChapterBattleResultAsync()` 콜백 래핑 |
+| `HandleNormalBattleEnd()` | `Game.ChapterBattleResultAsync()` 콜백 래핑 |
+| `AbandonChapter()` | `Game.ChapterAbandonAsync()` 콜백 래핑 |
+
+### 추가된 유틸리티
+
+- `AutoResolveEncounter()`: 1-option 인카운터 자동 해결 (기존 인라인 로직 → Async 분리)
+- `ConvertServerEncounter()`: `EncounterDeltaData` → `ChapterEncounter` 변환 (ONLINE 모드용)
+- `EncounterGenerator.FindSkillById()`: skillId로 ActiveSkill/PassiveSkill 전체 검색하여 SessionSkillWrapper 반환
+
+### 제거된 패턴
+
+- `Game.StartChapter()` 직접 호출 → `Game.ChapterStartAsync()` 전환
+- `chapter.AdvanceDay()` 로컬 호출 → `Game.ChapterAdvanceDayAsync()` 전환
+- `chapter.ResolveEncounter()` + `Resources.Add()` 직접 호출 → `Game.ChapterResolveEncounterAsync()` 전환
+- `chapter.RerollEncounter()` 로컬 호출 → `Game.ChapterRerollAsync()` 전환
+- `chapter.SessionSkills.Add()` 직접 수정 → `Game.ChapterSelectSkillAsync()` 전환
+- `Game.SaveGame()` 직접 호출 → Async 메서드 내부 처리
+
+---
+
 ## 2026-03-07 (10) - Phase 6: Screen Async 전환 + 이중 요청 방지
 
 ### 개요

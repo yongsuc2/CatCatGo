@@ -113,6 +113,8 @@ namespace CatCatGo.Services
         private NetworkMode _networkMode = NetworkMode.OFFLINE;
         private int _consecutiveFailures;
         private const int MaxConsecutiveFailures = 3;
+        private string _chapterSessionId;
+        public string ChapterSessionId => _chapterSessionId;
 
         public NetworkMode CurrentNetworkMode => _networkMode;
         public bool IsOnline => _networkMode == NetworkMode.ONLINE;
@@ -1373,6 +1375,258 @@ namespace CatCatGo.Services
             });
         }
 
+        public void ChapterStartAsync(int chapterId, ChapterType type, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                StartChapter(chapterId, type);
+                callback(CurrentChapter != null ? Result.Ok() : Result.Fail("Failed to start chapter"));
+                return;
+            }
+
+            ChapterApi.Start(chapterId, type.ToString(), response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    StartChapter(chapterId, type);
+                    callback(CurrentChapter != null ? Result.Ok() : Result.Fail("Failed to start chapter"));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                _chapterSessionId = response.Data.Data?.SessionId;
+                callback(Result.Ok());
+            });
+        }
+
+        public void ChapterAdvanceDayAsync(Action<Result<ChapterAdvanceDayResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                var chapter = CurrentChapter;
+                if (chapter == null) { callback(Result.Fail<ChapterAdvanceDayResult>("No active chapter")); return; }
+                var enc = chapter.AdvanceDay();
+                callback(Result.Ok(new ChapterAdvanceDayResult
+                {
+                    Encounter = enc,
+                    BattleRequired = chapter.IsBossDay() ? "BOSS" : chapter.IsEliteDay() ? "ELITE" : chapter.IsMidBossDay() ? "MIDBOSS" : chapter.IsOptionalEliteDay() ? "ELITE" : null,
+                }));
+                return;
+            }
+
+            ChapterApi.AdvanceDay(_chapterSessionId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    var chapter = CurrentChapter;
+                    if (chapter == null) { callback(Result.Fail<ChapterAdvanceDayResult>("No active chapter")); return; }
+                    var enc = chapter.AdvanceDay();
+                    callback(Result.Ok(new ChapterAdvanceDayResult { Encounter = enc }));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                var data = response.Data.Data;
+                callback(Result.Ok(new ChapterAdvanceDayResult
+                {
+                    BattleRequired = data?.BattleRequired,
+                    BattleSeed = data?.BattleSeed ?? 0,
+                    EnemyTemplateId = data?.EnemyTemplateId,
+                    ServerEncounter = data?.Encounter,
+                }));
+            });
+        }
+
+        public void ChapterResolveEncounterAsync(int choiceIndex, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                var chapter = CurrentChapter;
+                if (chapter == null) { callback(Result.Fail("No active chapter")); return; }
+                var result = chapter.ResolveEncounter(choiceIndex, chapter.SessionCurrentHp, chapter.SessionMaxHp);
+                if (result?.Reward != null)
+                {
+                    float goldMult = Player.GetGoldMultiplier();
+                    foreach (var r in result.Reward.Resources)
+                    {
+                        int amt = r.Type == ResourceType.GOLD ? Mathf.FloorToInt(r.Amount * goldMult) : r.Amount;
+                        Player.Resources.Add(r.Type, amt);
+                    }
+                }
+                callback(Result.Ok());
+                return;
+            }
+
+            ChapterApi.ResolveEncounter(_chapterSessionId, choiceIndex, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    var chapter = CurrentChapter;
+                    if (chapter != null)
+                    {
+                        var result = chapter.ResolveEncounter(choiceIndex, chapter.SessionCurrentHp, chapter.SessionMaxHp);
+                        if (result?.Reward != null)
+                        {
+                            float goldMult = Player.GetGoldMultiplier();
+                            foreach (var r in result.Reward.Resources)
+                            {
+                                int amt = r.Type == ResourceType.GOLD ? Mathf.FloorToInt(r.Amount * goldMult) : r.Amount;
+                                Player.Resources.Add(r.Type, amt);
+                            }
+                        }
+                    }
+                    callback(Result.Ok());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ChapterSelectSkillAsync(string skillId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                var chapter = CurrentChapter;
+                if (chapter == null) { callback(Result.Fail("No active chapter")); return; }
+                var skill = EncounterGenerator.FindSkillById(skillId);
+                if (skill != null)
+                {
+                    int existing = chapter.SessionSkills.FindIndex(s => s.Id == skill.Id);
+                    if (existing >= 0)
+                        chapter.SessionSkills[existing] = skill;
+                    else
+                        chapter.SessionSkills.Add(skill);
+                    chapter.RecalcSessionMaxHp();
+                }
+                callback(Result.Ok());
+                return;
+            }
+
+            ChapterApi.SelectSkill(_chapterSessionId, skillId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    var chapter = CurrentChapter;
+                    if (chapter != null)
+                    {
+                        var skill = EncounterGenerator.FindSkillById(skillId);
+                        if (skill != null)
+                        {
+                            int existing = chapter.SessionSkills.FindIndex(s => s.Id == skill.Id);
+                            if (existing >= 0)
+                                chapter.SessionSkills[existing] = skill;
+                            else
+                                chapter.SessionSkills.Add(skill);
+                            chapter.RecalcSessionMaxHp();
+                        }
+                    }
+                    callback(Result.Ok());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ChapterRerollAsync(Action<Result<ChapterRerollResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                var chapter = CurrentChapter;
+                if (chapter == null) { callback(Result.Fail<ChapterRerollResult>("No active chapter")); return; }
+                var newEnc = chapter.RerollEncounter();
+                callback(Result.Ok(new ChapterRerollResult { Encounter = newEnc }));
+                return;
+            }
+
+            ChapterApi.Reroll(_chapterSessionId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    var chapter = CurrentChapter;
+                    if (chapter == null) { callback(Result.Fail<ChapterRerollResult>("No active chapter")); return; }
+                    var newEnc = chapter.RerollEncounter();
+                    callback(Result.Ok(new ChapterRerollResult { Encounter = newEnc }));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(new ChapterRerollResult { ServerEncounter = response.Data.Data?.Encounter }));
+            });
+        }
+
+        public void ChapterBattleResultAsync(int battleSeed, string result, int turnCount, int playerRemainingHp,
+            Action<Result<ChapterBattleResultResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                callback(Result.Ok(new ChapterBattleResultResult { Verified = true }));
+                return;
+            }
+
+            ChapterApi.BattleResult(_chapterSessionId, battleSeed, result, turnCount, playerRemainingHp, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(Result.Ok(new ChapterBattleResultResult { Verified = false }));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                var data = response.Data.Data;
+                if (data != null && data.SessionEnded)
+                    _chapterSessionId = null;
+                callback(Result.Ok(new ChapterBattleResultResult
+                {
+                    Verified = data?.Verified ?? false,
+                    GoldEarned = data?.GoldEarned ?? 0,
+                    SessionEnded = data?.SessionEnded ?? false,
+                }));
+            });
+        }
+
+        public void ChapterAbandonAsync(Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE)
+            {
+                var chapter = CurrentChapter;
+                if (chapter != null)
+                    Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
+                CurrentChapter = null;
+                SaveGame();
+                callback(Result.Ok());
+                return;
+            }
+
+            ChapterApi.Abandon(_chapterSessionId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    var chapter = CurrentChapter;
+                    if (chapter != null)
+                        Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
+                    CurrentChapter = null;
+                    SaveGame();
+                    callback(Result.Ok());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                _chapterSessionId = null;
+                callback(Result.Ok());
+            });
+        }
+
         private Reward ConvertRewardData(CatCatGo.Network.RewardData rewardData)
         {
             if (rewardData?.Resources == null) return null;
@@ -1430,5 +1684,27 @@ namespace CatCatGo.Services
         public Reward Reward;
         public int CurrentFloor;
         public int BattleIndex;
+    }
+
+    public class ChapterAdvanceDayResult
+    {
+        public Encounter Encounter;
+        public string BattleRequired;
+        public int BattleSeed;
+        public string EnemyTemplateId;
+        public EncounterDeltaData ServerEncounter;
+    }
+
+    public class ChapterRerollResult
+    {
+        public Encounter Encounter;
+        public EncounterDeltaData ServerEncounter;
+    }
+
+    public class ChapterBattleResultResult
+    {
+        public bool Verified;
+        public int GoldEarned;
+        public bool SessionEnded;
     }
 }

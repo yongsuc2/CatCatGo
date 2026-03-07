@@ -19,6 +19,7 @@ using ChapterInstance = CatCatGo.Domain.Chapter.Chapter;
 using ChapterEncounter = CatCatGo.Domain.Chapter.Encounter;
 using SessionSkillWrapper = CatCatGo.Domain.Chapter.SessionSkillWrapper;
 using CatCatGo.Domain.Chapter;
+using CatCatGo.Network;
 using CatCatGo.Presentation.Popups;
 
 namespace CatCatGo.Presentation.Screens
@@ -104,6 +105,9 @@ namespace CatCatGo.Presentation.Screens
         private RectTransform _settingsOverlay;
         private RectTransform _settingsSkillList;
 
+        private bool _isRequestPending;
+        private int _currentBattleSeed;
+
         private ChapterEncounter _encounter;
         private ChapterResult _chapterResult;
         private List<SessionSkillWrapper> _eliteRewardChoices;
@@ -123,6 +127,7 @@ namespace CatCatGo.Presentation.Screens
 
         public override void OnScreenEnter()
         {
+            _isRequestPending = false;
             var chapter = Game.CurrentChapter;
             if (chapter == null)
             {
@@ -274,101 +279,132 @@ namespace CatCatGo.Presentation.Screens
 
         private void StartChapter()
         {
+            if (_isRequestPending) return;
+            _isRequestPending = true;
+
             int nextId = Game.Player.ClearedChapterMax + 1;
-            Game.StartChapter(nextId, ChapterType.SIXTY_DAY);
+            Game.ChapterStartAsync(nextId, ChapterType.SIXTY_DAY, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
 
-            var chapter = Game.CurrentChapter;
-            if (chapter == null) return;
+                var chapter = Game.CurrentChapter;
+                if (chapter == null) return;
 
-            var stats = Game.Player.ComputeStats();
-            chapter.InitSessionHp(stats.MaxHp);
+                var stats = Game.Player.ComputeStats();
+                chapter.InitSessionHp(stats.MaxHp);
 
-            _damageMap.Clear();
-            _healMap.Clear();
+                _damageMap.Clear();
+                _healMap.Clear();
 
-            SetState(ScreenState.Encounter);
-            AdvanceDay();
+                SetState(ScreenState.Encounter);
+                AdvanceDay();
+            });
         }
 
         private void AdvanceDay()
         {
-            var chapter = Game.CurrentChapter;
-            if (chapter == null) return;
+            if (_isRequestPending) return;
+            _isRequestPending = true;
 
-            if (chapter.IsBossDay())
+            Game.ChapterAdvanceDayAsync(result =>
             {
-                StartSpecialBattle(BattleType.Boss);
-                return;
-            }
+                _isRequestPending = false;
+                if (result.IsFail()) return;
 
-            var enc = chapter.AdvanceDay();
+                var data = result.Data;
+                var chapter = Game.CurrentChapter;
+                if (chapter == null) return;
 
-            if (enc == null && chapter.IsEliteDay())
-            {
-                StartSpecialBattle(BattleType.Elite);
-                return;
-            }
-
-            if (enc == null && chapter.IsMidBossDay())
-            {
-                StartSpecialBattle(BattleType.MidBoss);
-                return;
-            }
-
-            if (enc == null && chapter.IsOptionalEliteDay())
-            {
-                StartSpecialBattle(BattleType.Elite);
-                return;
-            }
-
-            if (enc == null && chapter.IsBossDay())
-            {
-                StartSpecialBattle(BattleType.Boss);
-                return;
-            }
-
-            if (enc != null && enc.Type == EncounterType.COMBAT)
-            {
-                var stats = Game.Player.ComputeStats();
-                var ch = chapter;
-                var battleStats = Stats.Create(
-                    maxHp: ch.SessionMaxHp, hp: ch.SessionCurrentHp,
-                    atk: stats.Atk, def: stats.Def, crit: stats.Crit);
-                var petAbility = Game.BattleManagerService.GetPetAbilitySkill(Game.Player);
-                var allPassives = new List<PassiveSkill>(ch.GetBattlePassiveSkills());
-                if (petAbility != null) allPassives.Add(petAbility);
-                var pu = new BattleUnit("Capybara", battleStats, ch.GetSessionActiveSkills().ToArray(), allPassives.ToArray(), true);
-                var b = chapter.CreateCombatBattle(pu);
-                if (b != null)
+                if (!string.IsNullOrEmpty(data.BattleRequired))
                 {
-                    _battleType = BattleType.Normal;
-                    StartBattle(b, false);
-                }
-                Refresh();
-                return;
-            }
-
-            if (enc != null && enc.Options.Count == 1)
-            {
-                var ch = chapter;
-                var result = ch.ResolveEncounter(0, ch.SessionCurrentHp, ch.SessionMaxHp);
-                if (result != null)
-                {
-                    float goldMult = Game.Player.GetGoldMultiplier();
-                    foreach (var r in result.Reward.Resources)
+                    _currentBattleSeed = data.BattleSeed;
+                    switch (data.BattleRequired)
                     {
-                        int amt = r.Type == ResourceType.GOLD ? Mathf.FloorToInt(r.Amount * goldMult) : r.Amount;
-                        Game.Player.Resources.Add(r.Type, amt);
+                        case "BOSS":
+                            StartSpecialBattle(BattleType.Boss);
+                            return;
+                        case "ELITE":
+                            StartSpecialBattle(BattleType.Elite);
+                            return;
+                        case "MIDBOSS":
+                            StartSpecialBattle(BattleType.MidBoss);
+                            return;
                     }
                 }
+
+                var enc = data.Encounter;
+                if (enc == null && data.ServerEncounter != null)
+                    enc = ConvertServerEncounter(data.ServerEncounter);
+
+                if (enc != null && enc.Type == EncounterType.COMBAT)
+                {
+                    _currentBattleSeed = data.BattleSeed;
+                    var stats = Game.Player.ComputeStats();
+                    var battleStats = Stats.Create(
+                        maxHp: chapter.SessionMaxHp, hp: chapter.SessionCurrentHp,
+                        atk: stats.Atk, def: stats.Def, crit: stats.Crit);
+                    var petAbility = Game.BattleManagerService.GetPetAbilitySkill(Game.Player);
+                    var allPassives = new List<PassiveSkill>(chapter.GetBattlePassiveSkills());
+                    if (petAbility != null) allPassives.Add(petAbility);
+                    var pu = new BattleUnit("Capybara", battleStats, chapter.GetSessionActiveSkills().ToArray(), allPassives.ToArray(), true);
+                    var b = chapter.CreateCombatBattle(pu);
+                    if (b != null)
+                    {
+                        _battleType = BattleType.Normal;
+                        StartBattle(b, false);
+                    }
+                    Refresh();
+                    return;
+                }
+
+                if (enc != null && enc.Options.Count == 1)
+                {
+                    AutoResolveEncounter(enc);
+                    return;
+                }
+
+                _encounter = enc;
+                ShowEncounter();
+                Refresh();
+            });
+        }
+
+        private void AutoResolveEncounter(ChapterEncounter enc)
+        {
+            if (_isRequestPending) return;
+            _isRequestPending = true;
+            Game.ChapterResolveEncounterAsync(0, resolveResult =>
+            {
+                _isRequestPending = false;
+                if (resolveResult.IsFail()) return;
                 Refresh();
                 AdvanceDay();
-                return;
-            }
+            });
+        }
 
-            _encounter = enc;
-            ShowEncounter();
-            Refresh();
+        private ChapterEncounter ConvertServerEncounter(EncounterDeltaData serverEnc)
+        {
+            if (serverEnc == null) return null;
+            Enum.TryParse<EncounterType>(serverEnc.Type, out var encType);
+            var options = new List<EncounterOption>();
+            if (serverEnc.Options != null)
+            {
+                foreach (var opt in serverEnc.Options)
+                {
+                    options.Add(new EncounterOption
+                    {
+                        Label = opt.Label,
+                        Description = opt.Description,
+                        SkillId = opt.SkillId,
+                        HpCostPercent = 0,
+                        GoldCost = 0,
+                        SuccessRate = 1.0f,
+                        Reward = new EncounterReward(),
+                    });
+                }
+            }
+            return new ChapterEncounter(encType, options);
         }
 
         private void ShowEncounter()
@@ -499,36 +535,42 @@ namespace CatCatGo.Presentation.Screens
 
         private void SelectOption(int index)
         {
-            var chapter = Game.CurrentChapter;
-            if (chapter == null || _encounter == null) return;
+            if (_isRequestPending) return;
+            if (Game.CurrentChapter == null || _encounter == null) return;
+            _isRequestPending = true;
 
-            var result = chapter.ResolveEncounter(index, chapter.SessionCurrentHp, chapter.SessionMaxHp);
-            if (result != null)
+            Game.ChapterResolveEncounterAsync(index, result =>
             {
-                float goldMult = Game.Player.GetGoldMultiplier();
-                foreach (var r in result.Reward.Resources)
-                {
-                    int amt = r.Type == ResourceType.GOLD ? Mathf.FloorToInt(r.Amount * goldMult) : r.Amount;
-                    Game.Player.Resources.Add(r.Type, amt);
-                }
-            }
+                _isRequestPending = false;
+                if (result.IsFail()) return;
 
-            _encounter = null;
-            Refresh();
-            AdvanceDay();
+                _encounter = null;
+                Refresh();
+                AdvanceDay();
+            });
         }
 
         private void RerollEncounter()
         {
-            var chapter = Game.CurrentChapter;
-            if (chapter == null) return;
+            if (_isRequestPending) return;
+            if (Game.CurrentChapter == null) return;
+            _isRequestPending = true;
 
-            var newEnc = chapter.RerollEncounter();
-            if (newEnc != null)
+            Game.ChapterRerollAsync(result =>
             {
-                _encounter = newEnc;
-                ShowEncounter();
-            }
+                _isRequestPending = false;
+                if (result.IsFail()) return;
+
+                var newEnc = result.Data.Encounter;
+                if (newEnc == null && result.Data.ServerEncounter != null)
+                    newEnc = ConvertServerEncounter(result.Data.ServerEncounter);
+
+                if (newEnc != null)
+                {
+                    _encounter = newEnc;
+                    ShowEncounter();
+                }
+            });
         }
 
         private void StartSpecialBattle(BattleType type)
@@ -637,43 +679,49 @@ namespace CatCatGo.Presentation.Screens
                 }
             }
 
-            if (state == BattleState.VICTORY)
+            int turnCount = chapter?.CurrentBattle?.TurnCount ?? 0;
+            int playerRemainingHp = chapter?.CurrentBattle?.Player?.CurrentHp ?? 0;
+            string resultStr = state == BattleState.VICTORY ? "VICTORY" : "DEFEAT";
+
+            Game.ChapterBattleResultAsync(_currentBattleSeed, resultStr, turnCount, playerRemainingHp, battleResult =>
             {
-                chapter?.OnBossDefeated();
-                if (chapter != null)
+                if (state == BattleState.VICTORY)
                 {
-                    Game.Player.ClearedChapterMax = Mathf.Max(Game.Player.ClearedChapterMax, chapter.Id);
-                    int clearGold = Mathf.FloorToInt(EncounterDataTable.GetChapterClearGold(chapter.Id) * Game.Player.GetGoldMultiplier());
-                    int clearGems = EncounterDataTable.GetChapterClearGems(chapter.Id);
-                    Game.Player.Resources.Add(ResourceType.GOLD, clearGold);
-                    Game.Player.Resources.Add(ResourceType.GEMS, clearGems);
+                    chapter?.OnBossDefeated();
+                    if (chapter != null)
+                    {
+                        Game.Player.ClearedChapterMax = Mathf.Max(Game.Player.ClearedChapterMax, chapter.Id);
+                        int clearGold = Mathf.FloorToInt(EncounterDataTable.GetChapterClearGold(chapter.Id) * Game.Player.GetGoldMultiplier());
+                        int clearGems = EncounterDataTable.GetChapterClearGems(chapter.Id);
+                        Game.Player.Resources.Add(ResourceType.GOLD, clearGold);
+                        Game.Player.Resources.Add(ResourceType.GEMS, clearGems);
+                    }
                 }
-            }
-            else
-            {
-                chapter?.OnBattleEnd(state);
-            }
+                else
+                {
+                    chapter?.OnBattleEnd(state);
+                }
 
-            if (chapter != null)
-                Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, chapter.IsCompleted());
+                if (chapter != null)
+                    Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, chapter.IsCompleted());
 
-            Game.CurrentChapter = null;
-            _battleView.StopBattle();
+                Game.CurrentChapter = null;
+                _battleView.StopBattle();
 
-            _chapterResult = new ChapterResult
-            {
-                IsVictory = state == BattleState.VICTORY,
-                ChapterId = chId,
-                Gold = state == BattleState.VICTORY ? EncounterDataTable.GetChapterClearGold(chId) : 0,
-                Gems = state == BattleState.VICTORY ? EncounterDataTable.GetChapterClearGems(chId) : 0,
-                Day = chDay,
-                TotalDays = chTotalDays,
-                EnemyRemainingHp = remainingHp,
-                EnemyMaxHp = totalMaxHp,
-            };
+                _chapterResult = new ChapterResult
+                {
+                    IsVictory = state == BattleState.VICTORY,
+                    ChapterId = chId,
+                    Gold = state == BattleState.VICTORY ? EncounterDataTable.GetChapterClearGold(chId) : 0,
+                    Gems = state == BattleState.VICTORY ? EncounterDataTable.GetChapterClearGems(chId) : 0,
+                    Day = chDay,
+                    TotalDays = chTotalDays,
+                    EnemyRemainingHp = remainingHp,
+                    EnemyMaxHp = totalMaxHp,
+                };
 
-            Game.SaveGame();
-            ShowResult();
+                ShowResult();
+            });
         }
 
         private void HandleNormalBattleEnd(BattleState state, ChapterInstance chapter)
@@ -681,62 +729,68 @@ namespace CatCatGo.Presentation.Screens
             if (chapter != null && state == BattleState.VICTORY && chapter.CurrentBattle != null)
                 chapter.UpdateSessionHpAfterBattle(chapter.CurrentBattle.Player.CurrentHp);
 
+            int turnCount = chapter?.CurrentBattle?.TurnCount ?? 0;
+            int playerRemainingHp = chapter?.CurrentBattle?.Player?.CurrentHp ?? 0;
+            string resultStr = state == BattleState.VICTORY ? "VICTORY" : "DEFEAT";
+
             int goldRaw = chapter?.OnBattleEnd(state) ?? 0;
             int goldEarned = goldRaw > 0 ? Mathf.FloorToInt(goldRaw * Game.Player.GetGoldMultiplier()) : 0;
             if (goldEarned > 0)
                 Game.Player.Resources.Add(ResourceType.GOLD, goldEarned);
 
-            if (state == BattleState.DEFEAT)
+            Game.ChapterBattleResultAsync(_currentBattleSeed, resultStr, turnCount, playerRemainingHp, battleResult =>
             {
-                int chId = chapter?.Id ?? 0;
-                int chDay = chapter?.CurrentDay ?? 0;
-                int chTotalDays = chapter?.TotalDays ?? 0;
-                int remainingHp = 0;
-                int totalMaxHp = 0;
-
-                if (chapter?.CurrentBattle != null)
+                if (state == BattleState.DEFEAT)
                 {
-                    foreach (var e in chapter.CurrentBattle.Enemies)
+                    int chId = chapter?.Id ?? 0;
+                    int chDay = chapter?.CurrentDay ?? 0;
+                    int chTotalDays = chapter?.TotalDays ?? 0;
+                    int remainingHp = 0;
+                    int totalMaxHp = 0;
+
+                    if (chapter?.CurrentBattle != null)
                     {
-                        remainingHp += Mathf.Max(0, e.CurrentHp);
-                        totalMaxHp += e.MaxHp;
+                        foreach (var e in chapter.CurrentBattle.Enemies)
+                        {
+                            remainingHp += Mathf.Max(0, e.CurrentHp);
+                            totalMaxHp += e.MaxHp;
+                        }
                     }
+
+                    if (chapter != null)
+                        Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
+
+                    Game.CurrentChapter = null;
+                    _battleView.StopBattle();
+
+                    _chapterResult = new ChapterResult
+                    {
+                        IsVictory = false,
+                        ChapterId = chId,
+                        Gold = 0,
+                        Gems = 0,
+                        Day = chDay,
+                        TotalDays = chTotalDays,
+                        EnemyRemainingHp = remainingHp,
+                        EnemyMaxHp = totalMaxHp,
+                    };
+
+                    ShowResult();
                 }
-
-                if (chapter != null)
-                    Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
-
-                Game.CurrentChapter = null;
-                _battleView.StopBattle();
-
-                _chapterResult = new ChapterResult
+                else if (_battleType == BattleType.Elite || _battleType == BattleType.MidBoss)
                 {
-                    IsVictory = false,
-                    ChapterId = chId,
-                    Gold = 0,
-                    Gems = 0,
-                    Day = chDay,
-                    TotalDays = chTotalDays,
-                    EnemyRemainingHp = remainingHp,
-                    EnemyMaxHp = totalMaxHp,
-                };
-
-                Game.SaveGame();
-                ShowResult();
-            }
-            else if (_battleType == BattleType.Elite || _battleType == BattleType.MidBoss)
-            {
-                _battleView.StopBattle();
-                ShowEliteReward();
-            }
-            else
-            {
-                _battleView.StopBattle();
-                SetState(ScreenState.Encounter);
-                _encounter = null;
-                Refresh();
-                AdvanceDay();
-            }
+                    _battleView.StopBattle();
+                    ShowEliteReward();
+                }
+                else
+                {
+                    _battleView.StopBattle();
+                    SetState(ScreenState.Encounter);
+                    _encounter = null;
+                    Refresh();
+                    AdvanceDay();
+                }
+            });
         }
 
         private void ShowEliteReward()
@@ -772,22 +826,22 @@ namespace CatCatGo.Presentation.Screens
 
         private void SelectEliteReward(int index)
         {
+            if (_isRequestPending) return;
             var chapter = Game.CurrentChapter;
             if (chapter == null || _eliteRewardChoices == null || index >= _eliteRewardChoices.Count) return;
+            _isRequestPending = true;
 
             var chosen = _eliteRewardChoices[index];
-            int existingIdx = chapter.SessionSkills.FindIndex(s => s.Id == chosen.Id);
-            if (existingIdx >= 0)
-                chapter.SessionSkills[existingIdx] = chosen;
-            else
-                chapter.SessionSkills.Add(chosen);
+            Game.ChapterSelectSkillAsync(chosen.Id, result =>
+            {
+                _isRequestPending = false;
+                if (result.IsFail()) return;
 
-            chapter.RecalcSessionMaxHp();
-            _eliteRewardChoices = null;
-
-            SetState(ScreenState.Encounter);
-            Refresh();
-            AdvanceDay();
+                _eliteRewardChoices = null;
+                SetState(ScreenState.Encounter);
+                Refresh();
+                AdvanceDay();
+            });
         }
 
         private void ShowResult()
@@ -1023,6 +1077,9 @@ namespace CatCatGo.Presentation.Screens
 
         private void AbandonChapter()
         {
+            if (_isRequestPending) return;
+            _isRequestPending = true;
+
             var chapter = Game.CurrentChapter;
             int chId = chapter?.Id ?? 0;
             int chDay = chapter?.CurrentDay ?? 0;
@@ -1031,23 +1088,22 @@ namespace CatCatGo.Presentation.Screens
             if (_state == ScreenState.Battling)
                 _battleView.StopBattle();
 
-            if (chapter != null)
-                Game.Player.UpdateBestSurvivalDay(chapter.Id, chapter.CurrentDay, false);
-
-            Game.CurrentChapter = null;
-            Game.SaveGame();
-
-            _chapterResult = new ChapterResult
+            Game.ChapterAbandonAsync(result =>
             {
-                IsVictory = false,
-                ChapterId = chId,
-                Gold = 0,
-                Gems = 0,
-                Day = chDay,
-                TotalDays = chTotalDays,
-            };
+                _isRequestPending = false;
 
-            ShowResult();
+                _chapterResult = new ChapterResult
+                {
+                    IsVictory = false,
+                    ChapterId = chId,
+                    Gold = 0,
+                    Gems = 0,
+                    Day = chDay,
+                    TotalDays = chTotalDays,
+                };
+
+                ShowResult();
+            });
         }
 
         private void ToggleSpeed()

@@ -424,5 +424,20 @@ namespace CatCatGo.Domain.Chapter
                 SkillIdsToRemove = new List<string> { oldSkillId },
             };
         }
+
+        public static SessionSkillWrapper FindSkillById(string skillId)
+        {
+            foreach (var skill in ActiveSkillRegistry.GetAll())
+            {
+                if (skill.Id == skillId)
+                    return new SessionSkillWrapper(skill);
+            }
+            foreach (var skill in PassiveSkillRegistry.GetAll())
+            {
+                if (skill.Id == skillId)
+                    return new SessionSkillWrapper(skill);
+            }
+            return null;
+        }
     }
 }
