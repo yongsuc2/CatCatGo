@@ -99,3 +99,48 @@
 - `HEAD /`: 200 OK
 - `GET /`: 200 OK
 - `POST /api/auth/register`: 정상 등록 및 중복 deviceId 기존 계정 반환 확인
+
+---
+
+## 2026-03-07: BUG-010 RewardData 구조/타입 불일치 수정 + BUG-008 서버 응답 패턴 통일
+
+### BUG-010: RewardData 서버-클라이언트 구조/타입 불일치
+
+**문제:**
+- 서버 `RewardData`: `{ Type(string), Amount(double) }` — 단일 보상
+- 클라이언트 `RewardData`: `{ Resources: List<RewardResourceData> }` — 래퍼 구조, `Amount(int)`
+- 역직렬화 실패: 서버가 `{"type":"GOLD","amount":1000}`을 보내면 클라이언트 `Resources`는 null
+
+**수정 내용 (`ContentService.cs`):**
+- `RewardData` 클래스를 클라이언트 래퍼 구조로 변경: `{ Resources: List<RewardResourceData> }`
+- `RewardResourceData` 클래스 추가: `{ Type(string), Amount(int) }`
+- `RewardData.From(type, amount)` 팩토리 메서드 추가
+- goldReward 계산을 `double` → `int`로 변경 (실제 정수값만 사용 확인)
+- 모든 사용처 수정: TowerChallenge, DungeonChallenge, DungeonSweep, GoblinCart, CatacombBattle, CatacombEnd
+
+**JSON 응답 형태 변경:**
+- Before: `{"reward":{"type":"GOLD","amount":1000}}`
+- After: `{"reward":{"resources":[{"type":"GOLD","amount":1000}]}}`
+
+### BUG-008: 서버 응답 패턴 이중화
+
+**문제:**
+- 패턴 A (Auth, Battle, Save, Arena, Shop): 서비스 에러 시 HTTP 에러 코드 반환
+- 패턴 B (Chapter 외 9개): 서비스 에러 시에도 항상 HTTP 200 + `ApiResponse.Success=false` 반환
+- 에러 처리 방식 불일치로 유지보수 위험
+
+**수정 내용 (9개 컨트롤러):**
+각 컨트롤러에 `ToActionResult()` 헬퍼 추가:
+```csharp
+private IActionResult ToActionResult<T>(ApiResponse<T> result) =>
+    result.Success ? Ok(result) : BadRequest(result);
+```
+- Chapter, Content, Daily, Equipment, Gacha, Heritage, Pet, Talent, Treasure 컨트롤러의 모든 POST 액션 적용
+- GET 엔드포인트(status, state, attendance, quest, pity)는 ApiResponse가 아닌 직접 객체 반환이므로 변경 없음
+
+**클라이언트 대응 필요:**
+- ApiClient가 HTTP 400 body를 역직렬화하지 않아 ErrorCode 유실 → Task #10 (dev-agent 담당)
+
+### 검증
+- `dotnet build` — 0 Warning, 0 Error
+- `dotnet test` — 128개 테스트 전부 통과
