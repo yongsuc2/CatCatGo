@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Newtonsoft.Json;
+using CatCatGo.Domain.Enums;
 using CatCatGo.Infrastructure;
 using CatCatGo.Network;
 using CatCatGo.Shared.Responses;
@@ -102,13 +103,13 @@ namespace CatCatGo.Services
             {
                 if (!response.IsSuccess || response.Data == null)
                 {
-                    onComplete(true);
+                    SyncResourceBalances(() => onComplete(true));
                     return;
                 }
 
                 if (string.IsNullOrEmpty(response.Data.Data))
                 {
-                    onComplete(true);
+                    SyncResourceBalances(() => onComplete(true));
                     return;
                 }
 
@@ -131,7 +132,32 @@ namespace CatCatGo.Services
                     GameLog.W("Sync", $"Failed to parse server save: {ex.Message}");
                 }
 
-                onComplete(true);
+                SyncResourceBalances(() => onComplete(true));
+            });
+        }
+
+        private void SyncResourceBalances(Action onComplete)
+        {
+            ResourceApi.GetBalance(response =>
+            {
+                if (response.IsSuccess && response.Data?.Balances != null)
+                {
+                    var game = GameManager.Instance;
+                    if (game != null)
+                    {
+                        foreach (var kv in response.Data.Balances)
+                        {
+                            if (Enum.TryParse<ResourceType>(kv.Key, out var resType))
+                                game.State.Player.Resources.SetAmount(resType, (float)kv.Value);
+                        }
+                        GameLog.I("Sync", "Resource balances synced from server");
+                    }
+                }
+                else
+                {
+                    GameLog.W("Sync", "Failed to fetch resource balances, using save snapshot");
+                }
+                onComplete();
             });
         }
 
