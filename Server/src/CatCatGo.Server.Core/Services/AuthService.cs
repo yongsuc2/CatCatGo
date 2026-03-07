@@ -45,8 +45,18 @@ public class AuthService
         account.RefreshToken = refreshToken;
         account.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_refreshTokenDays);
 
-        await _accountRepo.CreateAsync(account);
-        return await GenerateTokenResponse(account, true);
+        try
+        {
+            await _accountRepo.CreateAsync(account);
+            return await GenerateTokenResponse(account, true);
+        }
+        catch (Exception)
+        {
+            var conflicting = await _accountRepo.GetByDeviceIdAsync(request.DeviceId);
+            if (conflicting != null)
+                return await GenerateTokenResponse(conflicting, false);
+            throw;
+        }
     }
 
     public async Task<LoginResponse?> LoginByDeviceAsync(string deviceId)
