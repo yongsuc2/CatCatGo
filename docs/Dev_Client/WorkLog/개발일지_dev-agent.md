@@ -1,5 +1,40 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (5) - 서버 서비스 단위 테스트 작성
+
+### 개요
+
+구현된 9개 서버 서비스에 대한 단위 테스트를 작성했다.
+기존 테스트 패턴(xunit + NSubstitute)을 따라 경계값, 예외 상황을 포함하는 테스트를 작성.
+
+### 신규 테스트 파일 (7개)
+
+| 파일 | 테스트 수 | 대상 서비스 |
+|------|-----------|-------------|
+| ResourceServiceTests.cs | 12 | 잔액 조회, 소비, 지급, 다중 소비/지급 |
+| TalentServiceTests.cs | 7 | 초기 상태, 레벨업, 마일스톤 |
+| EquipmentServiceTests.cs | 11 | 강화, 합성, 장착, 판매 |
+| GachaServiceTests.cs | 9 | 뽑기, 10연차, 천장, 펫 뽑기 |
+| ChapterServiceTests.cs | 14 | 시작, 인카운터, 스킬, 리롤, 포기, 보물 |
+| PetServiceTests.cs | 8 | 먹이, 등급업, 장착 |
+| HeritageServiceTests.cs | 7 | 상태, 업그레이드, 전 루트 |
+| DailyServiceTests.cs | 8 | 출석, 퀘스트 보상 |
+| ContentServiceTests.cs | 12 | 타워, 던전, 여행, 고블린, 카타콤 |
+
+### 기존 테스트 수정
+
+- AuthServiceTests.cs: RefreshAsync 스텁 테스트 -> 유효/만료/무효/차단 4건으로 교체
+
+### 서비스 버그 수정
+
+- TalentService.ClaimMilestoneAsync: JSON 문자열 Contains 기반 중복 체크 -> Deserialize + List.Contains로 수정
+
+### 검증
+
+- `dotnet test`: 141 Passed, 0 Failed, 0 Skipped
+
+---
+
 ## 2026-03-07 (4) - planning-agent 세부분석 기반 서버 서비스 보완
 
 ### 개요

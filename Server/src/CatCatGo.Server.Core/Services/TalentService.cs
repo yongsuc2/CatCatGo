@@ -82,10 +82,10 @@ public class TalentService
         if (state.TotalLevel < milestoneLevel)
             return new TalentClaimResult { Success = false, Error = "LEVEL_NOT_REACHED" };
 
-        if (state.ClaimedMilestones.Contains($"\"{milestoneLevel}\""))
+        var claimed = System.Text.Json.JsonSerializer.Deserialize<List<int>>(state.ClaimedMilestones) ?? new();
+        if (claimed.Contains(milestoneLevel))
             return new TalentClaimResult { Success = false, Error = "ALREADY_CLAIMED" };
 
-        var claimed = System.Text.Json.JsonSerializer.Deserialize<List<int>>(state.ClaimedMilestones) ?? new();
         claimed.Add(milestoneLevel);
         state.ClaimedMilestones = System.Text.Json.JsonSerializer.Serialize(claimed);
 
