@@ -41,22 +41,24 @@ public class ContentService
 
     public async Task<ContentResult> DungeonEnterAsync(Guid accountId, string dungeonType)
     {
-        var progress = await GetOrCreateProgressAsync(accountId, $"DUNGEON_{dungeonType}");
+        var sharedProgress = await GetOrCreateProgressAsync(accountId, "DUNGEON_SHARED");
 
-        if (progress.LastResetDate.Date < DateTime.UtcNow.Date)
+        if (sharedProgress.LastResetDate.Date < DateTime.UtcNow.Date)
         {
-            progress.DailyRunsUsed = 0;
-            progress.LastResetDate = DateTime.UtcNow.Date;
+            sharedProgress.DailyRunsUsed = 0;
+            sharedProgress.LastResetDate = DateTime.UtcNow.Date;
         }
 
-        if (progress.DailyRunsUsed >= 3)
+        if (sharedProgress.DailyRunsUsed >= 3)
             return new ContentResult { Success = false, Error = "DAILY_LIMIT_REACHED" };
 
-        progress.DailyRunsUsed++;
-        progress.UpdatedAt = DateTime.UtcNow;
-        await _contentRepo.UpsertProgressAsync(progress);
+        sharedProgress.DailyRunsUsed++;
+        sharedProgress.UpdatedAt = DateTime.UtcNow;
+        await _contentRepo.UpsertProgressAsync(sharedProgress);
 
-        return new ContentResult { Success = true, RunsRemaining = 3 - progress.DailyRunsUsed };
+        var typeProgress = await GetOrCreateProgressAsync(accountId, $"DUNGEON_{dungeonType}");
+
+        return new ContentResult { Success = true, RunsRemaining = 3 - sharedProgress.DailyRunsUsed };
     }
 
     public async Task<ContentResult> DungeonResultAsync(Guid accountId, string dungeonType, bool victory)

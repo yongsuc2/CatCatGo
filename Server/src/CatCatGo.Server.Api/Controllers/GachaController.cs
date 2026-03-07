@@ -33,6 +33,14 @@ public class GachaController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("pet-pull")]
+    public async Task<IActionResult> PetPull()
+    {
+        var accountId = GetAccountId();
+        var result = await _gachaService.PetPullAsync(accountId);
+        return Ok(result);
+    }
+
     [HttpGet("pity")]
     public async Task<IActionResult> GetPity()
     {

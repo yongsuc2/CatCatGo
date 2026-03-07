@@ -7,6 +7,7 @@ public class GachaService
 {
     private readonly IGachaRepository _gachaRepo;
     private readonly IEquipmentRepository _equipmentRepo;
+    private readonly IPetRepository _petRepo;
     private readonly ResourceService _resourceService;
 
     private const int PityThreshold = 180;
@@ -20,10 +21,16 @@ public class GachaService
         { "EPIC", 5 }, { "LEGENDARY", 1 }, { "MYTHIC", 0.2 },
     };
 
-    public GachaService(IGachaRepository gachaRepo, IEquipmentRepository equipmentRepo, ResourceService resourceService)
+    private static readonly Dictionary<int, double> PetTierWeights = new()
+    {
+        { 1, 50 }, { 2, 30 }, { 3, 15 }, { 4, 4 }, { 5, 1 },
+    };
+
+    public GachaService(IGachaRepository gachaRepo, IEquipmentRepository equipmentRepo, IPetRepository petRepo, ResourceService resourceService)
     {
         _gachaRepo = gachaRepo;
         _equipmentRepo = equipmentRepo;
+        _petRepo = petRepo;
         _resourceService = resourceService;
     }
 
@@ -76,6 +83,35 @@ public class GachaService
         return new GachaResult { Success = true, Items = items };
     }
 
+    public async Task<PetGachaResult> PetPullAsync(Guid accountId)
+    {
+        var spent = await _resourceService.SpendAsync(accountId, "PET_EGG", 1, "PET_GACHA");
+        if (!spent)
+            return new PetGachaResult { Success = false, Error = "INSUFFICIENT_PET_EGG" };
+
+        var petTier = RollPetTier();
+        var petId = $"pet_t{petTier}_{Random.Shared.Next(1, 20)}";
+
+        var pet = new Models.PetEntry
+        {
+            Id = Guid.NewGuid(),
+            AccountId = accountId,
+            PetId = petId,
+            Grade = "COMMON",
+            Level = 1,
+            Experience = 0,
+            IsEquipped = false,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        };
+        await _petRepo.CreateAsync(pet);
+
+        var foodBonus = petTier * 5;
+        await _resourceService.GrantAsync(accountId, "PET_FOOD", foodBonus, "PET_GACHA_BONUS");
+
+        return new PetGachaResult { Success = true, Pet = pet, BonusFood = foodBonus };
+    }
+
     public async Task<GachaPityInfo> GetPityAsync(Guid accountId)
     {
         var pity = await GetOrCreatePityAsync(accountId, "EQUIPMENT");
@@ -117,6 +153,20 @@ public class GachaService
         return "COMMON";
     }
 
+    private static int RollPetTier()
+    {
+        var totalWeight = PetTierWeights.Values.Sum();
+        var roll = Random.Shared.NextDouble() * totalWeight;
+        var cumulative = 0.0;
+        foreach (var (tier, weight) in PetTierWeights)
+        {
+            cumulative += weight;
+            if (roll <= cumulative)
+                return tier;
+        }
+        return 1;
+    }
+
     private async Task<GachaPity> GetOrCreatePityAsync(Guid accountId, string boxType)
     {
         var pity = await _gachaRepo.GetPityAsync(accountId, boxType);
@@ -146,4 +196,12 @@ public class GachaPityInfo
 {
     public int PityCount { get; set; }
     public int Threshold { get; set; }
+}
+
+public class PetGachaResult
+{
+    public bool Success { get; set; }
+    public string? Error { get; set; }
+    public PetEntry? Pet { get; set; }
+    public int BonusFood { get; set; }
 }

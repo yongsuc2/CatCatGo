@@ -61,6 +61,8 @@ public class EquipmentService
                 return new EquipmentResult { Success = false, Error = "MATERIAL_NOT_FOUND" };
             if (mat.SlotIndex >= 0)
                 return new EquipmentResult { Success = false, Error = "MATERIAL_IS_EQUIPPED" };
+            if (mat.IsS)
+                return new EquipmentResult { Success = false, Error = "CANNOT_FORGE_S_GRADE" };
             materials.Add(mat);
         }
 
@@ -72,8 +74,14 @@ public class EquipmentService
         if (nextGrade == null)
             return new EquipmentResult { Success = false, Error = "MAX_GRADE" };
 
+        var mergedSubStats = MergeSubStats(materials);
+
+        var totalRefundStones = materials.Sum(m => (double)m.EnhancementLevel);
         foreach (var mat in materials)
             await _equipmentRepo.DeleteAsync(mat.Id);
+
+        if (totalRefundStones > 0)
+            await _resourceService.GrantAsync(accountId, "EQUIPMENT_STONE", totalRefundStones, "FORGE_REFUND");
 
         var newEquipment = new EquipmentEntry
         {
@@ -82,7 +90,7 @@ public class EquipmentService
             TemplateId = materials[0].TemplateId,
             Grade = nextGrade,
             EnhancementLevel = 0,
-            SubStats = "[]",
+            SubStats = mergedSubStats,
             SlotIndex = -1,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -156,6 +164,20 @@ public class EquipmentService
             _ => 1.0,
         };
         return Math.Floor(50 * (1 + currentLevel * 0.5) * gradeMultiplier);
+    }
+
+    private static string MergeSubStats(List<EquipmentEntry> materials)
+    {
+        var allStats = new List<string>();
+        foreach (var mat in materials)
+        {
+            var stats = System.Text.Json.JsonSerializer.Deserialize<List<string>>(mat.SubStats);
+            if (stats != null)
+                allStats.AddRange(stats);
+        }
+        var maxSubStats = 5;
+        var merged = allStats.Distinct().Take(maxSubStats).ToList();
+        return System.Text.Json.JsonSerializer.Serialize(merged);
     }
 
     private static string? GetNextGrade(string grade) => grade switch

@@ -36,4 +36,14 @@ public class PetRepository : IPetRepository
         _db.PetEntries.Update(entry);
         await _db.SaveChangesAsync();
     }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var entry = await _db.PetEntries.FindAsync(id);
+        if (entry != null)
+        {
+            _db.PetEntries.Remove(entry);
+            await _db.SaveChangesAsync();
+        }
+    }
 }

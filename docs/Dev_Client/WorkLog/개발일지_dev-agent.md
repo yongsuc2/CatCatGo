@@ -1,5 +1,38 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (4) - planning-agent 세부분석 기반 서버 서비스 보완
+
+### 개요
+
+planning-agent의 기획서 세부 분석에서 발견된 누락/미흡 사항 6건을 보완했다.
+
+### 변경 사항
+
+| 서비스 | 보완 내용 |
+|--------|-----------|
+| AuthService | RefreshAsync: null 반환 스텁 -> 실제 Refresh Token 검증 + 새 Access Token 발급 구현 |
+| EquipmentService | ForgeAsync: S등급 합성 차단, SubStats 유지+합산(최대 5개), 강화석 100% 반환 |
+| ContentService | DungeonEnterAsync: 타입별 분리 카운트 -> 전 종류 공유 입장 횟수(DUNGEON_SHARED) |
+| PetService | UpgradeAsync: 등급업 시 중복 펫 소모(삭제) 로직 추가 |
+| ChapterService | DetermineEncounterType: 중박(10회)/대박(30회) 카운터 기반 보정 보상 인카운터 보장 |
+| GachaService | PetPullAsync: PET_EGG 소모 -> 티어 가중치 기반 펫 생성 + PET_FOOD 보너스 지급 |
+
+### 인터페이스/구현체 추가
+
+| 항목 | 변경 |
+|------|------|
+| IAccountRepository | GetByRefreshTokenAsync 추가 |
+| AccountRepository | GetByRefreshTokenAsync 구현 |
+| IPetRepository | DeleteAsync 추가 |
+| PetRepository | DeleteAsync 구현 |
+| GachaController | POST /api/gacha/pet-pull 엔드포인트 추가 |
+
+### 검증
+
+- `dotnet build`: 0 Warning, 0 Error
+
+---
+
 ## 2026-03-07 (3) - 서버 미구현 피쳐 34개 API 구현
 
 ### 개요

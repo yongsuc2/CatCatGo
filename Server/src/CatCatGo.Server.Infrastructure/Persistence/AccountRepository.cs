@@ -29,6 +29,11 @@ public class AccountRepository : IAccountRepository
             a.SocialType == socialType && a.SocialId == socialId);
     }
 
+    public async Task<Account?> GetByRefreshTokenAsync(string refreshToken)
+    {
+        return await _db.Accounts.FirstOrDefaultAsync(a => a.RefreshToken == refreshToken);
+    }
+
     public async Task<Account> CreateAsync(Account account)
     {
         _db.Accounts.Add(account);

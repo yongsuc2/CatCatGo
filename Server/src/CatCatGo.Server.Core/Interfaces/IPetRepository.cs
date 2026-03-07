@@ -9,4 +9,5 @@ public interface IPetRepository
     Task<PetEntry?> GetEquippedAsync(Guid accountId);
     Task CreateAsync(PetEntry entry);
     Task UpdateAsync(PetEntry entry);
+    Task DeleteAsync(Guid id);
 }

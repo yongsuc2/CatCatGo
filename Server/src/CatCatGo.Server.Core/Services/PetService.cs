@@ -56,6 +56,10 @@ public class PetService
         if (duplicates.Count < duplicatesNeeded - 1)
             return new PetUpgradeResult { Success = false, Error = "INSUFFICIENT_DUPLICATES" };
 
+        var consumed = duplicates.Take(duplicatesNeeded - 1).ToList();
+        foreach (var dup in consumed)
+            await _petRepo.DeleteAsync(dup.Id);
+
         pet.Grade = GradeOrder[currentIndex + 1];
         pet.UpdatedAt = DateTime.UtcNow;
         await _petRepo.UpdateAsync(pet);

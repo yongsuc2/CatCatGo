@@ -201,15 +201,43 @@ public class ChapterService
         if (forcedBattleDays.Contains(session.CurrentDay))
             return "COMBAT";
 
+        if (session.JungbakCounter >= 10)
+        {
+            session.JungbakCounter = 0;
+            return "CHANCE";
+        }
+
+        if (session.DaebakCounter >= 30)
+        {
+            session.DaebakCounter = 0;
+            return "DEMON";
+        }
+
         var rng = new Random(session.Seed + session.CurrentDay);
         var roll = rng.Next(100);
 
-        return roll switch
+        string encounterType = roll switch
         {
             < 40 => "COMBAT",
             < 47 => "DEMON",
             _ => "CHANCE",
         };
+
+        if (encounterType == "COMBAT")
+        {
+            session.JungbakCounter++;
+            session.DaebakCounter++;
+        }
+        else if (encounterType == "CHANCE")
+        {
+            session.JungbakCounter = 0;
+        }
+        else if (encounterType == "DEMON")
+        {
+            session.DaebakCounter = 0;
+        }
+
+        return encounterType;
     }
 
     private static List<string> GenerateSkillChoices(int seed, int day)
