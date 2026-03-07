@@ -1,4 +1,4 @@
-# CLAUDE.md - CatCatGo Unity Project
+# CLAUDE.md
 
 ## Project Overview
 - CatCatGo — Unity 2D 게임 프로젝트
@@ -105,9 +105,9 @@
 ## Git Commit 포맷
 
 ```
-[에이전트이름] 커밋 메시지 요약
+[영역이름] 커밋 메시지 요약
 
-Ref: docs/{Agent디렉토리}/WorkLog/{작업일지파일}
+Ref: docs/{영역디렉토리}/WorkLog/{작업일지파일}
 ```
 
 **예시:**
@@ -117,11 +117,25 @@ Ref: docs/{Agent디렉토리}/WorkLog/{작업일지파일}
 Ref: docs/dev-agent/WorkLog/개발일지_dev-agent.md
 ```
 
+**영역 prefix는 작업 내용의 성격에 따라 결정한다** (문서 동기화 규칙과 동일):
+
+| prefix | 해당 작업 내용 |
+|--------|--------------|
+| `[dev-agent]` | Unity 클라이언트 코드, Scene/Prefab, UI, 애니메이션 |
+| `[dev-server-agent]` | 서버 API, DB 스키마, 서버 로직, 통신 프로토콜 |
+| `[planning-agent]` | 기획서, 밸런스 설계, 시스템 기획, 콘텐츠 설계 |
+| `[graphics-agent]` | 스프라이트, 이미지 에셋, 셰이더, 비주얼 이펙트 |
+| `[qa-agent]` | 테스트 케이스, 버그 리포트, 테스트 자동화 |
+| `[claude-code-engineer]` | CLAUDE.md, MCP 설정, hooks, skills, Agent 운영 |
+
 **규칙:**
-- 첫 줄: `[에이전트이름]` + 공백 + 변경 내용 요약
+- 첫 줄: `[영역이름]` + 공백 + 변경 내용 요약
 - 본문(선택): 상세 설명이 필요한 경우
 - 마지막 줄: `Ref:` + 해당 작업이 기록된 WorkLog 문서 경로
 - WorkLog가 없으면 커밋 전에 먼저 작성
+- prefix는 **작업을 수행한 주체가 아니라 작업 내용의 영역**으로 결정
+  - 예: 사용자가 직접 클라이언트 코드를 수정해도 `[dev-agent]`
+  - 예: 하나의 커밋이 여러 영역에 걸치면 **주된 변경 영역**을 prefix로 사용
 
 ---
 
@@ -130,16 +144,44 @@ Ref: docs/dev-agent/WorkLog/개발일지_dev-agent.md
 작업으로 인해 시스템 동작, 흐름, 구조가 변경되었을 때 관련 문서도 함께 업데이트할 것.
 문서 작성/수정은 `/doc` skill을 사용한다.
 
+### 핵심 원칙: 작업 내용 기준으로 문서 위치 결정
+
+문서는 **"누가 작업했는가"가 아니라 "작업 내용이 어떤 영역에 해당하는가"**에 따라 배치한다.
+
+- 작업 주체(특정 Agent, 사용자 직접 작업)와 무관하게, **변경된 내용의 성격**에 맞는 문서 경로에 기록
+- 하나의 작업이 여러 영역에 걸치면, **해당하는 모든 영역의 문서를 각각 업데이트**
+- Agent를 spawn하지 않고 직접 작업하더라도 이 규칙은 동일하게 적용
+
 ### 문서 디렉토리 구조
 
-각 Agent의 문서는 아래 매핑에 따라 관리한다.
+| 문서 경로 | 담당 영역 | 이 경로에 문서화해야 하는 작업 예시 |
+|----------|----------|-------------------------------|
+| `docs/dev-agent/` | Unity 클라이언트 | Scene/Prefab 변경, C# 클라이언트 스크립트, UI 구현, 애니메이션, 클라이언트 아키텍처 |
+| `docs/dev-server-agent/` | C# 서버 | 서버 API 추가/변경, DB 스키마, 서버 로직, 통신 프로토콜, 서버 설정 |
+| `docs/planning-agent/` | 기획 | 게임 기획서, 밸런스 설계, 시스템 기획, 콘텐츠 설계, 사양서 |
+| `docs/graphics-agent/` | 그래픽 리소스 | 스프라이트, 이미지 에셋, 셰이더, 비주얼 이펙트, 리소스 가이드라인 |
+| `docs/qa-agent/` | QA/테스트 | 테스트 케이스, 버그 리포트, 테스트 자동화, 품질 기준 |
+| `docs/claude-code-engineer/` | Claude Code 설정 | CLAUDE.md, MCP 설정, hooks, skills, Agent 운영 규칙 |
 
-| Agent | 문서 경로 | 담당 영역 |
-|-------|----------|----------|
-| dev-agent | `docs/dev-agent/` | Unity 클라이언트 |
-| dev-server-agent | `docs/dev-server-agent/` | C# 서버 |
-| planning-agent | `docs/planning-agent/` | 기획 |
-| graphics-agent | `docs/graphics-agent/` | 그래픽 리소스 |
-| qa-agent | `docs/qa-agent/` | QA/테스트 |
-| claude-code-engineer | `docs/claude-code-engineer/` | Claude Code 설정 |
+### 판단 기준
+
+1. **작업 결과물이 영향을 미치는 영역**을 기준으로 문서 경로를 선택한다
+2. 작업 주체가 판단 기준에 포함되지 않는다
+   - 예: planning-agent가 서버 API 스펙을 정리했다면 -> `docs/dev-server-agent/`에 문서화
+   - 예: 사용자가 직접 Unity 스크립트를 수정했다면 -> `docs/dev-agent/`에 문서화
+   - 예: dev-agent가 클라이언트-서버 연동 작업을 했다면 -> `docs/dev-agent/`와 `docs/dev-server-agent/` 모두 업데이트
+
+### 트러블슈팅 문서 작성 (필수)
+
+작업 중 버그, 에러, 문제 상황을 만나고 해결했을 때, 해당 영역의 `TroubleShooting/` 폴더에 **반드시** 문서를 작성한다.
+
+- **대상**: 버그 리포트, 빌드 에러, 런타임 에러, 설정 이슈, 환경 문제 등 — 원인을 파악하고 해결한 모든 경우
+- 문서 경로: `docs/{영역디렉토리}/TroubleShooting/`
+- 재발 방지를 위한 자료 축적이 목적이므로, 해결 후 문서 작성을 **생략하지 않는다**
+
+### 시스템 기획서(SystemDesign) 작성 규칙
+
+- 게임 밸런스에 영향을 주는 **구체적 수치(데미지값, 확률, 비용, px, 색상코드 등)는 기획서에 명시 금지**
+- 기획서에는 **개념과 구조만 기술**하고, 수치는 데이터 테이블을 참조하도록 안내
+- 새로운 수치가 필요하면 기존 데이터 테이블에 추가하거나 새 테이블을 생성
 
