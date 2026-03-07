@@ -65,3 +65,33 @@ consistency-report-v1, v2에서 인라인으로 기록된 BUG-001 ~ BUG-007을 `
 - docs/QA/Bugs/BUG-005_daily-quest-missing.md
 - docs/QA/Bugs/BUG-006_resource-type-missing.md
 - docs/QA/Bugs/BUG-007_dayProgressMaxBonus-not-applied.md
+
+### 클라이언트 코드 검수/리팩토링 검증 (Task #3)
+
+**목적**: dev-agent의 클라이언트 코드 전면 검수/리팩토링 결과 검증
+
+**검증 대상**: main 워킹 디렉토리 미커밋 변경사항 (44개 수정 + 6개 신규)
+
+**검증 항목 및 결과:**
+- 하드코딩 -> JSON 추출 12건: PASS (모든 값 원본과 일치)
+  - battle.data.json: stamina, chapterStaminaCost, newGameResources
+  - dungeon.data.json: goblinMiner 섹션
+  - pet.data.json: growth 섹션
+  - talent.data.json: statLabels, gradeLabels, heritageRouteLabels
+  - collection.data.json (신규): 컬렉션 엔트리 10건
+  - chapter-treasure.data.json: totalDays, survivalMilestones, clearMilestone
+- 중복 코드 제거 3건: PASS
+  - SkillGradeHelper (TierToGrade 중앙집중화)
+  - SkillRegistryHelper + SkillTierDataLoader (스킬 유틸 공유)
+  - DateHelper (GetTodayString 공유)
+- 버그 수정 3건 (GetComponent 중복 호출): PASS
+- 죽은 코드 삭제 3건: PASS
+- deprecated API 수정 (enableWordWrapping -> textWrappingMode): PASS
+- 테스트 호환성: PASS (삭제된 메서드 참조 0건)
+
+**발견된 이슈:**
+- [BUG-014 Minor] CollectionDataTable.EnsureLoaded()에서 JSON 로드 실패 시 _entries가 null로 남음
+
+**Output**
+- docs/qa-agent/client-code-review-verification-report.md
+- docs/qa-agent/Bugs/BUG-014_collection-datatable-null-safety.md
