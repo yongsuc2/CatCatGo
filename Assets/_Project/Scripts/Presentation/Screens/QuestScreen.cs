@@ -245,14 +245,9 @@ namespace CatCatGo.Presentation.Screens
             var evt = GetCurrentEvent();
             if (evt == null) return;
 
-            var reward = evt.ClaimMissionReward(missionId);
-            if (reward == null) return;
-
-            foreach (var r in reward.Resources)
-                Game.Player.Resources.Add(r.Type, r.Amount);
-
-            Game.SaveGame();
-            UI.Refresh();
+            var result = Game.ClaimQuestReward(evt.Id, missionId);
+            if (result.IsOk())
+                UI.Refresh();
         }
 
         private void OnClaimAll()
@@ -260,21 +255,9 @@ namespace CatCatGo.Presentation.Screens
             var evt = GetCurrentEvent();
             if (evt == null) return;
 
-            foreach (var mission in evt.Missions)
-            {
-                if (mission.Current >= mission.Target && !mission.Claimed)
-                {
-                    var reward = evt.ClaimMissionReward(mission.Id);
-                    if (reward != null)
-                    {
-                        foreach (var r in reward.Resources)
-                            Game.Player.Resources.Add(r.Type, r.Amount);
-                    }
-                }
-            }
-
-            Game.SaveGame();
-            UI.Refresh();
+            var result = Game.ClaimAllQuestRewards(evt.Id);
+            if (result.IsOk())
+                UI.Refresh();
         }
 
         private void CreateEmptyRow(string text)

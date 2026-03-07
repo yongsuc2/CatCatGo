@@ -1,5 +1,36 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (8) - Phase 3-2: Screen 리팩토링
+
+### 개요
+
+Screen 코드에서 도메인 객체를 직접 변경하던 패턴(B/C 패턴)을 Phase 3-1에서 추가한 GameManager 메서드 호출로 전환했다.
+UI 빌드/표시 코드는 변경하지 않고, 상태 변경 핸들러만 수정.
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `TalentScreen.cs` | OnUpgradeClicked, ClaimMilestone, OnClaimAll → GameManager 메서드 호출. ProcessSingleClaim 삭제 |
+| `PetScreen.cs` | OnHatchClicked, OnDeployClicked, OnFeedClicked, OnMaxLevelClicked → GameManager 메서드 호출 |
+| `EquipmentScreen.cs` | OnEquipClicked, OnSellClicked, OnUpgradeClicked, OnUnequipClicked, OnBulkMergeClicked, OnMergeClicked → GameManager 메서드 호출 |
+| `ContentScreen.cs` | Tower/Dungeon/GoblinMine/GoblinCart/Catacomb 핸들러 → GameManager 메서드 호출 |
+| `QuestScreen.cs` | OnClaimMission, OnClaimAll → GameManager 메서드 호출 |
+
+### 제거된 패턴
+
+- Screen에서 `Game.Player.Resources.Add/Spend` 직접 호출
+- Screen에서 `Game.SaveGame()` 직접 호출
+- Screen에서 도메인 서비스(tower.Challenge, catacomb.StartRun 등) 직접 호출
+- Screen에서 BattleManagerService.CreatePlayerUnit 직접 호출
+
+### 유지된 패턴
+
+- UI 표시용 읽기 전용 접근 (Game.ForgeService.FindMergeCandidates, Game.Player.Resources.Get 등)
+- 결과 데이터에서 보상 정보 추출하여 UI 표시
+
+---
+
 ## 2026-03-07 (7) - Phase 3-1: GameManager 듀얼 모드 메서드 추가
 
 ### 개요

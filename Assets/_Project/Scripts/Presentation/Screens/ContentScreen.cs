@@ -286,33 +286,19 @@ namespace CatCatGo.Presentation.Screens
 
             CreateActionButton(_subContent, $"\ub3c4\uc804 (\ud1a0\ud070 1\uac1c)", () =>
             {
-                if (tokens < 1) return;
-                var stats = Game.Player.ComputeStats();
-                var playerUnit = Game.BattleManagerService.CreatePlayerUnit(Game.Player, null, new Domain.Entities.PassiveSkill[0]);
-                var result = tower.Challenge(playerUnit, tokens);
+                var result = Game.TowerChallenge();
                 if (result.IsFail()) return;
 
-                var battle = result.Data.Battle;
-                battle.RunToCompletion(50);
-
-                var battleResult = tower.OnBattleResult(battle.State);
-                if (battleResult.TokenConsumed)
-                    Game.Player.Resources.Spend(ResourceType.CHALLENGE_TOKEN, 1);
-
                 string rewardStr = "";
-                if (battleResult.Advanced && battleResult.Reward != null)
+                if (result.Data.Advanced && result.Data.Reward != null)
                 {
-                    foreach (var r in battleResult.Reward.Resources)
-                    {
-                        Game.Player.Resources.Add(r.Type, r.Amount);
+                    foreach (var r in result.Data.Reward.Resources)
                         rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                    }
                 }
 
-                _resultText.text = battle.State == BattleState.VICTORY
+                _resultText.text = result.Data.BattleState == BattleState.VICTORY
                     ? $"\uc2b9\ub9ac! {rewardStr}"
                     : "\ud328\ubc30...";
-                Game.SaveGame();
                 ShowSubPanel(ContentView.Tower);
             });
         }
@@ -341,24 +327,19 @@ namespace CatCatGo.Presentation.Screens
                 var capturedType = type;
                 CreateActionButton(_subContent, $"{name} \uc804\ud22c", () =>
                 {
-                    var result = Game.ChallengeDungeon(capturedType);
+                    var result = Game.DungeonChallenge(capturedType);
                     if (result.IsFail()) { _resultText.text = result.Message; return; }
 
-                    var battle = result.Data.Battle;
-                    battle.RunToCompletion(50);
-                    var reward = Game.OnDungeonBattleResult(capturedType, battle.State);
-
                     string rewardStr = "";
-                    if (reward != null)
+                    if (result.Data.Reward != null)
                     {
-                        foreach (var r in reward.Resources)
+                        foreach (var r in result.Data.Reward.Resources)
                             rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
                     }
 
-                    _resultText.text = battle.State == BattleState.VICTORY
+                    _resultText.text = result.Data.BattleState == BattleState.VICTORY
                         ? $"\uc2b9\ub9ac! {rewardStr}"
                         : "\ud328\ubc30...";
-                    Game.SaveGame();
                     ShowSubPanel(ContentView.Dungeon);
                 });
 
@@ -366,14 +347,13 @@ namespace CatCatGo.Presentation.Screens
                 {
                     CreateActionButton(_subContent, $"{name} \uc18c\ud0d5", () =>
                     {
-                        var sweepResult = Game.SweepDungeon(capturedType);
+                        var sweepResult = Game.DungeonSweep(capturedType);
                         if (sweepResult.IsFail()) { _resultText.text = sweepResult.Message; return; }
 
                         string rewardStr = "";
                         foreach (var r in sweepResult.Data.Reward.Resources)
                             rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
                         _resultText.text = $"\uc18c\ud0d5 \uc644\ub8cc! {rewardStr}";
-                        Game.SaveGame();
                         ShowSubPanel(ContentView.Dungeon);
                     });
                 }
@@ -390,11 +370,9 @@ namespace CatCatGo.Presentation.Screens
 
             CreateActionButton(_subContent, $"\ucc44\uad74 (\uace1\uad2d\uc774 1\uac1c)", () =>
             {
-                var result = miner.Mine(pickaxes);
+                var result = Game.GoblinMine();
                 if (result.IsFail()) { _resultText.text = result.Message; return; }
-                Game.Player.Resources.Spend(ResourceType.PICKAXE, 1);
-                _resultText.text = $"\uad11\uc11d +{result.Data.OreGained}  (\ucd1d: {miner.OreCount})";
-                Game.SaveGame();
+                _resultText.text = $"\uad11\uc11d +{result.Data.OreGained}  (\ucd1d: {result.Data.TotalOre})";
                 ShowSubPanel(ContentView.GoblinMine);
             });
 
@@ -402,16 +380,13 @@ namespace CatCatGo.Presentation.Screens
             {
                 CreateActionButton(_subContent, "\uc218\ub808 \ubcf4\ub0b4\uae30 (30 \uad11\uc11d)", () =>
                 {
-                    var result = miner.UseCart(Game.Rng);
+                    var result = Game.GoblinCart();
                     if (result.IsFail()) { _resultText.text = result.Message; return; }
-                    foreach (var r in result.Data.Reward.Resources)
-                        Game.Player.Resources.Add(r.Type, r.Amount);
 
                     string rewardStr = "";
-                    foreach (var r in result.Data.Reward.Resources)
+                    foreach (var r in result.Data.Resources)
                         rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
                     _resultText.text = $"\uc218\ub808 \ubcf4\uc0c1: {rewardStr}";
-                    Game.SaveGame();
                     ShowSubPanel(ContentView.GoblinMine);
                 });
             }
@@ -428,8 +403,8 @@ namespace CatCatGo.Presentation.Screens
             {
                 CreateActionButton(_subContent, "\ub3c4\uc804 \uc2dc\uc791", () =>
                 {
-                    catacomb.StartRun();
-                    Game.SaveGame();
+                    var result = Game.CatacombStart();
+                    if (result.IsFail()) return;
                     ShowSubPanel(ContentView.Catacomb);
                 });
             }
@@ -437,41 +412,32 @@ namespace CatCatGo.Presentation.Screens
             {
                 CreateActionButton(_subContent, "\ub2e4\uc74c \uc804\ud22c", () =>
                 {
-                    var playerUnit = Game.BattleManagerService.CreatePlayerUnit(Game.Player, null, new Domain.Entities.PassiveSkill[0]);
-                    var battle = catacomb.GetNextBattle(playerUnit);
-                    if (battle == null) return;
-                    battle.RunToCompletion(50);
-                    var result = catacomb.OnBattleResult(battle.State);
+                    var result = Game.CatacombBattle();
+                    if (result.IsFail()) return;
 
-                    if (!result.ContinueRun)
+                    if (!result.Data.ContinueRun)
                     {
                         string rewardStr = "";
-                        foreach (var r in result.Reward.Resources)
-                        {
-                            Game.Player.Resources.Add(r.Type, r.Amount);
+                        foreach (var r in result.Data.Reward.Resources)
                             rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
-                        }
                         _resultText.text = $"\ud328\ubc30. \ubcf4\uc0c1: {rewardStr}";
                     }
                     else
                     {
-                        _resultText.text = $"\uc2b9\ub9ac! \uce35: {catacomb.CurrentRunFloor}  \uc804\ud22c: {catacomb.CurrentBattleIndex}/{catacomb.BattlesPerFloor}";
+                        _resultText.text = $"\uc2b9\ub9ac! \uce35: {result.Data.CurrentFloor}  \uc804\ud22c: {result.Data.BattleIndex}/{catacomb.BattlesPerFloor}";
                     }
-                    Game.SaveGame();
                     ShowSubPanel(ContentView.Catacomb);
                 });
 
                 CreateActionButton(_subContent, "\ud0d0\ud5d8 \uc885\ub8cc", () =>
                 {
-                    var reward = catacomb.EndRun();
-                    foreach (var r in reward.Resources)
-                        Game.Player.Resources.Add(r.Type, r.Amount);
+                    var result = Game.CatacombEnd();
+                    if (result.IsFail()) return;
 
                     string rewardStr = "";
-                    foreach (var r in reward.Resources)
+                    foreach (var r in result.Data.Resources)
                         rewardStr += $"{NumberFormatter.FormatResourceType(r.Type)}: +{r.Amount}  ";
                     _resultText.text = $"\ud0d0\ud5d8 \uc885\ub8cc. \ubcf4\uc0c1: {rewardStr}";
-                    Game.SaveGame();
                     ShowSubPanel(ContentView.Catacomb);
                 });
             }

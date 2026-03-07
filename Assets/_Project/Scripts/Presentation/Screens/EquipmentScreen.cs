@@ -998,8 +998,8 @@ namespace CatCatGo.Presentation.Screens
         {
             if (_selectedEquipment == null || _selectedIsEquipped) return;
 
-            Game.Player.EquipFromInventory(_selectedEquipment.Id);
-            Game.SaveGame();
+            var result = Game.EquipItem(_selectedEquipment.Id);
+            if (result.IsFail()) return;
             _selectedEquipment = null;
             _detailPanel.gameObject.SetActive(false);
             UI.Refresh();
@@ -1009,8 +1009,8 @@ namespace CatCatGo.Presentation.Screens
         {
             if (_selectedEquipment == null || _selectedIsEquipped) return;
 
-            Game.Player.SellEquipment(_selectedEquipment.Id);
-            Game.SaveGame();
+            var result = Game.SellEquipment(_selectedEquipment.Id);
+            if (result.IsFail()) return;
             _selectedEquipment = null;
             _detailPanel.gameObject.SetActive(false);
             UI.Refresh();
@@ -1061,14 +1061,9 @@ namespace CatCatGo.Presentation.Screens
         {
             if (_selectedEquipment == null || !_selectedIsEquipped) return;
 
-            int stones = (int)Game.Player.Resources.EquipmentStones;
-            var result = _selectedEquipment.Upgrade(stones);
+            var result = Game.UpgradeEquipment(_selectedEquipment.Id);
             if (result.IsOk())
             {
-                Game.Player.Resources.Spend(ResourceType.EQUIPMENT_STONE, result.Data.Cost);
-                var slot = Game.Player.GetEquipmentSlot(_selectedSlotType);
-                slot.SyncLevel(_selectedSlotIndex);
-                Game.SaveGame();
                 UI.Refresh();
                 ShowDetail(_selectedEquipment);
             }
@@ -1078,8 +1073,8 @@ namespace CatCatGo.Presentation.Screens
         {
             if (_selectedEquipment == null || !_selectedIsEquipped) return;
 
-            Game.Player.UnequipToInventory(_selectedSlotType, _selectedSlotIndex);
-            Game.SaveGame();
+            var result = Game.UnequipItem(_selectedSlotType, _selectedSlotIndex);
+            if (result.IsFail()) return;
             _selectedEquipment = null;
             _detailPanel.gameObject.SetActive(false);
             UI.Refresh();
@@ -1089,25 +1084,9 @@ namespace CatCatGo.Presentation.Screens
         {
             if (Game == null) return;
 
-            var candidates = Game.ForgeService.FindMergeCandidates(Game.Player.Inventory);
-            if (candidates.Count == 0) return;
-
-            int merged = 0;
-            foreach (var group in candidates)
+            var result = Game.BulkForge();
+            if (result.IsOk() && result.Data.MergedCount > 0)
             {
-                var result = Game.ForgeService.Merge(group, Game.Rng);
-                if (result.IsOk())
-                {
-                    foreach (var eq in group)
-                        Game.Player.RemoveFromInventory(eq.Id);
-                    Game.Player.AddToInventory(result.Data.Result);
-                    merged++;
-                }
-            }
-
-            if (merged > 0)
-            {
-                Game.SaveGame();
                 UI.Refresh();
                 RefreshForge();
             }
@@ -1115,13 +1094,10 @@ namespace CatCatGo.Presentation.Screens
 
         private void OnMergeClicked(List<Equipment> group)
         {
-            var result = Game.ForgeService.Merge(group, Game.Rng);
+            var ids = group.ConvertAll(eq => eq.Id);
+            var result = Game.ForgeEquipment(ids);
             if (result.IsOk())
             {
-                foreach (var eq in group)
-                    Game.Player.RemoveFromInventory(eq.Id);
-                Game.Player.AddToInventory(result.Data.Result);
-                Game.SaveGame();
                 UI.Refresh();
                 RefreshForge();
             }

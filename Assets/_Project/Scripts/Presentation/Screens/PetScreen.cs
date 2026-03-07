@@ -390,51 +390,26 @@ namespace CatCatGo.Presentation.Screens
         private void OnHatchClicked()
         {
             if (Game == null) return;
-            int eggs = (int)Game.Player.Resources.Get(ResourceType.PET_EGG);
-            if (eggs < 1) return;
-
-            Game.Player.Resources.Spend(ResourceType.PET_EGG, 1);
-
-            var template = PetTable.GetRandomTemplate(Game.Rng);
-            var pet = new Pet(
-                $"hatch_{System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{Game.Rng.NextInt(0, 9999)}",
-                template.Name,
-                template.Tier,
-                PetGrade.COMMON,
-                template.MaxGrade,
-                1,
-                template.BasePassiveBonus);
-            Game.Player.AddPet(pet);
-
-            if (Game.Player.ActivePet == null)
-                Game.Player.SetActivePet(pet);
-
-            _selectedPet = pet;
-            Game.SaveGame();
+            var result = Game.HatchPet();
+            if (result.IsFail()) return;
+            _selectedPet = result.Data;
             UI.Refresh();
         }
 
         private void OnDeployClicked()
         {
             if (_selectedPet == null || Game == null) return;
-            Game.Player.SetActivePet(_selectedPet);
-            Game.SaveGame();
-            UI.Refresh();
+            var result = Game.DeployPet(_selectedPet.Id);
+            if (result.IsOk())
+                UI.Refresh();
         }
 
         private void OnFeedClicked()
         {
             if (_selectedPet == null || Game == null) return;
-            int food = (int)Game.Player.Resources.Get(ResourceType.PET_FOOD);
-            if (food < 1) return;
-
-            var result = _selectedPet.Feed(1);
+            var result = Game.FeedPet(_selectedPet.Id, 1);
             if (result.IsOk())
-            {
-                Game.Player.Resources.Spend(ResourceType.PET_FOOD, 1);
-                Game.SaveGame();
                 UI.Refresh();
-            }
         }
 
         private void OnMaxLevelClicked()
@@ -442,14 +417,9 @@ namespace CatCatGo.Presentation.Screens
             if (_selectedPet == null || Game == null) return;
             int food = (int)Game.Player.Resources.Get(ResourceType.PET_FOOD);
             if (food < 1) return;
-
-            var result = _selectedPet.Feed(food);
+            var result = Game.FeedPet(_selectedPet.Id, food);
             if (result.IsOk())
-            {
-                Game.Player.Resources.Spend(ResourceType.PET_FOOD, food);
-                Game.SaveGame();
                 UI.Refresh();
-            }
         }
 
         private void SelectPet(Pet pet)

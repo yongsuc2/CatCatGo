@@ -574,49 +574,24 @@ namespace CatCatGo.Presentation.Screens
         private void OnUpgradeClicked(StatType statType)
         {
             if (Game == null || Game.Player == null) return;
-
-            var talent = Game.Player.Talent;
-            var result = talent.Upgrade(statType, (int)Game.Player.Resources.Gold);
+            var result = Game.TalentUpgrade(statType);
             if (result.IsOk())
-            {
-                Game.Player.Resources.Spend(ResourceType.GOLD, result.Data.Cost);
-                Game.SaveGame();
                 UI.Refresh();
-            }
-        }
-
-        private bool ProcessSingleClaim(int level, string rewardType, int rewardAmount)
-        {
-            string key = Game.Player.Talent.GetMilestoneKey(level);
-            if (Game.Player.ClaimedMilestones.Contains(key)) return false;
-            Game.Player.ClaimedMilestones.Add(key);
-            if (rewardType != "GOLD_BOOST")
-            {
-                Game.Player.Resources.Add(ResourceType.GOLD, rewardAmount);
-            }
-            return true;
         }
 
         private void OnClaimAll()
         {
             if (Game == null || Game.Player == null) return;
-
-            var claimable = Game.Player.Talent.GetClaimableMilestones(Game.Player.ClaimedMilestones);
-            if (claimable.Count == 0) return;
-
-            foreach (var milestone in claimable)
-                ProcessSingleClaim(milestone.Level, milestone.RewardType, milestone.RewardAmount);
-
-            Game.SaveGame();
-            UI.Refresh();
+            var result = Game.ClaimAllTalentMilestones();
+            if (result.IsOk())
+                UI.Refresh();
         }
 
         private void ClaimMilestone(int level, string rewardType, int rewardAmount)
         {
             if (Game == null || Game.Player == null) return;
-            if (!ProcessSingleClaim(level, rewardType, rewardAmount)) return;
-
-            Game.SaveGame();
+            var result = Game.ClaimTalentMilestone(level);
+            if (result.IsFail()) return;
             ShowRewardPopup(rewardType, rewardAmount);
             UI.Refresh();
         }
