@@ -13,6 +13,7 @@ using CatCatGo.Domain.Economy;
 using CatCatGo.Domain.Meta;
 using CatCatGo.Domain.Data;
 using CatCatGo.Infrastructure;
+using CatCatGo.Network;
 using GameResources = CatCatGo.Domain.Entities.Resources;
 
 namespace CatCatGo.Services
@@ -108,6 +109,13 @@ namespace CatCatGo.Services
 
         public SeededRandom Rng;
         public SaveManager SaveManagerSystem;
+
+        private NetworkMode _networkMode = NetworkMode.OFFLINE;
+        private int _consecutiveFailures;
+        private const int MaxConsecutiveFailures = 3;
+
+        public NetworkMode CurrentNetworkMode => _networkMode;
+        public bool IsOnline => _networkMode == NetworkMode.ONLINE;
 
         private float _lastTickTime;
 
@@ -413,6 +421,35 @@ namespace CatCatGo.Services
         public long? GetLastSaveTime()
         {
             return SaveManagerSystem.GetLastSaveTime();
+        }
+
+        public void SetNetworkMode(NetworkMode mode)
+        {
+            if (_networkMode == mode) return;
+            _networkMode = mode;
+            _consecutiveFailures = 0;
+            EventBus.Publish(new NetworkModeChangedEvent { Mode = mode });
+        }
+
+        private void OnApiSuccess()
+        {
+            _consecutiveFailures = 0;
+        }
+
+        private void OnApiFailed()
+        {
+            _consecutiveFailures++;
+            if (_consecutiveFailures >= MaxConsecutiveFailures && _networkMode == NetworkMode.ONLINE)
+            {
+                SetNetworkMode(NetworkMode.OFFLINE);
+                SaveGame();
+            }
+        }
+
+        private void ApplyServerDelta(StateDelta delta)
+        {
+            if (delta != null)
+                State.ApplyDelta(delta);
         }
 
         public Result<TalentUpgradeResult> TalentUpgrade(StatType statType)
@@ -818,6 +855,537 @@ namespace CatCatGo.Services
             SaveGame();
             return result;
         }
+
+        #region ONLINE API Methods
+
+        public void TalentUpgradeAsync(StatType statType, Action<Result<TalentUpgradeResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(TalentUpgrade(statType)); return; }
+
+            string statName = statType == StatType.ATK ? "ATK" : statType == StatType.HP ? "HP" : "DEF";
+            TalentApi.Upgrade(statName, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(TalentUpgrade(statType));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(new TalentUpgradeResult()));
+            });
+        }
+
+        public void ClaimTalentMilestoneAsync(int milestoneLevel, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimTalentMilestone(milestoneLevel)); return; }
+
+            TalentApi.ClaimMilestone(milestoneLevel, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimTalentMilestone(milestoneLevel));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ClaimAllTalentMilestonesAsync(Action<Result<int>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimAllTalentMilestones()); return; }
+
+            TalentApi.ClaimAllMilestones(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimAllTalentMilestones());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                int count = response.Data.Data?.ClaimedCount ?? 0;
+                callback(Result.Ok(count));
+            });
+        }
+
+        public void UpgradeEquipmentAsync(string equipmentId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(UpgradeEquipment(equipmentId)); return; }
+
+            EquipmentApi.Upgrade(equipmentId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(UpgradeEquipment(equipmentId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void EquipItemAsync(string equipmentId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(EquipItem(equipmentId)); return; }
+
+            EquipmentApi.Equip(equipmentId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(EquipItem(equipmentId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void UnequipItemAsync(SlotType slotType, int index, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(UnequipItem(slotType, index)); return; }
+
+            EquipmentApi.Unequip(slotType.ToString(), index, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(UnequipItem(slotType, index));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void SellEquipmentAsync(string equipmentId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(SellEquipment(equipmentId)); return; }
+
+            EquipmentApi.Sell(equipmentId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(SellEquipment(equipmentId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ForgeEquipmentAsync(List<string> equipmentIds, Action<Result<ForgeResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ForgeEquipment(equipmentIds)); return; }
+
+            EquipmentApi.Forge(equipmentIds, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ForgeEquipment(equipmentIds));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(new ForgeResult()));
+            });
+        }
+
+        public void BulkForgeAsync(Action<Result<BulkForgeResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(BulkForge()); return; }
+
+            EquipmentApi.BulkForge(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(BulkForge());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                int count = response.Data.Data?.MergedCount ?? 0;
+                callback(Result.Ok(new BulkForgeResult { MergedCount = count }));
+            });
+        }
+
+        public void HatchPetAsync(Action<Result<Pet>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(HatchPet()); return; }
+
+            PetApi.Hatch(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(HatchPet());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                Pet pet = null;
+                if (response.Data.Delta?.AddedPets != null && response.Data.Delta.AddedPets.Count > 0)
+                    pet = Player.OwnedPets.LastOrDefault();
+                callback(Result.Ok(pet));
+            });
+        }
+
+        public void FeedPetAsync(string petId, int amount, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(FeedPet(petId, amount)); return; }
+
+            PetApi.Feed(petId, amount, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(FeedPet(petId, amount));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void DeployPetAsync(string petId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(DeployPet(petId)); return; }
+
+            PetApi.Deploy(petId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(DeployPet(petId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void PullGachaAsync(Action<PullResult> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(PullGacha()); return; }
+
+            GachaApi.Pull(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(PullGacha());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(null);
+            });
+        }
+
+        public void PullGacha10Async(Action<List<PullResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(PullGacha10()); return; }
+
+            GachaApi.Pull10(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(PullGacha10());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(null);
+            });
+        }
+
+        public void TowerChallengeAsync(Action<Result<TowerActionResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(TowerChallenge()); return; }
+
+            ContentApi.TowerChallenge(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(TowerChallenge());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                var data = response.Data.Data;
+                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEATED;
+                Reward reward = ConvertRewardData(data?.Reward);
+                callback(Result.Ok(new TowerActionResult
+                {
+                    BattleState = battleState,
+                    Reward = reward,
+                    Advanced = battleState == BattleState.VICTORY,
+                }));
+            });
+        }
+
+        public void DungeonChallengeAsync(DungeonType type, Action<Result<DungeonChallengeResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(DungeonChallenge(type)); return; }
+
+            ContentApi.DungeonChallenge(type.ToString(), response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(DungeonChallenge(type));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                var data = response.Data.Data;
+                var battleState = data?.BattleResult == "VICTORY" ? BattleState.VICTORY : BattleState.DEFEATED;
+                callback(Result.Ok(new DungeonChallengeResult
+                {
+                    BattleState = battleState,
+                    Reward = ConvertRewardData(data?.Reward),
+                }));
+            });
+        }
+
+        public void DungeonSweepAsync(DungeonType type, Action<Result<SweepResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(DungeonSweep(type)); return; }
+
+            ContentApi.DungeonSweep(type.ToString(), response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(DungeonSweep(type));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(new SweepResult { Reward = ConvertRewardData(response.Data.Data?.Reward) }));
+            });
+        }
+
+        public void GoblinMineAsync(Action<Result<GoblinMineResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(GoblinMine()); return; }
+
+            ContentApi.GoblinMine(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(GoblinMine());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                int oreGained = response.Data.Data?.OreGained ?? 0;
+                callback(Result.Ok(new GoblinMineResult { OreGained = oreGained, TotalOre = GoblinMinerSystem.OreCount }));
+            });
+        }
+
+        public void GoblinCartAsync(Action<Result<Reward>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(GoblinCart()); return; }
+
+            ContentApi.GoblinCart(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(GoblinCart());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(ConvertRewardData(response.Data.Data?.Reward)));
+            });
+        }
+
+        public void CatacombStartAsync(Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(CatacombStart()); return; }
+
+            ContentApi.CatacombStart(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(CatacombStart());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void CatacombBattleAsync(Action<Result<CatacombRunResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(CatacombBattle()); return; }
+
+            ContentApi.CatacombBattle(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(CatacombBattle());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                var data = response.Data.Data;
+                callback(Result.Ok(new CatacombRunResult
+                {
+                    ContinueRun = data?.ContinueRun ?? false,
+                    Reward = ConvertRewardData(data?.Reward),
+                    CurrentFloor = Catacomb.CurrentRunFloor,
+                    BattleIndex = Catacomb.CurrentBattleIndex,
+                }));
+            });
+        }
+
+        public void CatacombEndAsync(Action<Result<Reward>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(CatacombEnd()); return; }
+
+            ContentApi.CatacombEnd(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(CatacombEnd());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(ConvertRewardData(response.Data.Data?.Reward)));
+            });
+        }
+
+        public void ClaimQuestRewardAsync(string eventId, string missionId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimQuestReward(eventId, missionId)); return; }
+
+            DailyApi.ClaimQuest(eventId, missionId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimQuestReward(eventId, missionId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ClaimAllQuestRewardsAsync(string eventId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimAllQuestRewards(eventId)); return; }
+
+            DailyApi.ClaimAllQuests(eventId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimAllQuestRewards(eventId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void UpgradeHeritageAsync(string route, Action<Result<HeritageUpgradeResult>> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(UpgradeHeritage(route)); return; }
+
+            HeritageApi.Upgrade(route, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(UpgradeHeritage(route));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok(new HeritageUpgradeResult()));
+            });
+        }
+
+        public void ClaimChapterTreasureAsync(string milestoneId, Action<Result> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimChapterTreasure(milestoneId)); return; }
+
+            TreasureApi.Claim(milestoneId, response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimChapterTreasure(milestoneId));
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                callback(Result.Ok());
+            });
+        }
+
+        public void ClaimAttendanceAsync(Action<AttendanceClaimResult> callback)
+        {
+            if (_networkMode == NetworkMode.OFFLINE) { callback(ClaimAttendance()); return; }
+
+            DailyApi.ClaimAttendance(response =>
+            {
+                if (!response.IsSuccess || response.Data == null || !response.Data.Success)
+                {
+                    OnApiFailed();
+                    callback(ClaimAttendance());
+                    return;
+                }
+                OnApiSuccess();
+                ApplyServerDelta(response.Data.Delta);
+                int day = response.Data.Data?.Day ?? 0;
+                callback(new AttendanceClaimResult { Day = day });
+            });
+        }
+
+        private Reward ConvertRewardData(CatCatGo.Network.RewardData rewardData)
+        {
+            if (rewardData?.Resources == null) return null;
+            var rewardResources = new List<ResourceReward>();
+            foreach (var r in rewardData.Resources)
+            {
+                if (Enum.TryParse<ResourceType>(r.Type, out var resType))
+                    rewardResources.Add(new ResourceReward(resType, r.Amount));
+            }
+            return new Reward(rewardResources);
+        }
+
+        #endregion
     }
 
     public class SweepResult

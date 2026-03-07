@@ -75,6 +75,11 @@ namespace CatCatGo.Services
 
             SetState(authSuccess ? ConnectionState.Online : ConnectionState.Offline);
 
+            if (GameManager.Instance != null)
+                GameManager.Instance.SetNetworkMode(authSuccess
+                    ? Infrastructure.NetworkMode.ONLINE
+                    : Infrastructure.NetworkMode.OFFLINE);
+
             if (authSuccess)
             {
                 TryLoadServerSave();
@@ -274,6 +279,13 @@ namespace CatCatGo.Services
             if (State == newState) return;
             State = newState;
             OnConnectionStateChanged?.Invoke(newState);
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetNetworkMode(newState == ConnectionState.Online
+                    ? Infrastructure.NetworkMode.ONLINE
+                    : Infrastructure.NetworkMode.OFFLINE);
+            }
         }
 
         private void OnApplicationPause(bool pauseStatus)

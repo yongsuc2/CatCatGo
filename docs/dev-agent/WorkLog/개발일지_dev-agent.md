@@ -1,5 +1,50 @@
 # 개발일지 - dev-agent
 
+## 2026-03-07 (9) - Phase 4-5: GameManager ONLINE 분기 추가
+
+### 개요
+
+GameManager의 25개 듀얼 모드 메서드에 ONLINE 분기를 추가. ONLINE 모드에서 서버 API를 호출하고, 응답의 StateDelta를 GameState.ApplyDelta()로 적용.
+
+### 신규 파일
+
+| 파일 | 설명 |
+|------|------|
+| `ServerResponse.cs` | 서버 응답 래퍼 타입 (Success, Error, ErrorCode, Data, Delta) |
+| `ServerResponseTypes.cs` | API별 응답 데이터 타입 (RewardData, PetHatchResponseData 등) |
+| `TalentApi.cs` | POST /api/talent/* (3 메서드) |
+| `EquipmentApi.cs` | POST /api/equipment/* (6 메서드) |
+| `PetApi.cs` | POST /api/pet/* (3 메서드) |
+| `GachaApi.cs` | POST /api/gacha/* (2 메서드) |
+| `HeritageApi.cs` | POST /api/heritage/upgrade |
+| `ContentApi.cs` | POST /api/content/* (8 메서드) |
+| `DailyApi.cs` | POST /api/daily/* (3 메서드) |
+| `TreasureApi.cs` | POST /api/treasure/claim |
+| `SyncApi.cs` | GET /api/sync/full, POST /api/sync/push |
+
+### 변경 파일
+
+| 파일 | 변경 내용 |
+|------|-----------|
+| `GameManager.cs` | NetworkMode 필드 + SetNetworkMode + 25개 Async 메서드 + ConvertRewardData 헬퍼 |
+| `ServerSyncService.cs` | 인증 결과/상태 변경 시 GameManager.SetNetworkMode 호출 |
+
+### ONLINE 분기 패턴
+
+```
+void MethodAsync(params, Action<Result<T>> callback)
+  OFFLINE → 기존 동기 메서드 호출 후 즉시 callback
+  ONLINE → API 호출 → 성공: ApplyServerDelta + callback(Ok)
+                     → 실패: OnApiFailed + OFFLINE 폴백
+```
+
+### 폴백 전략
+
+- API 실패 시 OFFLINE 로직으로 폴백
+- 3회 연속 실패 시 자동으로 OFFLINE 모드 전환 + SaveGame
+
+---
+
 ## 2026-03-07 (8) - Phase 3-2: Screen 리팩토링
 
 ### 개요
