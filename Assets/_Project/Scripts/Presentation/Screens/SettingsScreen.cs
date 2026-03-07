@@ -30,6 +30,23 @@ namespace CatCatGo.Presentation.Screens
             BuildUI();
         }
 
+        private void OnEnable()
+        {
+            if (ServerSyncService.Instance != null)
+                ServerSyncService.Instance.OnConnectionStateChanged += OnConnectionStateChanged;
+        }
+
+        private void OnDisable()
+        {
+            if (ServerSyncService.Instance != null)
+                ServerSyncService.Instance.OnConnectionStateChanged -= OnConnectionStateChanged;
+        }
+
+        private void OnConnectionStateChanged(ConnectionState newState)
+        {
+            Refresh();
+        }
+
         private void BuildUI()
         {
             var scrollGo = new GameObject("ScrollView");

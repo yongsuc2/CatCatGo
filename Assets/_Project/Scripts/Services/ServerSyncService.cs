@@ -172,11 +172,13 @@ namespace CatCatGo.Services
                 }
                 else if (response.IsOffline)
                 {
+                    _lastSyncTime = Time.realtimeSinceStartup;
                     SetState(ConnectionState.Offline);
                     Debug.Log("[ServerSync] Offline - save kept locally");
                 }
                 else
                 {
+                    _lastSyncTime = Time.realtimeSinceStartup;
                     Debug.LogWarning($"[ServerSync] Sync failed: {response.ErrorMessage}");
                 }
             });
