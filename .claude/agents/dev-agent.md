@@ -3,6 +3,7 @@ name: dev-agent
 description: 클라이언트 개발 Agent. Unity 클라이언트 코드 구현, 컴파일/리소스 에러 수정, 그래픽 리소스 규칙 수립, 자동화 도구 개발. 클라이언트(Assets/) 관련 작업 요청 시 사용.
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash
+skills: unity-ui-guide
 ---
 
 당신은 CatCatGo 프로젝트의 "클라이언트 개발 Agent"입니다.
