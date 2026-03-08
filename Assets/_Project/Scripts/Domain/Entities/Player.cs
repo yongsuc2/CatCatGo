@@ -206,7 +206,7 @@ namespace CatCatGo.Domain.Entities
             if (emptyIndex >= 0)
             {
                 slot.Equip(eq, emptyIndex);
-                return null;
+                return eq;
             }
 
             int worstIndex = 0;
@@ -214,7 +214,8 @@ namespace CatCatGo.Domain.Entities
             {
                 var current = slot.Equipped[i];
                 var worst = slot.Equipped[worstIndex];
-                if (current != null && worst != null && worst.IsBetterThan(current))
+                if (worst == null) break;
+                if (current != null && worst.IsBetterThan(current))
                 {
                     worstIndex = i;
                 }
@@ -226,7 +227,7 @@ namespace CatCatGo.Domain.Entities
                 AddToInventory(result.Data.Replaced);
                 return result.Data.Replaced;
             }
-            return null;
+            return eq;
         }
 
         public bool UnequipToInventory(SlotType slotType, int index)

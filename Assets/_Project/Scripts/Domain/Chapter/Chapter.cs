@@ -54,7 +54,7 @@ namespace CatCatGo.Domain.Chapter
             if (seed == 0) seed = Environment.TickCount;
             Id = id;
             Type = type;
-            TotalDays = 60;
+            TotalDays = ChapterTreasureTable.GetTotalDays(id);
             CurrentDay = 0;
             State = ChapterState.IN_PROGRESS;
             SessionSkills = new List<SessionSkillWrapper>();

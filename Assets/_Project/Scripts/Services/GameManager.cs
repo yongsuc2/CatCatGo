@@ -638,8 +638,9 @@ namespace CatCatGo.Services
 
         public Result EquipItem(string equipmentId)
         {
-            var equipped = Player.EquipFromInventory(equipmentId);
-            if (equipped == null) return Result.Fail("Cannot equip");
+            var eq = Player.Inventory.Find(e => e.Id == equipmentId);
+            if (eq == null) return Result.Fail("Equipment not found in inventory");
+            Player.EquipFromInventory(equipmentId);
             SaveGame();
             return Result.Ok();
         }
@@ -754,7 +755,7 @@ namespace CatCatGo.Services
                 return Result.Fail<TowerActionResult>(result.Message);
 
             var battle = result.Data.Battle;
-            battle.RunToCompletion(50);
+            battle.RunToCompletion(BattleDataTable.Data.MaxTurns);
 
             var battleResult = Tower.OnBattleResult(battle.State);
             if (battleResult.TokenConsumed)
@@ -784,7 +785,7 @@ namespace CatCatGo.Services
                 return Result.Fail<DungeonChallengeResult>(challengeResult.Message);
 
             var battle = challengeResult.Data.Battle;
-            battle.RunToCompletion(50);
+            battle.RunToCompletion(BattleDataTable.Data.MaxTurns);
             var reward = OnDungeonBattleResult(type, battle.State);
 
             SaveGame();
@@ -841,7 +842,7 @@ namespace CatCatGo.Services
             if (battle == null)
                 return Result.Fail<CatacombRunResult>("No battle available");
 
-            battle.RunToCompletion(50);
+            battle.RunToCompletion(BattleDataTable.Data.MaxTurns);
             var result = Catacomb.OnBattleResult(battle.State);
 
             if (!result.ContinueRun)

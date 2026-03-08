@@ -242,7 +242,7 @@ namespace CatCatGo.Domain.Battle
                     case SkillEffectType.ADD_RAGE:
                     {
                         int rageAmount = effect.UseSourceStat ? source.RagePerAttack : effect.Amount;
-                        source.Rage = source.Rage + rageAmount;
+                        source.Rage = Math.Min(source.Rage + rageAmount, source.MaxRage);
                         results.Add(new SkillDamageResult
                         {
                             SkillName = skill.Name,

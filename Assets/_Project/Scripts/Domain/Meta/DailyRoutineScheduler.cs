@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CatCatGo.Domain.Enums;
+using CatCatGo.Domain.Data;
 
 namespace CatCatGo.Domain.Meta
 {
@@ -73,7 +74,7 @@ namespace CatCatGo.Domain.Meta
                         reason = available ? "Ready" : "No challenge tokens";
                         break;
                     case RoutineAction.CHAPTER_PROGRESS:
-                        available = context.Stamina >= 5;
+                        available = context.Stamina >= BattleDataTable.Data.ChapterStaminaCost;
                         reason = available ? "Ready" : "Not enough stamina";
                         break;
                     case RoutineAction.GOBLIN_MINE:

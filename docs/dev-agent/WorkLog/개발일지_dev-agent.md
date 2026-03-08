@@ -1,5 +1,55 @@
 # 개발일지 - dev-agent
 
+## 2026-03-08 (22) - 클라이언트 C# 코드 전수 점검
+
+### 개요
+
+Assets/ 디렉토리의 클라이언트 C# 코드 전수 점검 수행. Domain, Infrastructure, Services, Presentation, Network, Data, Editor 전 레이어 100여 개 파일 읽기 완료. 버그 5건 수정, 하드코딩 밸런스 수치 2건 데이터 테이블 참조로 변경.
+
+### 버그 수정 (5건)
+
+| ID | 파일 | 내용 | 수정 |
+|----|------|------|------|
+| BUG-A | `DateHelper.cs` | `DateTime.Now.Month`/`.Day`가 한 자리수일 때 zero-padding 없어 `2026-3-8` 형식 반환. `DailyResetSystem`, `AttendanceSystem` 등 날짜 문자열 비교 전부 오동작 | `DateTime.Now.ToString("yyyy-MM-dd")` 사용 |
+| BUG-B | `Player.cs:EquipFromInventory` | (1) 빈 슬롯에 장착 성공 시 `return null` 반환하여 성공/실패 구분 불가 (2) worst-index 루프에서 `worst`가 null일 때 NRE 가능 | (1) `return eq` (2) `if (worst == null) break;` 가드 추가 |
+| BUG-C | `GameManager.cs:EquipItem` | 인벤토리에 없는 장비 ID로 `EquipFromInventory` 호출 시 내부에서 `RemoveFromInventory`가 null 반환 → 후속 로직에서 무의미한 동작 | 인벤토리 존재 여부 사전 검증 추가 |
+| BUG-D | `SkillExecutionEngine.cs:ADD_RAGE` | `source.Rage = source.Rage + rageAmount` — MaxRage 상한 체크 없이 무한 증가 가능 | `Math.Min(source.Rage + rageAmount, source.MaxRage)` |
+| BUG-E | `DailyRoutineScheduler.cs` | `context.Stamina >= 5` 하드코딩. 데이터 테이블에서 스태미나 비용이 변경되면 불일치 | `BattleDataTable.Data.ChapterStaminaCost` 참조 |
+
+### 하드코딩 밸런스 수치 수정 (2건)
+
+| 파일 | 내용 | 수정 |
+|------|------|------|
+| `Chapter.cs` | `TotalDays = 60` 하드코딩. `ChapterTreasureTable.GetTotalDays(id)`가 이미 JSON에서 값을 로드하는데 사용되지 않음 | `ChapterTreasureTable.GetTotalDays(id)` 참조 |
+| `GameManager.cs` | `RunToCompletion(50)` 3곳 하드코딩. `BattleDataTable.Data.MaxTurns`가 이미 JSON에서 값을 로드하는데 사용되지 않음 | `BattleDataTable.Data.MaxTurns` 참조 |
+
+### 검토 범위
+
+- Domain: Entities (Player, Talent, Heritage, Pet, ActiveSkill, PassiveSkill, Equipment, EquipmentSlot, Resources), Battle (Battle, BattleUnit, SkillExecutionEngine, SkillValidator, StatusEffect, BattleLog, BattleLogCategorizer), Chapter (Chapter, Encounter, EncounterGenerator, EnemyTemplate), Content (Tower, CatacombDungeon, DailyDungeon, GoblinMiner), Economy (Collection, DailyResetSystem, ChapterTreasure, TreasureChest), Meta (DailyRoutineScheduler, AttendanceSystem, GameEvent/EventManager, SaveManager), ValueObjects (Stats, Result, Cost, Reward), Data (전체 데이터 테이블 20여 개)
+- Infrastructure: EventBus, SeededRandom, JsonDataLoader, GameEvents, GameLog, DateHelper
+- Services: GameManager, GameState, SaveSerializer, ServerSyncService, BattleManager, Forge, PetManager
+- Network: ApiClient, TokenStore, API 래퍼 15종, ErrorCodeMessages, StateDelta, ServerResponseTypes
+- Presentation: 핵심 UI (BaseScreen, BasePopup, UIManager, SpriteManager, GameBootstrap), Components 10여 개, Battle Views
+- Editor: ResourceValidator, UISceneValidator, UITestWindow
+- Enums: GameEnums
+
+### 아키텍처 일치 확인
+
+프로젝트_구조.md 대비 코드 아키텍처 일치 확인 완료. Assembly 의존성 순서 준수 (Shared → Infrastructure → Network → Domain → Services → Presentation).
+
+### 변경 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Scripts/Infrastructure/DateHelper.cs` | 날짜 형식 수정 |
+| `Assets/_Project/Scripts/Domain/Entities/Player.cs` | EquipFromInventory 반환값/가드 수정 |
+| `Assets/_Project/Scripts/Services/GameManager.cs` | EquipItem 검증 추가, RunToCompletion 하드코딩 제거 |
+| `Assets/_Project/Scripts/Domain/Battle/SkillExecutionEngine.cs` | ADD_RAGE MaxRage 상한 추가 |
+| `Assets/_Project/Scripts/Domain/Meta/DailyRoutineScheduler.cs` | 스태미나 비용 데이터 테이블 참조 |
+| `Assets/_Project/Scripts/Domain/Chapter/Chapter.cs` | TotalDays 데이터 테이블 참조 |
+
+---
+
 ## 2026-03-08 (21) - BUG-016 수정 + FI-3 되돌리기
 
 ### 개요

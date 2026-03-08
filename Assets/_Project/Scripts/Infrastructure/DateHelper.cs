@@ -6,8 +6,7 @@ namespace CatCatGo.Infrastructure
     {
         public static string GetTodayString()
         {
-            var now = DateTime.Now;
-            return $"{now.Year}-{now.Month}-{now.Day}";
+            return DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
 }
