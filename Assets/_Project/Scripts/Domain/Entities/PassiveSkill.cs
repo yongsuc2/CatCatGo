@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CatCatGo.Domain.Enums;
 
 namespace CatCatGo.Domain.Entities

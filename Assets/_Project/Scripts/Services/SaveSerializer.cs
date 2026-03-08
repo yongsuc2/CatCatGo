@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using CatCatGo.Domain.Enums;
 using CatCatGo.Domain.ValueObjects;
 using CatCatGo.Domain.Entities;

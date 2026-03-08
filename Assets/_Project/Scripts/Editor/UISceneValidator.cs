@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
 using CatCatGo.Presentation.Core;
 using CatCatGo.Presentation.Utils;
