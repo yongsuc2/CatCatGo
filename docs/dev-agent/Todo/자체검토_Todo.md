@@ -15,5 +15,5 @@
 | ID | 우선순위 | 작업 | 상세 | 상태 |
 |----|---------|------|------|------|
 | FI-2 | 저 | Battle.RunToCompletion maxTurns 초과 시 DEFEAT 로그 누락 | maxTurns 초과로 패배 처리 시 BattleLogType.DEATH 로그를 남기지 않아 UI에서 패배 사유를 표시하기 어려움 | 완료 |
-| FI-3 | 저 | EquipmentSlot.Unequip 시 SlotLevel 초기화 미수행 | 장비 해제 시 SlotLevels[index]를 0으로 초기화하지 않음 | 완료 |
+| FI-3 | 저 | EquipmentSlot.Unequip 시 SlotLevel 초기화 미수행 | 기획서상 "강화 레벨은 슬롯에 귀속"으로 의도된 동작 | 해당없음 |
 | FI-4 | 중 | 펫 뽑기(PET/BASIC_PET) PityCount 증가 안 함 | TreasureChest.Pull에서 펫 뽑기 시 PityCount를 증가시키지 않으나, 기획서상 펫 뽑기는 천장 시스템 없음으로 의도된 동작 | 해당없음 |

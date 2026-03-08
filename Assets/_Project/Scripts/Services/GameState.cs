@@ -319,7 +319,6 @@ namespace CatCatGo.Services
             {
                 var unequipped = slot.Equipped[slotChange.Index];
                 slot.Equipped[slotChange.Index] = null;
-                slot.SlotLevels[slotChange.Index] = 0;
                 if (unequipped != null)
                     Player.AddToInventory(unequipped);
             }

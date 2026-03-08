@@ -1,5 +1,35 @@
 # 개발일지 - dev-agent
 
+## 2026-03-08 (21) - BUG-016 수정 + FI-3 되돌리기
+
+### 개요
+
+BUG-016 (PetManagerTests 컴파일 에러) 수정, FI-3 (EquipmentSlot.Unequip SlotLevel 초기화) 되돌리기.
+
+### 버그 수정 (1건)
+
+| ID | 파일 | 내용 | 수정 |
+|----|------|------|------|
+| BUG-016 | `PetManagerTests.cs` | 삭제된 PetManager 메서드(GetTotalPassiveBonus, FeedPet, TryUpgradeGrade, SelectBestPet)를 참조하는 테스트 코드 잔존 — 컴파일 에러 | 해당 테스트 메서드 8개 삭제, 미사용 using 정리 |
+
+### 되돌리기 (1건)
+
+| 파일 | 내용 |
+|------|------|
+| `EquipmentSlot.cs` | FI-3에서 추가한 `SlotLevels[index] = 0`, `SlotPromoteCounts[index] = 0` 제거 — 기획서(03_장비시스템.md)에 "강화 레벨은 슬롯에 귀속"으로 의도된 동작 |
+| `GameState.cs` | ApplyEquipSlotChange에서 Unequip 시 SlotLevels 초기화 제거 (동일 사유) |
+
+### 변경 파일
+
+| 파일 | 변경 |
+|------|------|
+| `Assets/_Project/Tests/Editor/Services/PetManagerTests.cs` | 삭제된 메서드 테스트 8개 제거 |
+| `Assets/_Project/Scripts/Domain/Entities/EquipmentSlot.cs` | Unequip 슬롯 초기화 되돌리기 |
+| `Assets/_Project/Scripts/Services/GameState.cs` | ApplyEquipSlotChange 슬롯 초기화 되돌리기 |
+| `docs/dev-agent/Todo/자체검토_Todo.md` | FI-3 상태 해당없음으로 변경 |
+
+---
+
 ## 2026-03-08 (20) - BUG-014 수정 + 죽은 코드 삭제 + 중복 제거
 
 ### 개요
