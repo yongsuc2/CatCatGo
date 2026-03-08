@@ -1,6 +1,6 @@
 ---
 name: bugfix
-description: 축적된 Open 버그를 검토하고 수정 작업을 진행. catcat-pd가 심각도 순으로 정리하여 적절한 Agent에게 할당.
+description: 축적된 Open 버그를 검토하고 수정 작업을 진행. 심각도 순으로 정리하여 적절한 Agent에게 할당.
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -27,6 +27,6 @@ disable-model-invocation: false
 ```
 Open 버그 수정 작업.
 대상 버그: {Open 버그 목록 (번호, 제목, 심각도)}
-catcat-pd는 심각도 순(Critical → Major → Minor)으로 버그를 정리하고 적절한 Agent에게 수정을 할당하세요.
+심각도 순(Critical → Major → Minor)으로 버그를 정리하고 적절한 Agent에게 수정을 할당하세요.
 수정 완료 후 qa-agent에게 검증을 요청하고, 통과 시 Closed 처리하세요.
 ```
