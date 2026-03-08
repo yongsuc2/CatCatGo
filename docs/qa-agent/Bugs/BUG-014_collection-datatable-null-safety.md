@@ -1,7 +1,7 @@
 # BUG-014: CollectionDataTable.EnsureLoaded()에서 null safety 미흡
 
 ## 상태
-Open
+Closed
 
 ## 심각도
 Minor
@@ -48,3 +48,6 @@ JSON 파일 로드 실패 시 `_entries`를 빈 리스트로 초기화하지 않
 ## 수정 이력
 | 날짜 | 담당 Agent | 내용 | 커밋 |
 |------|-----------|------|------|
+| 2026-03-07 | qa-agent | 버그 발견 및 등록 | - |
+| 2026-03-08 | dev-agent | data?["entries"] null 체크 추가, null 시 빈 리스트 초기화 | 3fc8f412 |
+| 2026-03-08 | qa-agent | 수정 검증 완료 — data null, entries null 두 경우 모두 빈 리스트 반환 확인 | - |
