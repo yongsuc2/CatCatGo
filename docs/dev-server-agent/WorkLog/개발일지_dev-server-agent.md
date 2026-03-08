@@ -1,5 +1,31 @@
 # dev-server-agent 개발일지
 
+## 2026-03-08: 서버 코드 unused using 정리
+
+### 작업 목표
+Server/ 디렉토리 내 모든 .cs 파일에서 사용하지 않는 using 문을 찾아 제거
+
+### 분석 범위
+- Controllers: 15개 파일
+- Services: 14개 파일
+- Models/Interfaces: 28개 파일
+- Infrastructure (Repository, Cache, External): 17개 파일
+- Middleware: 3개 파일
+- Program.cs: 1개
+- Tests: 14개 파일
+- Shared (Requests, Responses, Models): 10개 파일
+
+### 발견 및 수정
+| 파일 | 제거한 using | 이유 |
+|------|-------------|------|
+| `Server/src/CatCatGo.Shared/Models/ApiResponse.cs` | `using System.Text.Json.Serialization;` | JsonPropertyName, JsonIgnore 등 Serialization 어트리뷰트 미사용 |
+
+### 검증
+- `dotnet build` — 0 Error
+- `dotnet test` — 129개 테스트 전부 통과
+
+---
+
 ## 2026-03-08: BUG-017 서버 EquipmentDeltaData WeaponSubType 필드 추가
 
 ### 버그 원인
